@@ -1,26 +1,131 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), sans-serif;
+  --font-display: var(--font-plus-jakarta-sans), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+
+  --color-cyber-dark: #070708;
+  --color-cyber-card: #0d0d10;
+  --color-cyber-border: #1b1e26;
+  --color-neon-orange: #ff6b00;
+  --color-neon-blue: #00f0ff;
+  --color-neon-purple: #b923ff;
+  --color-neon-green: #39ff14;
+
+  --animate-scanline: scanline 6s linear infinite;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite alternate;
+  --animate-matrix: matrix 20s linear infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
   }
 }
 
+@keyframes pulse-glow {
+  0% {
+    text-shadow: 0 0 4px rgba(255, 107, 0, 0.4), 0 0 10px rgba(255, 107, 0, 0.2);
+    box-shadow: 0 0 4px rgba(255, 107, 0, 0.2), inset 0 0 2px rgba(255, 107, 0, 0.1);
+  }
+  100% {
+    text-shadow: 0 0 8px rgba(255, 107, 0, 0.8), 0 0 20px rgba(255, 107, 0, 0.4);
+    box-shadow: 0 0 12px rgba(255, 107, 0, 0.5), inset 0 0 6px rgba(255, 107, 0, 0.3);
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #070708;
+  color: #ededed;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #070708;
+}
+::-webkit-scrollbar-thumb {
+  background: #1b1e26;
+  border-radius: 3px;
+  border: 1px solid #2d3345;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff6b00;
+}
+
+/* Cyber Utilities */
+.cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(27, 30, 38, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(27, 30, 38, 0.4) 1px, transparent 1px);
+}
+
+.cyber-grid-dots {
+  background-size: 20px 20px;
+  background-image: radial-gradient(rgba(27, 30, 38, 0.8) 1px, transparent 1px);
+}
+
+.glow-orange {
+  text-shadow: 0 0 8px rgba(255, 107, 0, 0.6), 0 0 15px rgba(255, 107, 0, 0.3);
+}
+
+.glow-blue {
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6), 0 0 15px rgba(0, 240, 255, 0.3);
+}
+
+.glow-border-orange {
+  box-shadow: 0 0 8px rgba(255, 107, 0, 0.25), inset 0 0 4px rgba(255, 107, 0, 0.1);
+  border-color: rgba(255, 107, 0, 0.4);
+}
+
+.glow-border-blue {
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.25), inset 0 0 4px rgba(0, 240, 255, 0.1);
+  border-color: rgba(0, 240, 255, 0.4);
+}
+
+.glow-border-purple {
+  box-shadow: 0 0 8px rgba(185, 35, 255, 0.25), inset 0 0 4px rgba(185, 35, 255, 0.1);
+  border-color: rgba(185, 35, 255, 0.4);
+}
+
+/* Scanline Effect */
+.scanlines {
+  position: relative;
+  overflow: hidden;
+}
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 10;
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Cyberpunk decorative cut corners */
+.clip-cyber {
+  clip-path: polygon(0px 0px, calc(100% - 12px) 0px, 100% 12px, 100% 100%, 12px 100%, 0px calc(100% - 12px));
+}
+
+.clip-cyber-sm {
+  clip-path: polygon(0px 0px, calc(100% - 8px) 0px, 100% 8px, 100% 100%, 8px 100%, 0px calc(100% - 8px));
+}
+
+.clip-cyber-header {
+  clip-path: polygon(0px 0px, 100% 0px, calc(100% - 15px) 100%, 0px 100%);
 }
