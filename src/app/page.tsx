@@ -3,17 +3,20 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
-import { Search } from "lucide-react";
+
+// Stable timestamp constant — avoids new Date() creating a new reference on every render
+const JAM_TARGET_MS = new Date("2025-04-20T09:00:00").getTime();
 
 // ─────────────────────────────────────────────
-// COUNTDOWN HOOK
+// COUNTDOWN HOOK  (accepts number, not Date)
 // ─────────────────────────────────────────────
-function useCountdown(targetDate: Date) {
+function useCountdown(targetMs: number) {
   const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
   useEffect(() => {
     const tick = () => {
-      const diff = targetDate.getTime() - Date.now();
+      const diff = targetMs - Date.now();
       if (diff <= 0) { setTimeLeft({ d: 0, h: 0, m: 0, s: 0 }); return; }
       setTimeLeft({
         d: Math.floor(diff / 86400000),
@@ -25,19 +28,19 @@ function useCountdown(targetDate: Date) {
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [targetDate]);
+  }, [targetMs]);
   return timeLeft;
 }
 
 // ─────────────────────────────────────────────
-// NAV LINKS
+// NAV LINKS  (all protected — redirect to onboarding if no user)
 // ─────────────────────────────────────────────
 const navLinks = [
-  { label: "Quest Board", href: "/dashboard/quests" },
-  { label: "Arcade Wall", href: "/dashboard/arcade" },
-  { label: "Character Sheet", href: "/dashboard/team" },
-  { label: "Hall Of Fame", href: "/dashboard/leaderboard" },
-  { label: "Inventory", href: "/dashboard/inventory" },
+  { label: "Quest Board",     href: "/dashboard/quests" },
+  { label: "Arcade Wall",     href: "/dashboard/arcade" },
+  { label: "Character Select",href: "/dashboard/team" },
+  { label: "Hall Of Fame",    href: "/dashboard/leaderboard" },
+  { label: "Inventory",       href: "/dashboard/inventory" },
 ];
 
 // ─────────────────────────────────────────────
@@ -80,10 +83,19 @@ const sora = "var(--font-sora), sans-serif";
 // ─────────────────────────────────────────────
 export default function Home() {
   const { user, loading } = useGameForge();
-  const jamDate = new Date("2025-04-20T09:00:00");
-  const countdown = useCountdown(jamDate);
+  const router = useRouter();
+  const countdown = useCountdown(JAM_TARGET_MS);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pad = (n: number) => String(n).padStart(2, "0");
+
+  // Guard: navigate to onboarding if not logged in, else to the route
+  const handleNavLink = (href: string) => {
+    if (!loading && user) {
+      router.push(href);
+    } else {
+      router.push("/onboarding");
+    }
+  };
 
   return (
     <div style={{ background: "#131314", color: "#E5E2E3", minHeight: "100vh", overflowX: "hidden" }}>
@@ -131,9 +143,9 @@ export default function Home() {
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-10">
             {navLinks.map((l) => (
-              <Link
+              <button
                 key={l.label}
-                href={l.href}
+                onClick={() => handleNavLink(l.href)}
                 style={{
                   fontFamily: mono,
                   fontWeight: 600,
@@ -141,12 +153,15 @@ export default function Home() {
                   lineHeight: "12px",
                   letterSpacing: "1.2px",
                   color: "#E0C0AF",
-                  textDecoration: "none",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
                 }}
                 className="hover:text-[#FFB68B] transition-colors duration-200"
               >
                 {l.label}
-              </Link>
+              </button>
             ))}
           </nav>
 
@@ -189,14 +204,13 @@ export default function Home() {
         {mobileOpen && (
           <div style={{ background: "#131314", borderTop: "1px solid rgba(88,66,53,0.3)", padding: "16px 64px" }}>
             {navLinks.map((l) => (
-              <Link
+              <button
                 key={l.label}
-                href={l.href}
-                style={{ display: "block", padding: "10px 0", fontFamily: mono, fontSize: "12px", letterSpacing: "1.2px", color: "#E0C0AF", textDecoration: "none" }}
-                onClick={() => setMobileOpen(false)}
+                onClick={() => { handleNavLink(l.href); setMobileOpen(false); }}
+                style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 0", fontFamily: mono, fontSize: "12px", letterSpacing: "1.2px", color: "#E0C0AF", background: "none", border: "none", cursor: "pointer" }}
               >
                 {l.label}
-              </Link>
+              </button>
             ))}
           </div>
         )}
