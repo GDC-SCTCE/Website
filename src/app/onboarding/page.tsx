@@ -6,10 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
 import { NAV_LINKS } from "@/constants/navigation";
-import { MONO, SORA } from "@/constants/fonts";
 
-const mono = MONO;
-const sora = SORA;
 
 const DEV_TOOLS = ["Unity", "Godot", "Unreal", "Blender", "Figma"];
 const YEAR_OPTIONS = ["1st", "2nd", "3rd", "4th"];
@@ -79,23 +76,8 @@ export default function OnboardingPage() {
 
   if (loading || (user && !submitting)) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#131314",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: mono,
-            fontSize: "12px",
-            color: "#FF7A00",
-            letterSpacing: "1.2px",
-          }}
-        >
+      <div className="min-h-screen bg-[#131314] flex items-center justify-center">
+        <span className="font-mono text-[12px] text-[#FF7A00] tracking-[1.2px]">
           CONNECTING TO COMPILER...
         </span>
       </div>
@@ -103,104 +85,32 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135.04deg, #131314 0%, #1C1B1C 100%)",
-        color: "#E5E2E3",
-        position: "relative",
-        overflowX: "hidden",
-      }}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] relative overflow-x-hidden">
       {/* ── Ambient blobs ── */}
-      <div
-        style={{
-          position: "absolute",
-          width: "512px",
-          height: "746px",
-          left: "-136px",
-          top: "79px",
-          background: "#FFB68B",
-          opacity: 0.03,
-          filter: "blur(60px)",
-          transform: "rotate(12deg)",
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          width: "640px",
-          height: "622px",
-          left: "870px",
-          top: "242px",
-          background: "#00DBE9",
-          opacity: 0.03,
-          filter: "blur(75px)",
-          transform: "rotate(-12deg)",
-          pointerEvents: "none",
-        }}
-      />
+      <div className="absolute w-[512px] h-[746px] left-[-136px] top-[79px] bg-[#FFB68B]/3 blur-[60px] rotate-12 pointer-events-none" />
+      <div className="absolute w-[640px] h-[622px] left-[870px] top-[242px] bg-[#00DBE9]/3 blur-[75px] -rotate-12 pointer-events-none" />
 
       {/* ── NAVBAR ── */}
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
-          background: "rgba(19,19,20,0.96)",
-          borderBottom: "1px solid rgba(88,66,53,0.3)",
-          backdropFilter: "blur(8px)",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1440px",
-            margin: "0 auto",
-            height: "79px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-          className="px-4 md:px-16"
-        >
+      <header className="sticky top-0 z-50 bg-[#131314]/96 border-b border-[#584235]/30 backdrop-blur-md">
+        <div className="max-w-[1440px] mx-auto h-[79px] flex items-center justify-between px-4 md:px-16">
           {/* Logo */}
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
-            <div style={{ width: "39px", height: "40px", position: "relative", flexShrink: 0 }}>
-              <Image src="/gdclogo.png" alt="GDC Logo" fill style={{ objectFit: "contain" }} sizes="39px" />
+          <Link href="/" className="flex items-center gap-[12px] no-underline">
+            <div className="w-[39px] h-[40px] relative shrink-0">
+              <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" sizes="39px" />
             </div>
-            <span
-              style={{
-                fontFamily: sora,
-                fontWeight: 800,
-                fontSize: "24px",
-                lineHeight: "32px",
-                letterSpacing: "-1.2px",
-                color: "#FFB68B",
-              }}
-            >
+            <span className="font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] text-[#FFB68B] hidden min-[420px]:inline-block">
               GAME DEV CLUB
             </span>
           </Link>
 
-          {/* Desktop nav */}
           <nav
-            style={{ alignItems: "center", gap: "40px" }}
-            className="hidden md:flex"
+            className="hidden md:flex items-center gap-[40px]"
           >
             {navLinks.map((l) => (
               <Link
                 key={l.label}
                 href={l.href}
-                style={{
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#E0C0AF",
-                  textDecoration: "none",
-                }}
+                className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B] transition-colors duration-200"
               >
                 {l.label}
               </Link>
@@ -208,28 +118,16 @@ export default function OnboardingPage() {
           </nav>
 
           {/* CTA + mobile */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div className="flex items-center gap-[16px]">
             <button
-              style={{
-                background: "#FF7A00",
-                width: "98.41px",
-                height: "28px",
-                fontFamily: mono,
-                fontWeight: 600,
-                fontSize: "12px",
-                letterSpacing: "1.2px",
-                color: "#5C2800",
-                border: "none",
-                cursor: "pointer",
-              }}
+              className="bg-[#FF7A00]/50 w-[98.41px] h-[28px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#5C2800]/60 border-none cursor-not-allowed"
               disabled
             >
               Join Us
             </button>
             <button
-              className="md:hidden"
+              className="md:hidden text-[#E0C0AF] bg-transparent border-none cursor-pointer p-1"
               onClick={() => setMobileOpen(!mobileOpen)}
-              style={{ color: "#E0C0AF", background: "none", border: "none", cursor: "pointer" }}
             >
               <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
                 <rect y="3" width="22" height="2" rx="1" />
@@ -240,21 +138,13 @@ export default function OnboardingPage() {
           </div>
         </div>
         {mobileOpen && (
-          <div
-            style={{
-              background: "#131314",
-              borderTop: "1px solid rgba(88,66,53,0.3)",
-              paddingTop: "16px",
-              paddingBottom: "16px",
-            }}
-            className="px-4 md:px-16 md:hidden"
-          >
+          <div className="bg-[#131314] border-t border-[#584235]/30 py-[16px] px-4 md:px-16 md:hidden">
             {navLinks.map((l) => (
               <Link
                 key={l.label}
                 href={l.href}
                 onClick={() => setMobileOpen(false)}
-                style={{ display: "block", padding: "10px 0", fontFamily: mono, fontSize: "12px", letterSpacing: "1.2px", color: "#E0C0AF", textDecoration: "none" }}
+                className="block py-[10px] font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B] transition-colors duration-200"
               >
                 {l.label}
               </Link>
@@ -264,277 +154,108 @@ export default function OnboardingPage() {
       </header>
 
       {/* ── MAIN ── */}
-      <main
-        style={{
-          maxWidth: "1440px",
-          margin: "0 auto",
-          padding: "0 64px 80px",
-        }}
-      >
+      <main className="max-w-[1440px] mx-auto px-4 md:px-[64px] pb-[80px]">
         {/* ── PROGRESS HEADER ── */}
-        <div style={{ textAlign: "center", paddingTop: "96px", marginBottom: "56px" }}>
+        <div className="text-center pt-[96px] mb-[56px]">
           {/* Phase label */}
-          <p
-            style={{
-              fontFamily: mono,
-              fontWeight: 600,
-              fontSize: "12px",
-              lineHeight: "12px",
-              letterSpacing: "1.2px",
-              color: "#00DBE9",
-              marginBottom: "28px",
-            }}
-          >
+          <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#00DBE9] mb-[28px]">
             PHASE 02 / CHARACTER DATA
           </p>
 
           {/* Heading */}
-          <h1
-            style={{
-              fontFamily: sora,
-              fontWeight: 700,
-              fontSize: "48px",
-              lineHeight: "53px",
-              letterSpacing: "-2.4px",
-              textTransform: "uppercase",
-              color: "#FFB68B",
-              margin: "0 0 24px 0",
-            }}
-          >
+          <h1 className="font-sora font-bold text-[48px] leading-[53px] tracking-[-2.4px] uppercase text-[#FFB68B] mb-[24px]">
             Initialize Protocol
           </h1>
 
           {/* Progress bar */}
-          <div
-            style={{
-              display: "inline-block",
-              width: "128px",
-              position: "relative",
-            }}
-          >
+          <div className="inline-block w-[128px] relative">
             {/* Shadow layer */}
-            <div
-              style={{
-                position: "absolute",
-                width: "128px",
-                height: "4px",
-                top: 0,
-                left: 0,
-                background: "rgba(255,255,255,0.002)",
-                boxShadow: "0px 4px 20px -5px rgba(255,182,139,0.6)",
-              }}
-            />
+            <div className="absolute w-[128px] h-[4px] top-0 left-0 bg-transparent shadow-[0_4px_20px_-5px_rgba(255,182,139,0.6)]" />
             {/* Fill */}
-            <div
-              style={{
-                width: "128px",
-                height: "4px",
-                background: "#FFB68B",
-                marginTop: "4px",
-              }}
-            />
+            <div className="w-[128px] h-[4px] bg-[#FFB68B] mt-[4px]" />
           </div>
         </div>
 
         {/* ── TWO COLUMN FORM ── */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "738.67px 1fr",
-            gap: "64px",
-            alignItems: "start",
-          }}
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-[738.67px_1fr] gap-[64px] items-start max-w-[1280px] mx-auto">
           {/* ───── LEFT: BASE STATS ───── */}
           <div>
             {/* Section title */}
-            <div style={{ display: "flex", alignItems: "baseline", gap: "16px", marginBottom: "48px" }}>
-              <span
-                style={{
-                  fontFamily: sora,
-                  fontWeight: 700,
-                  fontSize: "48px",
-                  lineHeight: "53px",
-                  letterSpacing: "-0.96px",
-                  color: "#353436",
-                }}
-              >
+            <div className="flex items-baseline gap-[16px] mb-[48px]">
+              <span className="font-sora font-bold text-[48px] leading-[53px] tracking-[-0.96px] text-[#353436]">
                 03
               </span>
-              <span
-                style={{
-                  fontFamily: sora,
-                  fontWeight: 700,
-                  fontSize: "32px",
-                  lineHeight: "48px",
-                  textTransform: "uppercase",
-                  color: "#E5E2E3",
-                }}
-              >
+              <span className="font-sora font-bold text-[32px] leading-[48px] uppercase text-[#E5E2E3]">
                 BASE STATS
               </span>
             </div>
 
             {/* Row 1: Full Name + Email */}
-            <div style={{ display: "grid", gridTemplateColumns: "357.33px 357.33px", gap: "24px", marginBottom: "36px" }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mb-[36px] max-w-[738.67px]">
               {/* Full Name */}
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontFamily: mono,
-                    fontWeight: 700,
-                    fontSize: "12px",
-                    lineHeight: "12px",
-                    letterSpacing: "1.2px",
-                    color: "#E0C0AF",
-                    marginBottom: "20px",
-                    paddingLeft: "4px",
-                  }}
-                >
+                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
                   FULL NAME
                 </label>
-                <div style={{ borderBottom: "1px solid #D0D0D0", paddingBottom: "13px" }}>
+                <div className="border-b border-[#D0D0D0] pb-[13px]">
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="e.g. Jaxen Sterling"
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      fontFamily: sora,
-                      fontWeight: 400,
-                      fontSize: "16px",
-                      lineHeight: "20px",
-                      color: "#353436",
-                      caretColor: "#FFB68B",
-                    }}
+                    className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
                   />
                 </div>
               </div>
 
               {/* Email */}
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontFamily: mono,
-                    fontWeight: 700,
-                    fontSize: "12px",
-                    lineHeight: "12px",
-                    letterSpacing: "1.2px",
-                    color: "#E0C0AF",
-                    marginBottom: "20px",
-                    paddingLeft: "4px",
-                  }}
-                >
+                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
                   EMAIL ADDRESS
                 </label>
-                <div style={{ borderBottom: "1px solid #D0D0D0", paddingBottom: "13px" }}>
+                <div className="border-b border-[#D0D0D0] pb-[13px]">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="jaxen@ignition.hub"
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      fontFamily: sora,
-                      fontWeight: 400,
-                      fontSize: "16px",
-                      lineHeight: "20px",
-                      color: "#353436",
-                      caretColor: "#FFB68B",
-                    }}
+                    className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
                   />
                 </div>
               </div>
             </div>
 
             {/* Row 2: Roll No + Academic Year */}
-            <div style={{ display: "grid", gridTemplateColumns: "357.33px 357.33px", gap: "24px" }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] max-w-[738.67px]">
               {/* Roll No */}
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontFamily: mono,
-                    fontWeight: 700,
-                    fontSize: "12px",
-                    lineHeight: "12px",
-                    letterSpacing: "1.2px",
-                    color: "#E0C0AF",
-                    marginBottom: "20px",
-                    paddingLeft: "4px",
-                  }}
-                >
+                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
                   ROLL NO.
                 </label>
-                <div style={{ borderBottom: "1px solid #D0D0D0", paddingBottom: "13px" }}>
+                <div className="border-b border-[#D0D0D0] pb-[13px]">
                   <input
                     type="text"
                     value={rollNo}
                     onChange={(e) => setRollNo(e.target.value)}
                     placeholder="IH-8829-X"
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      fontFamily: sora,
-                      fontWeight: 400,
-                      fontSize: "16px",
-                      lineHeight: "20px",
-                      color: "#353436",
-                      caretColor: "#FFB68B",
-                    }}
+                    className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
                   />
                 </div>
               </div>
 
               {/* Academic Year */}
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontFamily: mono,
-                    fontWeight: 700,
-                    fontSize: "12px",
-                    lineHeight: "12px",
-                    letterSpacing: "1.2px",
-                    color: "#E0C0AF",
-                    marginBottom: "20px",
-                    paddingLeft: "4px",
-                  }}
-                >
+                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
                   ACADEMIC YEAR
                 </label>
-                <div style={{ display: "flex" }}>
+                <div className="flex flex-wrap border border-[#353436]">
                   {YEAR_OPTIONS.map((y) => {
                     const isActive = year === y;
                     return (
                       <button
                         key={y}
                         onClick={() => setYear(y)}
-                        style={{
-                          width: "83.33px",
-                          height: "48px",
-                          background: isActive ? "#FF7A00" : "transparent",
-                          border: isActive ? "1px solid #FF7A00" : "1px solid #353436",
-                          fontFamily: mono,
-                          fontWeight: 400,
-                          fontSize: "10px",
-                          lineHeight: "15px",
-                          color: isActive ? "#522300" : "#E5E2E3",
-                          cursor: "pointer",
-                          textTransform: "uppercase",
-                          transition: "all 0.15s ease",
-                        }}
+                        className={`w-[83.33px] h-[48px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer uppercase transition-all duration-150 border-none ${isActive ? "bg-[#FF7A00] text-[#522300]" : "bg-transparent text-[#E5E2E3] hover:bg-white/5"}`}
                       >
                         {y}
                       </button>
@@ -548,69 +269,28 @@ export default function OnboardingPage() {
           {/* ───── RIGHT: LOADOUT ───── */}
           <div>
             {/* Section title */}
-            <div style={{ display: "flex", alignItems: "baseline", gap: "16px", marginBottom: "48px" }}>
-              <span
-                style={{
-                  fontFamily: sora,
-                  fontWeight: 700,
-                  fontSize: "48px",
-                  lineHeight: "53px",
-                  letterSpacing: "-0.96px",
-                  color: "#353436",
-                }}
-              >
+            <div className="flex items-baseline gap-[16px] mb-[48px]">
+              <span className="font-sora font-bold text-[48px] leading-[53px] tracking-[-0.96px] text-[#353436]">
                 04
               </span>
-              <span
-                style={{
-                  fontFamily: sora,
-                  fontWeight: 700,
-                  fontSize: "32px",
-                  lineHeight: "48px",
-                  textTransform: "uppercase",
-                  color: "#E5E2E3",
-                }}
-              >
+              <span className="font-sora font-bold text-[32px] leading-[48px] uppercase text-[#E5E2E3]">
                 LOADOUT
               </span>
             </div>
 
             {/* Development Tools */}
-            <div style={{ marginBottom: "56px" }}>
-              <p
-                style={{
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#E0C0AF",
-                  marginBottom: "28px",
-                }}
-              >
+            <div className="mb-[56px]">
+              <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[28px]">
                 DEVELOPMENT TOOLS
               </p>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <div className="flex gap-[8px] flex-wrap">
                 {DEV_TOOLS.map((tool) => {
                   const isSelected = selectedTools.includes(tool);
                   return (
                     <button
                       key={tool}
                       onClick={() => toggleTool(tool)}
-                      style={{
-                        height: "33px",
-                        padding: "0 16px",
-                        background: isSelected ? "#FFB68B" : "transparent",
-                        border: isSelected ? "none" : "1px solid #353436",
-                        fontFamily: mono,
-                        fontWeight: 400,
-                        fontSize: "10px",
-                        lineHeight: "15px",
-                        color: isSelected ? "#522300" : "#E0C0AF",
-                        cursor: "pointer",
-                        boxShadow: isSelected ? "0px 4px 20px -5px rgba(255,182,139,0.6)" : "none",
-                        transition: "all 0.15s ease",
-                      }}
+                      className={`h-[33px] px-[16px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer transition-all duration-150 ${isSelected ? "bg-[#FFB68B] text-[#522300] border-none shadow-[0_4px_20px_-5px_rgba(255,182,139,0.6)]" : "bg-transparent text-[#E0C0AF] border border-[#353436] hover:border-[#FFB68B]"}`}
                     >
                       {tool}
                     </button>
@@ -621,79 +301,24 @@ export default function OnboardingPage() {
 
             {/* XP Classification */}
             <div>
-              <p
-                style={{
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#E0C0AF",
-                  marginBottom: "28px",
-                }}
-              >
+              <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[28px]">
                 XP CLASSIFICATION
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div className="flex flex-col gap-[12px]">
                 {XP_LEVELS.map((lvl) => {
                   const isSelected = xpLevel === lvl.id;
                   return (
                     <button
                       key={lvl.id}
                       onClick={() => setXpLevel(lvl.id)}
-                      style={{
-                        width: "100%",
-                        height: "69px",
-                        background: "#1C1B1C",
-                        border: isSelected ? "1px solid #FFB68B" : "1px solid #353436",
-                        padding: "17px 17px 17px 49px",
-                        textAlign: "left",
-                        cursor: "pointer",
-                        position: "relative",
-                        boxSizing: "border-box",
-                        transition: "border-color 0.15s ease",
-                      }}
+                      className={`w-full h-[69px] bg-[#1C1B1C] pl-[49px] pr-[17px] py-[17px] text-left cursor-pointer relative box-border transition-colors duration-150 border ${isSelected ? "border-[#FFB68B]" : "border-[#353436] hover:border-[#FFB68B]/50"}`}
                     >
                       {/* Radio circle */}
-                      <span
-                        style={{
-                          position: "absolute",
-                          left: "17px",
-                          top: "26.5px",
-                          width: "16px",
-                          height: "16px",
-                          border: "2px solid #353436",
-                          borderRadius: "50%",
-                          display: "inline-block",
-                          background: isSelected ? "#FFB68B" : "transparent",
-                          boxSizing: "border-box",
-                        }}
-                      />
-                      <p
-                        style={{
-                          fontFamily: mono,
-                          fontWeight: 400,
-                          fontSize: "12px",
-                          lineHeight: "18px",
-                          color: "#FFB68B",
-                          margin: "0 0 2px 0",
-                        }}
-                      >
+                      <span className={`absolute left-[17px] top-[26.5px] w-[16px] h-[16px] border-2 border-[#353436] rounded-full inline-block box-border ${isSelected ? "bg-[#FFB68B]" : "bg-transparent"}`} />
+                      <p className="font-mono font-normal text-[12px] leading-[18px] text-[#FFB68B] m-0 mb-[2px]">
                         {lvl.label}
                       </p>
-                      <p
-                        style={{
-                          fontFamily: sora,
-                          fontWeight: 400,
-                          fontSize: "11px",
-                          lineHeight: "16px",
-                          color: "#E0C0AF",
-                          margin: 0,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
+                      <p className="font-sora font-normal text-[11px] leading-[16px] text-[#E0C0AF] m-0 truncate">
                         {lvl.desc}
                       </p>
                     </button>
@@ -705,134 +330,49 @@ export default function OnboardingPage() {
         </div>
 
         {/* ── CTA BUTTON ── */}
-        <div style={{ textAlign: "center", marginTop: "96px" }}>
-          <div style={{ display: "inline-block", position: "relative" }}>
+        <div className="text-center mt-[96px]">
+          <div className="inline-block relative">
             {/* Glow behind button */}
-            <div
-              style={{
-                position: "absolute",
-                inset: "-4px",
-                background: "linear-gradient(90deg, #FFB68B 0%, #FDD400 100%)",
-                opacity: 0.25,
-                filter: "blur(4px)",
-                pointerEvents: "none",
-              }}
-            />
+            <div className="absolute inset-[-4px] bg-gradient-to-r from-[#FFB68B] to-[#FDD400] opacity-25 blur-[4px] pointer-events-none" />
             <button
               onClick={handleJoin}
               disabled={submitting || !fullName.trim()}
-              style={{
-                position: "relative",
-                width: "469.81px",
-                height: "78px",
-                background: !fullName.trim() ? "#584235" : "#FFB68B",
-                border: "none",
-                fontFamily: sora,
-                fontWeight: 400,
-                fontSize: "20px",
-                lineHeight: "30px",
-                letterSpacing: "4px",
-                textTransform: "uppercase",
-                color: "#522300",
-                cursor: fullName.trim() ? "pointer" : "not-allowed",
-                transition: "background 0.2s ease, transform 0.15s ease",
-                opacity: !fullName.trim() ? 0.6 : 1,
-              }}
-              onMouseEnter={(e) => {
-                if (fullName.trim()) (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.01)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
-              }}
+              className={`relative w-full max-w-[469.81px] h-[78px] border-none font-sora font-normal text-[20px] leading-[30px] tracking-[4px] uppercase text-[#522300] transition-all duration-200 ${!fullName.trim() ? "bg-[#584235] opacity-60 cursor-not-allowed" : "bg-[#FFB68B] cursor-pointer hover:scale-[1.01]"}`}
             >
               {submitting ? "INITIALIZING..." : "JOIN THE COLLECTIVE →"}
             </button>
           </div>
-          <p
-            style={{
-              fontFamily: mono,
-              fontWeight: 400,
-              fontSize: "10px",
-              lineHeight: "15px",
-              color: "#353436",
-              marginTop: "20px",
-            }}
-          >
+          <p className="font-mono font-normal text-[10px] leading-[15px] text-[#353436] mt-[20px]">
             By joining, you agree to the Terms of Service
           </p>
         </div>
       </main>
 
       {/* ── FOOTER ── */}
-      <footer
-        style={{
-          background: "#131314",
-          borderTop: "2px solid #353436",
-          height: "142px",
-          display: "flex",
-          alignItems: "center",
-          boxSizing: "border-box",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1440px",
-            width: "100%",
-            margin: "0 auto",
-            padding: "0 64px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+      <footer className="bg-[#131314] border-t-2 border-[#353436] h-[142px] flex items-center box-border">
+        <div className="max-w-[1440px] w-full mx-auto px-4 md:px-[64px] flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Left: Logo + Tagline */}
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
-              <div style={{ width: "32px", height: "32px", position: "relative", flexShrink: 0 }}>
-                <Image src="/gdclogo.png" alt="GDC Logo" fill style={{ objectFit: "contain" }} sizes="32px" />
+          <div className="text-center md:text-left">
+            <div className="flex items-center gap-[12px] mb-[8px] justify-center md:justify-start">
+              <div className="w-[32px] h-[32px] relative shrink-0">
+                <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" sizes="32px" />
               </div>
-              <span
-                style={{
-                  fontFamily: sora,
-                  fontWeight: 700,
-                  fontSize: "16px",
-                  lineHeight: "24px",
-                  color: "#FFB68B",
-                }}
-              >
+              <span className="font-sora font-bold text-[16px] leading-[24px] text-[#FFB68B]">
                 GAME DEV CLUB
               </span>
             </div>
-            <p
-              style={{
-                fontFamily: mono,
-                fontWeight: 600,
-                fontSize: "12px",
-                lineHeight: "12px",
-                letterSpacing: "1.2px",
-                color: "#E0C0AF",
-                margin: 0,
-              }}
-            >
+            <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] m-0">
               © 2024 GAME DEV COLLECTIVE. BUILT FOR PERFORMANCE.
             </p>
           </div>
 
           {/* Right: Footer links */}
-          <div style={{ display: "flex", gap: "32px" }}>
+          <div className="flex gap-[32px]">
             {["Support", "GitHub", "Discord", "Terms"].map((l) => (
               <a
                 key={l}
                 href="#"
-                style={{
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#E0C0AF",
-                  textDecoration: "none",
-                }}
+                className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B] transition-colors duration-200"
               >
                 {l}
               </a>

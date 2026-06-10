@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
 import { NAV_LINKS } from "@/constants/navigation";
-import { MONO, SORA } from "@/constants/fonts";
+
 import { useCountdown } from "@/hooks/useCountdown";
 
 // Stable timestamp constant — avoids new Date() creating a new reference on every render
@@ -40,15 +40,13 @@ const features = [
 // STATS
 // ─────────────────────────────────────────────
 const stats = [
-  { value: "847", label: "Members", color: "#FF7A00" },
-  { value: "156", label: "Links Up", color: "#E9C400" },
-  { value: "12K", label: "In Game", color: "#FF7A00" },
-  { value: "2,340", label: "First Base", color: "#E9C400" },
+  { value: "847", label: "Members", textColor: "text-[#FF7A00]" },
+  { value: "156", label: "Links Up", textColor: "text-[#E9C400]" },
+  { value: "12K", label: "In Game", textColor: "text-[#FF7A00]" },
+  { value: "2,340", label: "First Base", textColor: "text-[#E9C400]" },
 ];
 
-// Shared font styles
-const mono = MONO;
-const sora = SORA;
+
 
 
 // ─────────────────────────────────────────────
@@ -67,44 +65,17 @@ export default function Home() {
   };
 
   return (
-    <div style={{ background: "#131314", color: "#E5E2E3", minHeight: "100vh", overflowX: "hidden" }}>
+    <div className="bg-[#131314] text-[#E5E2E3] min-h-screen overflow-x-hidden">
 
       {/* ── NAVBAR ── */}
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
-          background: "#131314",
-          borderBottom: "1px solid rgba(88,66,53,0.3)",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1440px",
-            margin: "0 auto",
-            height: "79px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-          className="px-4 md:px-16"
-        >
+      <header className="sticky top-0 z-50 bg-[#131314] border-b border-[#584235]/30">
+        <div className="max-w-[1440px] mx-auto h-[79px] flex items-center justify-between px-4 md:px-16">
           {/* Logo */}
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
-            <div style={{ width: "39px", height: "40px", position: "relative", flexShrink: 0 }}>
-              <Image src="/gdclogo.png" alt="GDC Logo" fill style={{ objectFit: "contain" }} />
+          <Link href="/" className="flex items-center gap-[12px] no-underline">
+            <div className="w-[39px] h-[40px] relative shrink-0">
+              <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" />
             </div>
-            <span
-              style={{
-                fontFamily: sora,
-                fontWeight: 800,
-                fontSize: "24px",
-                lineHeight: "32px",
-                letterSpacing: "-1.2px",
-                color: "#FFB68B",
-              }}
-            >
+            <span className="font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] text-[#FFB68B] hidden min-[420px]:inline-block">
               GAME DEV CLUB
             </span>
           </Link>
@@ -115,19 +86,7 @@ export default function Home() {
               <button
                 key={l.label}
                 onClick={() => handleNavLink(l.href)}
-                style={{
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#E0C0AF",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 0,
-                }}
-                className="hover:text-[#FFB68B] transition-colors duration-200"
+                className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] bg-none border-none cursor-pointer p-0 hover:text-[#FFB68B] transition-colors duration-200"
               >
                 {l.label}
               </button>
@@ -135,30 +94,15 @@ export default function Home() {
           </nav>
 
           {/* CTA + Mobile toggle */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div className="flex items-center gap-[16px]">
             <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
-              <button
-                style={{
-                  background: "#FF7A00",
-                  width: "98.41px",
-                  height: "28px",
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#5C2800",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
+              <button className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200">
                 {!loading && user ? "Terminal" : "Join Us"}
               </button>
             </Link>
             <button
-              className="md:hidden"
+              className="md:hidden text-[#E0C0AF] bg-none border-none cursor-pointer p-1"
               onClick={() => setMobileOpen(!mobileOpen)}
-              style={{ color: "#E0C0AF", background: "none", border: "none", cursor: "pointer" }}
             >
               <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
                 <rect y="3" width="22" height="2" rx="1" />
@@ -171,20 +115,12 @@ export default function Home() {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div
-            style={{
-              background: "#131314",
-              borderTop: "1px solid rgba(88,66,53,0.3)",
-              paddingTop: "16px",
-              paddingBottom: "16px",
-            }}
-            className="px-4 md:px-16 md:hidden"
-          >
+          <div className="bg-[#131314] border-t border-[#584235]/30 py-[16px] px-4 md:px-16 md:hidden">
             {navLinks.map((l) => (
               <button
                 key={l.label}
                 onClick={() => { handleNavLink(l.href); setMobileOpen(false); }}
-                style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 0", fontFamily: mono, fontSize: "12px", letterSpacing: "1.2px", color: "#E0C0AF", background: "none", border: "none", cursor: "pointer" }}
+                className="block w-full text-left py-[10px] font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] bg-none border-none cursor-pointer hover:text-[#FFB68B] transition-colors duration-200"
               >
                 {l.label}
               </button>
@@ -194,72 +130,26 @@ export default function Home() {
       </header>
 
       {/* ── HERO ── */}
-      <section style={{ textAlign: "center", paddingTop: "15dvh", paddingBottom: "10dvh", position: "relative", overflow: "hidden" }}>
+      <section className="text-center pt-[15dvh] pb-[10dvh] relative overflow-hidden px-4">
         {/* Ambient glow */}
-        <div style={{ position: "absolute", top: "-80px", left: "50%", transform: "translateX(-50%)", width: "700px", height: "400px", borderRadius: "50%", background: "rgba(255,122,0,0.06)", filter: "blur(120px)", pointerEvents: "none" }} />
+        <div className="absolute top-[-80px] left-1/2 -translate-x-1/2 w-[700px] max-w-full h-[400px] rounded-full bg-[#FF7A00]/5 blur-[120px] pointer-events-none" />
 
-        <h1
-          style={{
-            fontFamily: sora,
-            fontWeight: 400,
-            fontSize: "clamp(48px, 6.67vw, 96px)",
-            lineHeight: "1",
-            color: "#E5E2E3",
-            margin: "0 auto 32px",
-            maxWidth: "640px",
-          }}
-        >
+        <h1 className="font-sora font-normal text-[clamp(48px,6.67vw,96px)] leading-none text-[#E5E2E3] mx-auto mb-[32px] max-w-[640px]">
           Welcome to Game Dev Collective.
         </h1>
 
-        <p
-          style={{
-            fontFamily: sora,
-            fontWeight: 400,
-            fontSize: "18px",
-            lineHeight: "28px",
-            color: "#E0C0AF",
-            maxWidth: "600px",
-            margin: "0 auto 48px",
-          }}
-        >
+        <p className="font-sora font-normal text-[18px] leading-[28px] text-[#E0C0AF] max-w-[600px] mx-auto mb-[48px]">
           Step into a world where code becomes art and creativity fuels the arcade. Build games, earn XP, and rise through the ranks.
         </p>
 
-        <div style={{ display: "flex", gap: "24px", justifyContent: "center", alignItems: "center" }}>
+        <div className="flex flex-col sm:flex-row gap-[24px] justify-center items-center">
           <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
-            <button
-              style={{
-                background: "#FF7A00",
-                width: "211.66px",
-                height: "52px",
-                fontFamily: mono,
-                fontWeight: 600,
-                fontSize: "12px",
-                letterSpacing: "1.2px",
-                color: "#5C2800",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
+            <button className="bg-[#FF7A00] w-full sm:w-[211.66px] h-[52px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200">
               {!loading && user ? "ENTER FORGE →" : "INITIATE PROTOCOL →"}
             </button>
           </Link>
-          <a href="#jam">
-            <button
-              style={{
-                background: "transparent",
-                border: "1px solid #FF7A00",
-                width: "195.6px",
-                height: "54px",
-                fontFamily: mono,
-                fontWeight: 600,
-                fontSize: "12px",
-                letterSpacing: "1.2px",
-                color: "#FF7A00",
-                cursor: "pointer",
-              }}
-            >
+          <a href="#jam" className="w-full sm:w-auto">
+            <button className="bg-transparent border border-[#FF7A00] w-full sm:w-[195.6px] h-[54px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] cursor-pointer hover:bg-[#FF7A00]/5 transition-colors duration-200">
               DOX SOURCE →
             </button>
           </a>
@@ -268,119 +158,42 @@ export default function Home() {
 
       {/* ── THREE WAYS ── */}
       <section
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "0 24px 96px",
-          borderLeft: "2px solid rgba(88,66,53,0.2)",
-          borderRight: "2px solid rgba(88,66,53,0.2)",
-        }}
+        className="max-w-[1200px] mx-auto px-[24px] pb-[96px] md:border-l md:border-r md:border-[#584235]/20"
         id="sprint"
       >
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "48px" }}>
-          <p
-            style={{
-              fontFamily: mono,
-              fontWeight: 600,
-              fontSize: "12px",
-              letterSpacing: "1.2px",
-              color: "#FFB68B",
-              textTransform: "uppercase",
-              marginBottom: "26px",
-            }}
-          >
+        <div className="text-center mb-[48px] pt-[48px]">
+          <p className="font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FFB68B] uppercase mb-[26px]">
             FEATURES
           </p>
-          <h2
-            style={{
-              fontFamily: sora,
-              fontWeight: 700,
-              fontSize: "clamp(32px, 3.33vw, 48px)",
-              lineHeight: "53px",
-              letterSpacing: "-0.96px",
-              color: "#E5E2E3",
-              margin: "0 auto 16px",
-              maxWidth: "672px",
-            }}
-          >
+          <h2 className="font-sora font-bold text-[clamp(32px,3.33vw,48px)] leading-[53px] tracking-[-0.96px] text-[#E5E2E3] mx-auto mb-[16px] max-w-[672px]">
             Three ways to level up your craft.
           </h2>
-          <p
-            style={{
-              fontFamily: sora,
-              fontWeight: 400,
-              fontSize: "16px",
-              lineHeight: "24px",
-              color: "#E0C0AF",
-              maxWidth: "672px",
-              margin: "0 auto",
-            }}
-          >
+          <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] max-w-[672px] mx-auto">
             Give every discipline a forge for growth, collaboration, and high-community activity.
           </p>
         </div>
 
         {/* Cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 340px)", gap: "24px", justifyContent: "center" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] justify-center max-w-[1020px] mx-auto">
           {features.map((f) => (
-            <div key={f.title}>
+            <div key={f.title} className="flex flex-col items-center text-center md:items-start md:text-left mx-auto max-w-[340px]">
               {/* Image card */}
-              <div
-                style={{
-                  width: "340px",
-                  height: "191.25px",
-                  background: "#201F20",
-                  border: "1px solid #584235",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                  position: "relative",
-                }}
-              >
-                <Image src={f.img} alt={f.title} fill style={{ objectFit: "cover" }} />
+              <div className="w-[340px] max-w-full h-[191.25px] bg-[#201F20] border border-[#584235] rounded-[8px] overflow-hidden relative">
+                <Image src={f.img} alt={f.title} fill className="object-cover" />
               </div>
               {/* Title */}
-              <h3
-                style={{
-                  fontFamily: sora,
-                  fontWeight: 400,
-                  fontSize: "24px",
-                  lineHeight: "32px",
-                  color: "#FFB68B",
-                  marginTop: "24px",
-                  marginBottom: "16px",
-                }}
-              >
+              <h3 className="font-sora font-normal text-[24px] leading-[32px] text-[#FFB68B] mt-[24px] mb-[16px]">
                 {f.title}
               </h3>
               {/* Desc */}
-              <p
-                style={{
-                  fontFamily: sora,
-                  fontWeight: 400,
-                  fontSize: "16px",
-                  lineHeight: "24px",
-                  color: "#E0C0AF",
-                  marginBottom: "16px",
-                  maxWidth: "322px",
-                }}
-              >
+              <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] mb-[16px] max-w-[322px]">
                 {f.desc}
               </p>
               {/* Explore link */}
               <a
                 href="#"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#FF7A00",
-                  textDecoration: "none",
-                }}
+                className="inline-flex items-center gap-[8px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] no-underline hover:text-[#FFB68B] transition-colors duration-200"
               >
                 Explore →
               </a>
@@ -390,109 +203,39 @@ export default function Home() {
       </section>
 
       {/* ── STATS ── */}
-      <section style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 80px 96px" }} id="meets">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "64px", alignItems: "center" }}>
+      <section className="max-w-[1280px] mx-auto px-4 md:px-[80px] pb-[96px] pt-[48px]" id="meets">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[64px] items-center">
           {/* Left */}
-          <div style={{ paddingLeft: "64px" }}>
-            <p
-              style={{
-                fontFamily: mono,
-                fontWeight: 700,
-                fontSize: "12px",
-                letterSpacing: "1.2px",
-                color: "#FDD400",
-                textTransform: "uppercase",
-                marginBottom: "16px",
-              }}
-            >
+          <div className="px-0 md:px-[64px] text-center lg:text-left flex flex-col items-center lg:items-start">
+            <p className="font-mono font-bold text-[12px] tracking-[1.2px] text-[#FDD400] uppercase mb-[16px]">
               LIVE
             </p>
-            <h2
-              style={{
-                fontFamily: sora,
-                fontWeight: 700,
-                fontSize: "clamp(32px, 3.33vw, 48px)",
-                lineHeight: "53px",
-                letterSpacing: "-0.96px",
-                color: "#E5E2E3",
-                marginBottom: "24px",
-              }}
-            >
+            <h2 className="font-sora font-bold text-[clamp(32px,3.33vw,48px)] leading-[53px] tracking-[-0.96px] text-[#E5E2E3] mb-[24px]">
               The collective keeps growing.
             </h2>
-            <p
-              style={{
-                fontFamily: sora,
-                fontWeight: 400,
-                fontSize: "16px",
-                lineHeight: "24px",
-                color: "#E0C0AF",
-                maxWidth: "448px",
-                marginBottom: "40px",
-              }}
-            >
+            <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] max-w-[448px] mb-[40px]">
               Real-time metrics from our distributed global network of creators and players.
             </p>
             <Link href="/onboarding">
-              <button
-                style={{
-                  background: "#FDD400",
-                  width: "130.41px",
-                  height: "44px",
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#6F5C00",
-                  border: "none",
-                  borderRadius: "2px",
-                  cursor: "pointer",
-                }}
-              >
+              <button className="bg-[#FDD400] w-[130.41px] h-[44px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#6F5C00] border-none rounded-[2px] cursor-pointer hover:brightness-110 transition-all duration-200">
                 Enlist
               </button>
             </Link>
           </div>
 
           {/* Right: 2×2 Stats grid */}
-          <div
-            style={{
-              borderLeft: "1px solid rgba(88,66,53,0.3)",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-            }}
-          >
+          <div className="border-t lg:border-t-0 lg:border-l border-[#584235]/30 grid grid-cols-2">
             {stats.map((s, i) => (
               <div
                 key={s.label}
-                style={{
-                  padding: "48px",
-                  borderRight: i % 2 === 0 ? "1px solid rgba(88,66,53,0.3)" : "none",
-                  borderBottom: i < 2 ? "1px solid rgba(88,66,53,0.3)" : "none",
-                }}
+                className={`p-6 md:p-[48px] ${i % 2 === 0 ? "border-r border-[#584235]/30" : ""} ${i < 2 ? "border-b border-[#584235]/30" : ""}`}
               >
                 <p
-                  style={{
-                    fontFamily: sora,
-                    fontWeight: 400,
-                    fontSize: "48px",
-                    lineHeight: "48px",
-                    color: s.color,
-                    marginBottom: "8px",
-                  }}
+                  className={`font-sora font-normal text-[48px] leading-[48px] mb-[8px] ${s.textColor}`}
                 >
                   {s.value}
                 </p>
-                <p
-                  style={{
-                    fontFamily: mono,
-                    fontWeight: 400,
-                    fontSize: "14px",
-                    lineHeight: "21px",
-                    color: "#A78B7C",
-                    textTransform: "uppercase",
-                  }}
-                >
+                <p className="font-mono font-normal text-[14px] leading-[21px] text-[#A78B7C] uppercase">
                   {s.label}
                 </p>
               </div>
@@ -503,292 +246,139 @@ export default function Home() {
 
       {/* ── COMMUNITY / ABOUT ── */}
       <section
-        style={{
-          maxWidth: "1280px",
-          margin: "0 auto",
-          borderTop: "1px solid rgba(88,66,53,0.5)",
-          borderBottom: "1px solid rgba(88,66,53,0.5)",
-          padding: "0 80px",
-          minHeight: "580px",
-          display: "flex",
-          alignItems: "stretch",
-        }}
+        className="max-w-[1280px] mx-auto border-t border-b border-[#584235]/50 px-4 md:px-[80px] min-h-[580px] flex flex-col md:flex-row items-stretch"
         id="community"
       >
         {/* Left vertical label */}
-        <div
-          style={{
-            width: "48px",
-            borderRight: "1px solid rgba(88,66,53,0.3)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <span
-            style={{
-              fontFamily: mono,
-              fontWeight: 400,
-              fontSize: "10px",
-              lineHeight: "15px",
-              color: "#A78B7C",
-              transform: "rotate(-90deg)",
-              whiteSpace: "nowrap",
-            }}
-          >
+        <div className="hidden md:flex w-[48px] border-r border-[#584235]/30 items-center justify-center shrink-0">
+          <span className="font-mono font-normal text-[10px] leading-[15px] text-[#A78B7C] -rotate-90 whitespace-nowrap">
             GDSC SCT — GAME DEV CLUB
           </span>
         </div>
 
         {/* Left content */}
-        <div style={{ flex: 1, padding: "80px 80px 80px 80px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <p
-            style={{
-              fontFamily: mono,
-              fontWeight: 700,
-              fontSize: "12px",
-              letterSpacing: "1.2px",
-              color: "#FF7A00",
-              textTransform: "uppercase",
-              marginBottom: "16px",
-            }}
-          >
+        <div className="flex-1 p-6 md:p-[80px] flex flex-col justify-center text-center md:text-left items-center md:items-start">
+          <p className="font-mono font-bold text-[12px] tracking-[1.2px] text-[#FF7A00] uppercase mb-[16px]">
             CONNECTED
           </p>
-          <h2
-            style={{
-              fontFamily: sora,
-              fontWeight: 700,
-              fontSize: "clamp(32px, 3.33vw, 48px)",
-              lineHeight: "60px",
-              letterSpacing: "-0.96px",
-              color: "#E5E2E3",
-              maxWidth: "373px",
-              marginBottom: "24px",
-            }}
-          >
+          <h2 className="font-sora font-bold text-[clamp(32px,3.33vw,48px)] leading-[48px] md:leading-[60px] tracking-[-0.96px] text-[#E5E2E3] max-w-[373px] mb-[24px]">
             Build alongside creators who understand the grind.
           </h2>
-          <p
-            style={{
-              fontFamily: sora,
-              fontWeight: 400,
-              fontSize: "16px",
-              lineHeight: "24px",
-              color: "#E0C0AF",
-              maxWidth: "394px",
-              marginBottom: "40px",
-            }}
-          >
+          <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] max-w-[394px] mb-[40px]">
             We believe in radical transparency and cross-disciplinary mentorship for all members.
           </p>
           <Link href="/onboarding">
-            <button
-              style={{
-                background: "transparent",
-                border: "1px solid #FF7A00",
-                width: "124.81px",
-                height: "38px",
-                fontFamily: mono,
-                fontWeight: 600,
-                fontSize: "12px",
-                letterSpacing: "1.2px",
-                color: "#FF7A00",
-                cursor: "pointer",
-              }}
-            >
+            <button className="bg-transparent border border-[#FF7A00] w-[124.81px] h-[38px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] cursor-pointer hover:bg-[#FF7A00]/5 transition-colors duration-200">
               Connect
             </button>
           </Link>
         </div>
 
         {/* Right image */}
-        <div style={{ width: "677.59px", position: "relative", flexShrink: 0 }}>
+        <div className="w-full md:w-[677.59px] h-[300px] md:h-auto relative shrink-0 overflow-hidden">
           <Image
             src="/community_grind.png"
             alt="Game dev community working together"
             fill
-            style={{ objectFit: "cover" }}
+            className="object-cover"
           />
           {/* Left-fade gradient overlay */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "128px",
-              height: "100%",
-              background: "linear-gradient(90deg, #131314 0%, rgba(19,19,20,0) 100%)",
-            }}
-          />
+          <div className="absolute inset-0 md:left-0 md:w-[128px] md:h-full bg-gradient-to-b md:bg-gradient-to-r from-[#131314] to-transparent pointer-events-none" />
         </div>
       </section>
 
       {/* ── SPRING JAM ── */}
       <section
         id="jam"
-        style={{
-          background: "#1C1B1C",
-          borderBottom: "1px solid rgba(88,66,53,0.3)",
-          padding: "96px 0",
-        }}
+        className="bg-[#1C1B1C] border-b border-[#584235]/30 py-[96px] px-4"
       >
-        <div
-          style={{
-            maxWidth: "1280px",
-            margin: "0 auto",
-            padding: "0 64px",
-            display: "grid",
-            gridTemplateColumns: "1fr auto",
-            gap: "64px",
-            alignItems: "center",
-          }}
-        >
+        <div className="max-w-[1280px] mx-auto px-4 md:px-[64px] grid grid-cols-1 lg:grid-cols-2 gap-[64px] items-center">
           {/* Left */}
-          <div style={{ maxWidth: "633.59px" }}>
-            <p
-              style={{
-                fontFamily: mono,
-                fontWeight: 700,
-                fontSize: "12px",
-                letterSpacing: "1.2px",
-                color: "#FFE170",
-                textTransform: "uppercase",
-                marginBottom: "16px",
-              }}
-            >
+          <div className="max-w-[633.59px] text-center lg:text-left flex flex-col items-center lg:items-start mx-auto lg:mx-0">
+            <p className="font-mono font-bold text-[12px] tracking-[1.2px] text-[#FFE170] uppercase mb-[16px]">
               NEXT QUEST
             </p>
-            <h2
-              style={{
-                fontFamily: sora,
-                fontWeight: 400,
-                fontSize: "clamp(36px, 4.17vw, 60px)",
-                lineHeight: "60px",
-                color: "#E5E2E3",
-                marginBottom: "40px",
-              }}
-            >
+            <h2 className="font-sora font-normal text-[clamp(36px,4.17vw,60px)] leading-[48px] md:leading-[60px] text-[#E5E2E3] mb-[40px]">
               Spring Game Jam 2025.
             </h2>
 
             {/* Date + Countdown row */}
-            <div style={{ display: "flex", gap: "48px", marginBottom: "48px" }}>
+            <div className="flex gap-[48px] mb-[48px] justify-center lg:justify-start">
               <div>
-                <p style={{ fontFamily: mono, fontWeight: 400, fontSize: "10px", lineHeight: "15px", color: "#A78B7C", textTransform: "uppercase", marginBottom: "12px" }}>
+                <p className="font-mono font-normal text-[10px] leading-[15px] text-[#A78B7C] uppercase mb-[12px]">
                   Date
                 </p>
-                <p style={{ fontFamily: sora, fontWeight: 400, fontSize: "20px", lineHeight: "28px", color: "#E5E2E3" }}>
+                <p className="font-sora font-normal text-[20px] leading-[28px] text-[#E5E2E3]">
                   April 18–20, 2025
                 </p>
               </div>
               <div>
-                <p style={{ fontFamily: mono, fontWeight: 400, fontSize: "10px", lineHeight: "15px", color: "#A78B7C", textTransform: "uppercase", marginBottom: "12px" }}>
+                <p className="font-mono font-normal text-[10px] leading-[15px] text-[#A78B7C] uppercase mb-[12px]">
                   Countdown
                 </p>
-                <p style={{ fontFamily: mono, fontWeight: 700, fontSize: "24px", lineHeight: "32px", color: "#FF7A00" }}>
+                <p className="font-mono font-bold text-[24px] leading-[32px] text-[#FF7A00]">
                   {pad(countdown.d)}d : {pad(countdown.h)}h : {pad(countdown.m)}m
                 </p>
               </div>
             </div>
 
             <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
-              <button
-                style={{
-                  background: "#FF7A00",
-                  width: "213.61px",
-                  height: "60px",
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  lineHeight: "20px",
-                  letterSpacing: "1.4px",
-                  color: "#5C2800",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
+              <button className="bg-[#FF7A00] w-[213.61px] h-[60px] font-mono font-semibold text-[14px] leading-[20px] tracking-[1.4px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200">
                 ACCEPT QUEST →
               </button>
             </Link>
           </div>
 
           {/* Right: Poster */}
-          <div>
-            <div
-              style={{
-                width: "518.39px",
-                height: "699.33px",
-                background: "#201F20",
-                border: "2px solid rgba(255,122,0,0.3)",
-                borderRadius: "8px",
-                position: "relative",
-                overflow: "hidden",
-                boxShadow: "0px 25px 50px -12px rgba(0,0,0,0.25)",
-              }}
-            >
-              <div style={{ position: "absolute", inset: "14px", borderRadius: "4px", overflow: "hidden" }}>
+          <div className="flex flex-col items-center lg:items-start mx-auto w-[518.39px] max-w-full">
+            <div className="w-[518.39px] max-w-full h-[699.33px] bg-[#201F20] border-2 border-[#FF7A00]/30 rounded-[8px] relative overflow-hidden shadow-2xl">
+              <div className="absolute inset-[14px] rounded-[4px] overflow-hidden">
                 <Image
                   src="/game_jam_poster.png"
                   alt="Spring Game Jam 2025 poster"
                   fill
-                  style={{ objectFit: "cover" }}
+                  className="object-cover"
                 />
               </div>
             </div>
 
             {/* Below poster: labels + progress */}
-            <div style={{ marginTop: "16px", display: "flex", justifyContent: "space-between", alignItems: "center", width: "518.39px" }}>
-              <span style={{ fontFamily: mono, fontWeight: 400, fontSize: "11px", lineHeight: "16px", letterSpacing: "1.1px", color: "#E0C0AF" }}>
+            <div className="mt-[16px] flex justify-between items-center w-[518.39px] max-w-full px-2">
+              <span className="font-mono font-normal text-[11px] leading-[16px] tracking-[1.1px] text-[#E0C0AF]">
                 Registrations
               </span>
-              <span style={{ fontFamily: mono, fontWeight: 700, fontSize: "11px", lineHeight: "16px", color: "#FF7A00" }}>
+              <span className="font-mono font-bold text-[11px] leading-[16px] text-[#FF7A00]">
                 24 / 100
               </span>
             </div>
             {/* Progress bar */}
-            <div style={{ marginTop: "8px", width: "502.39px", height: "4px", background: "rgba(88,66,53,0.2)", borderRadius: "9999px", overflow: "hidden" }}>
-              <div style={{ width: "24%", height: "100%", background: "#FF7A00", borderRadius: "9999px" }} />
+            <div className="mt-[8px] w-[502.39px] max-w-full h-[4px] bg-[#584235]/20 rounded-full overflow-hidden mx-auto lg:mx-0">
+              <div className="w-[24%] h-full bg-[#FF7A00] rounded-full" />
             </div>
           </div>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
-      <footer
-        style={{
-          background: "#131314",
-          borderTop: "1px solid #584235",
-          padding: "49px 64px",
-        }}
-      >
-        <div style={{ maxWidth: "1440px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <footer className="bg-[#131314] border-t border-[#584235] py-[49px] px-4 md:px-[64px]">
+        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Left: logo + copyright */}
-          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-            <div style={{ width: "32px", height: "32px", position: "relative", opacity: 0.8, flexShrink: 0 }}>
-              <Image src="/gdclogo.png" alt="GDC Logo" fill style={{ objectFit: "contain" }} />
+          <div className="flex flex-col md:flex-row items-center gap-[24px] text-center md:text-left">
+            <div className="w-[32px] h-[32px] relative opacity-80 shrink-0">
+              <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" />
             </div>
-            <span style={{ fontFamily: mono, fontWeight: 400, fontSize: "12px", lineHeight: "16px", color: "#A78B7C" }}>
+            <span className="font-mono font-normal text-[12px] leading-[16px] text-[#A78B7C]">
               © 2025 Game Dev Collective // GDSC SCT. All rights reserved.
             </span>
           </div>
 
           {/* Right: footer links */}
-          <div style={{ display: "flex", gap: "32px" }}>
+          <div className="flex gap-[32px] flex-wrap justify-center">
             {["Privacy Policy", "Term of Service", "Cookies"].map((l) => (
               <a
                 key={l}
                 href="#"
-                style={{
-                  fontFamily: mono,
-                  fontWeight: 400,
-                  fontSize: "12px",
-                  lineHeight: "16px",
-                  color: "#A78B7C",
-                  textDecoration: "none",
-                }}
-                className="hover:text-[#E0C0AF] transition-colors"
+                className="font-mono font-normal text-[12px] leading-[16px] text-[#A78B7C] no-underline hover:text-[#E0C0AF] transition-colors duration-200"
               >
                 {l}
               </a>

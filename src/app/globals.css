@@ -4,6 +4,7 @@
   --font-sans: var(--font-inter), sans-serif;
   --font-display: var(--font-plus-jakarta-sans), sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
+  --font-sora: var(--font-sora), sans-serif;
 
   --color-cyber-dark: #070708;
   --color-cyber-card: #0d0d10;

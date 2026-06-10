@@ -6,10 +6,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
 import { NAV_LINKS } from "@/constants/navigation";
-import { MONO, SORA } from "@/constants/fonts";
 
-const sora = SORA;
-const mono = MONO;
 
 const navLinks = NAV_LINKS;
 
@@ -28,8 +25,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: "#131314", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ fontFamily: mono, fontSize: "12px", color: "#FF7A00", letterSpacing: "1.2px" }}>
+      <div className="min-h-screen bg-[#131314] flex items-center justify-center">
+        <span className="font-mono text-[12px] text-[#FF7A00] tracking-[1.2px]">
           AUTHENTICATING TERMINAL PROTOCOL...
         </span>
       </div>
@@ -39,69 +36,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const handleLogout = () => { logout(); router.push("/"); };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#131314", display: "flex", flexDirection: "column" }}>
+    <div className="min-h-screen bg-[#131314] flex flex-col">
 
       {/* ── NAVBAR ── */}
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
-          background: "#131314",
-          borderBottom: "1px solid rgba(88,66,53,0.4)",
-          height: "79px",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            maxWidth: "1440px",
-            margin: "0 auto",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-          className="px-4 md:px-16"
-        >
+      <header className="sticky top-0 z-50 bg-[#131314] border-b border-[#584235]/40 h-[79px] flex items-center">
+        <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between px-4 md:px-16">
           {/* Logo */}
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", flexShrink: 0 }}>
-            <div style={{ width: "39px", height: "40px", position: "relative" }}>
-              <Image src="/gdclogo.png" alt="GDC Logo" fill style={{ objectFit: "contain" }} />
+          <Link href="/" className="flex items-center gap-[12px] no-underline shrink-0">
+            <div className="w-[39px] h-[40px] relative">
+              <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" />
             </div>
-            <span
-              style={{
-                fontFamily: sora,
-                fontWeight: 800,
-                fontSize: "24px",
-                lineHeight: "32px",
-                letterSpacing: "-1.2px",
-                color: "#FFB68B",
-              }}
-            >
+            <span className="font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] text-[#FFB68B] hidden min-[420px]:inline-block">
               GAME DEV CLUB
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <nav style={{ alignItems: "center", gap: "40px" }} className="hidden md:flex">
+          <nav className="hidden md:flex items-center gap-[40px]">
             {navLinks.map((l) => {
               const isActive = pathname === l.href;
               return (
                 <Link
                   key={l.label}
                   href={l.href}
-                  style={{
-                    fontFamily: mono,
-                    fontWeight: isActive ? 700 : 600,
-                    fontSize: "12px",
-                    lineHeight: "12px",
-                    letterSpacing: "1.2px",
-                    color: isActive ? "#FFB68B" : "#E0C0AF",
-                    textDecoration: "none",
-                    transition: "color 0.2s",
-                  }}
+                  className={`font-mono text-[12px] leading-[12px] tracking-[1.2px] no-underline transition-colors duration-200 ${isActive ? "font-bold text-[#FFB68B]" : "font-semibold text-[#E0C0AF] hover:text-[#FFB68B]"}`}
                 >
                   {l.label}
                 </Link>
@@ -110,51 +68,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
 
           {/* Right side: CTA + mobile toggle */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexShrink: 0 }}>
+          <div className="flex items-center gap-[16px] shrink-0">
             {user ? (
               <button
                 onClick={handleLogout}
-                style={{
-                  background: "#FF7A00",
-                  width: "98.41px",
-                  height: "28px",
-                  fontFamily: mono,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#5C2800",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200"
               >
                 Sign Out
               </button>
             ) : (
               <Link href="/onboarding">
                 <button
-                  style={{
-                    background: "#FF7A00",
-                    width: "98.41px",
-                    height: "28px",
-                    fontFamily: mono,
-                    fontWeight: 600,
-                    fontSize: "12px",
-                    lineHeight: "12px",
-                    letterSpacing: "1.2px",
-                    color: "#5C2800",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
+                  className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200"
                 >
                   Join Us
                 </button>
               </Link>
             )}
             <button
-              className="md:hidden"
+              className="md:hidden text-[#E0C0AF] bg-transparent border-none cursor-pointer p-1"
               onClick={() => setMobileOpen(!mobileOpen)}
-              style={{ color: "#E0C0AF", background: "none", border: "none", cursor: "pointer" }}
             >
               <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
                 <rect y="3" width="22" height="2" rx="1" />
@@ -167,26 +100,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Mobile dropdown */}
         {mobileOpen && (
-          <div
-            style={{
-              position: "absolute",
-              top: "79px",
-              left: 0,
-              right: 0,
-              background: "#131314",
-              borderTop: "1px solid rgba(88,66,53,0.4)",
-              paddingTop: "16px",
-              paddingBottom: "16px",
-              zIndex: 60,
-            }}
-            className="px-4 md:px-16 md:hidden"
-          >
+          <div className="absolute top-[79px] left-0 right-0 bg-[#131314] border-t border-[#584235]/40 py-[16px] z-60 px-4 md:px-16 md:hidden">
             {navLinks.map((l) => (
               <Link
                 key={l.label}
                 href={l.href}
                 onClick={() => setMobileOpen(false)}
-                style={{ display: "block", padding: "10px 0", fontFamily: mono, fontSize: "12px", letterSpacing: "1.2px", color: pathname === l.href ? "#FFB68B" : "#E0C0AF", textDecoration: "none" }}
+                className={`block py-[10px] font-mono text-[12px] tracking-[1.2px] no-underline ${pathname === l.href ? "text-[#FFB68B]" : "text-[#E0C0AF] hover:text-[#FFB68B]"}`}
               >
                 {l.label}
               </Link>
@@ -196,59 +116,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
 
       {/* ── PAGE CONTENT ── */}
-      <main style={{ flex: 1 }}>
+      <main className="flex-1">
         {children}
       </main>
 
       {/* ── FOOTER ── */}
-      <footer
-        style={{
-          height: "66px",
-          background: "#131314",
-          borderTop: "1px solid #584235",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            maxWidth: "1440px",
-            margin: "0 auto",
-            padding: "0 64px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+      <footer className="h-[66px] bg-[#131314] border-t border-[#584235] flex items-center">
+        <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between px-4 md:px-16">
           {/* Left: brand */}
-          <span
-            style={{
-              fontFamily: sora,
-              fontWeight: 600,
-              fontSize: "12px",
-              lineHeight: "12px",
-              letterSpacing: "1.2px",
-              color: "#E5E2E3",
-            }}
-          >
+          <span className="font-sora font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E5E2E3]">
             GAME FORGE COLLECTIVE
           </span>
 
           {/* Center: footer nav */}
-          <nav style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+          <nav className="flex items-center gap-[32px]">
             {footerLinks.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
-                style={{
-                  fontFamily: mono,
-                  fontWeight: 400,
-                  fontSize: "11px",
-                  lineHeight: "16px",
-                  color: "#A78B7C",
-                  textDecoration: "none",
-                }}
+                className="font-mono font-normal text-[11px] leading-[16px] text-[#A78B7C] no-underline hover:text-[#E0C0AF] transition-colors duration-200"
               >
                 {l.label}
               </a>
@@ -256,16 +142,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
 
           {/* Right: copyright */}
-          <span
-            style={{
-              fontFamily: sora,
-              fontWeight: 600,
-              fontSize: "12px",
-              lineHeight: "12px",
-              letterSpacing: "1.2px",
-              color: "#A78B7C",
-            }}
-          >
+          <span className="font-sora font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#A78B7C]">
             © 2024 GAME FORGE COLLECTIVE // SYSTEM_READY
           </span>
         </div>

@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
 import { NAV_LINKS } from "@/constants/navigation";
-import { MONO, SORA } from "@/constants/fonts";
 
 export default function OnboardingSuccess() {
   const { user, loading } = useGameForge();
@@ -22,23 +21,8 @@ export default function OnboardingSuccess() {
 
   if (loading || !user) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#131314",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: "12px",
-            color: "#FF7A00",
-            letterSpacing: "1.2px",
-          }}
-        >
+      <div className="min-h-screen bg-[#131314] flex items-center justify-center">
+        <span className="font-mono text-[12px] text-[#FF7A00] tracking-[1.2px]">
           INITIALIZING PROTOCOL...
         </span>
       </div>
@@ -46,142 +30,49 @@ export default function OnboardingSuccess() {
   }
 
   return (
-    <div
-      style={{
-        position: "relative",
-        minHeight: "100vh",
-        background: "linear-gradient(142.68deg, #131314 0%, #1C1B1C 100%)",
-        color: "#E5E2E3",
-        overflowX: "hidden",
-      }}
-    >
+    <div className="relative min-h-screen bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] overflow-x-hidden">
       {/* ── ATMOSPHERIC ELEMENTS ── */}
       {/* Orange ambient glow centre */}
       <div
         aria-hidden
-        style={{
-          position: "fixed",
-          width: "384px",
-          height: "384px",
-          left: "50%",
-          top: "22%",
-          transform: "translateX(-50%)",
-          background: "#FFB68B",
-          opacity: 0.05,
-          filter: "blur(60px)",
-          borderRadius: "9999px",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
+        className="fixed w-[384px] h-[384px] left-1/2 top-[22%] -translate-x-1/2 bg-[#FFB68B] opacity-5 blur-[60px] rounded-full pointer-events-none z-0"
       />
       {/* Cyan ambient glow bottom-right */}
       <div
         aria-hidden
-        style={{
-          position: "fixed",
-          width: "256px",
-          height: "256px",
-          right: "10%",
-          bottom: "20%",
-          background: "#00DBE9",
-          opacity: 0.05,
-          filter: "blur(50px)",
-          borderRadius: "9999px",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
+        className="fixed w-[256px] h-[256px] right-[10%] bottom-[20%] bg-[#00DBE9] opacity-5 blur-[50px] rounded-full pointer-events-none z-0"
       />
       {/* Canvas particle grid */}
       <div
         aria-hidden
-        style={{
-          position: "fixed",
-          inset: 0,
-          backgroundImage:
-            "linear-gradient(180deg, #FF7A00 1.25%, rgba(255,122,0,0) 1.25%), linear-gradient(90deg, #FF7A00 1.25%, rgba(255,122,0,0) 1.25%)",
-          backgroundSize: "80px 80px",
-          opacity: 0.03,
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
+        className="fixed inset-0 bg-[linear-gradient(180deg,#FF7A00_1.25%,rgba(255,122,0,0)_1.25%),linear-gradient(90deg,#FF7A00_1.25%,rgba(255,122,0,0)_1.25%)] bg-[size:80px_80px] opacity-[0.03] pointer-events-none z-0"
       />
 
       {/* ── NAVBAR ── */}
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
-          background: "#131314",
-          borderBottom: "1px solid rgba(88,66,53,0.3)",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1440px",
-            margin: "0 auto",
-            height: "79px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-          className="px-4 md:px-16"
-        >
+      <header className="sticky top-0 z-50 bg-[#131314] border-b border-[#584235]/30 h-[79px] flex items-center">
+        <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between px-4 md:px-16">
           {/* Logo */}
-          <Link
-            href="/"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              textDecoration: "none",
-            }}
-          >
-            <div
-              style={{
-                width: "39px",
-                height: "40px",
-                position: "relative",
-                flexShrink: 0,
-              }}
-            >
+          <Link href="/" className="flex items-center gap-[12px] no-underline shrink-0">
+            <div className="w-[39px] h-[40px] relative">
               <Image
                 src="/gdclogo.png"
                 alt="GDC Logo"
                 fill
-                style={{ objectFit: "contain" }}
+                className="object-contain"
               />
             </div>
-            <span
-              style={{
-                fontFamily: SORA,
-                fontWeight: 800,
-                fontSize: "24px",
-                lineHeight: "32px",
-                letterSpacing: "-1.2px",
-                color: "#FFB68B",
-              }}
-            >
+            <span className="font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] text-[#FFB68B] hidden min-[420px]:inline-block">
               GAME DEV CLUB
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-10">
+          <nav className="hidden md:flex items-center gap-[40px]">
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.label}
                 href={l.href}
-                style={{
-                  fontFamily: MONO,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#E0C0AF",
-                  textDecoration: "none",
-                }}
-                className="hover:text-[#FFB68B] transition-colors duration-200"
+                className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B] transition-colors duration-200"
               >
                 {l.label}
               </Link>
@@ -189,32 +80,17 @@ export default function OnboardingSuccess() {
           </nav>
 
           {/* CTA — already logged in, show "Dashboard" */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div className="flex items-center gap-[16px] shrink-0">
             <Link href="/dashboard/quests">
-              <button
-                style={{
-                  background: "#FF7A00",
-                  width: "98px",
-                  height: "28px",
-                  fontFamily: MONO,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#5C2800",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
+              <button className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200">
                 DASHBOARD
               </button>
             </Link>
 
             {/* Mobile hamburger */}
             <button
-              className="md:hidden"
+              className="md:hidden text-[#E0C0AF] bg-transparent border-none cursor-pointer p-1"
               onClick={() => setMobileOpen((o) => !o)}
-              style={{ color: "#E0C0AF", background: "none", border: "none", cursor: "pointer" }}
               aria-label="Toggle menu"
             >
               <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
@@ -228,30 +104,13 @@ export default function OnboardingSuccess() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div
-            style={{
-              background: "#131314",
-              borderTop: "1px solid rgba(88,66,53,0.3)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-              paddingTop: "16px",
-              paddingBottom: "16px",
-            }}
-            className="px-4 md:px-16 md:hidden"
-          >
+          <div className="absolute top-[79px] left-0 right-0 bg-[#131314] border-t border-[#584235]/30 py-[16px] z-60 px-4 md:px-16 md:hidden flex flex-col gap-[16px]">
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.label}
                 href={l.href}
                 onClick={() => setMobileOpen(false)}
-                style={{
-                  fontFamily: MONO,
-                  fontSize: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#E0C0AF",
-                  textDecoration: "none",
-                }}
+                className="font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B]"
               >
                 {l.label}
               </Link>
@@ -261,69 +120,21 @@ export default function OnboardingSuccess() {
       </header>
 
       {/* ── MAIN CONTENT ── */}
-      <main
-        style={{
-          position: "relative",
-          zIndex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: "178px 64px 80px",
-          maxWidth: "1440px",
-          margin: "0 auto",
-          boxSizing: "border-box",
-        }}
-      >
+      <main className="relative z-10 flex flex-col items-center pt-[100px] pb-[60px] md:pt-[178px] md:pb-[80px] px-4 md:px-16 max-w-[1440px] mx-auto box-border">
         {/* ── SUCCESS INDICATOR ── */}
-        <div
-          style={{
-            position: "relative",
-            width: "128px",
-            height: "128px",
-            marginBottom: "48px",
-          }}
-        >
+        <div className="relative w-[128px] h-[128px] mb-[48px]">
           {/* Outer decorative border — rotated 45° */}
           <div
             aria-hidden
-            style={{
-              position: "absolute",
-              width: "160px",
-              height: "160px",
-              left: "50%",
-              top: "50%",
-              transform: "translate(-50%,-50%) rotate(45deg)",
-              border: "1px solid rgba(255,182,139,0.2)",
-              pointerEvents: "none",
-            }}
+            className="absolute w-[160px] h-[160px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-45 border border-[#FFB68B]/20 pointer-events-none"
           />
           {/* Inner decorative border — rotated -12° */}
           <div
             aria-hidden
-            style={{
-              position: "absolute",
-              width: "144px",
-              height: "144px",
-              left: "50%",
-              top: "50%",
-              transform: "translate(-50%,-50%) rotate(-12deg)",
-              border: "1px solid rgba(0,219,233,0.2)",
-              pointerEvents: "none",
-            }}
+            className="absolute w-[144px] h-[144px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 border border-[#00DBE9]/20 pointer-events-none"
           />
           {/* Main indicator box */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: "#1C1B1C",
-              border: "2px solid #FF7A00",
-              boxShadow: "0px 0px 15px rgba(255,122,0,0.6)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <div className="absolute inset-0 bg-[#1C1B1C] border-2 border-[#FF7A00] shadow-[0px_0px_15px_rgba(255,122,0,0.6)] flex items-center justify-center">
             {/* Checkmark SVG */}
             <svg
               width="40"
@@ -345,110 +156,37 @@ export default function OnboardingSuccess() {
         </div>
 
         {/* ── PAGE HEADER TEXT ── */}
-        <div
-          style={{
-            width: "100%",
-            maxWidth: "842px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            marginBottom: "48px",
-          }}
-        >
+        <div className="w-full max-w-[842px] flex flex-col items-center mb-[48px]">
           {/* "CHARACTER CREATED" label */}
-          <p
-            style={{
-              fontFamily: MONO,
-              fontWeight: 600,
-              fontSize: "12px",
-              lineHeight: "12px",
-              letterSpacing: "2.4px",
-              textTransform: "uppercase",
-              color: "#FFB68B",
-              margin: "0 0 28px",
-              textAlign: "center",
-            }}
-          >
+          <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[2.4px] uppercase text-[#FFB68B] m-0 mb-[28px] text-center">
             Character Created
           </p>
 
           {/* Main heading */}
-          <h1
-            style={{
-              fontFamily: SORA,
-              fontWeight: 800,
-              fontSize: "clamp(48px, 7vw, 80px)",
-              lineHeight: 1,
-              letterSpacing: "-3.2px",
-              color: "#E5E2E3",
-              textAlign: "center",
-              margin: 0,
-            }}
-          >
+          <h1 className="font-sora font-extrabold text-[clamp(40px,7vw,80px)] leading-none tracking-[-3.2px] text-[#E5E2E3] text-center m-0">
             Welcome to the party,{" "}
-            <span style={{ color: "#FF7A00" }}>{user.nickname}.</span>
+            <span className="text-[#FF7A00]">{user.nickname}.</span>
           </h1>
         </div>
 
         {/* ── DESCRIPTION ── */}
-        <p
-          style={{
-            fontFamily: SORA,
-            fontWeight: 400,
-            fontSize: "18px",
-            lineHeight: "28px",
-            color: "#E0C0AF",
-            textAlign: "center",
-            maxWidth: "570px",
-            margin: "0 0 80px",
-          }}
-        >
+        <p className="font-sora font-normal text-[16px] md:text-[18px] leading-[24px] md:leading-[28px] text-[#E0C0AF] text-center max-w-[570px] m-0 mb-[60px] md:mb-[80px]">
           Check your email. Your adventure starts now. Your inventory is
           synchronized, and your initial tools are ready for deployment in the
           engine.
         </p>
 
         {/* ── CTA BUTTONS ── */}
-        <div
-          style={{
-            display: "flex",
-            gap: "24px",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            marginBottom: "80px",
-          }}
-        >
+        <div className="flex flex-col sm:flex-row gap-[24px] justify-center items-center w-full mb-[60px] md:mb-[80px]">
           {/* Primary: JOIN OUR DISCORD */}
           <a
             id="success-join-discord"
             href="https://discord.gg/gdcsct"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "12px",
-              width: "365px",
-              height: "80px",
-              background: "#FF7A00",
-              boxShadow: "0px 0px 15px rgba(255,122,0,0.6)",
-              textDecoration: "none",
-              flexShrink: 0,
-            }}
-            className="hover:brightness-110 transition-all duration-200"
+            className="flex items-center justify-center gap-[12px] w-full sm:w-[365px] h-[80px] bg-[#FF7A00] shadow-[0px_0px_15px_rgba(255,122,0,0.6)] no-underline shrink-0 hover:brightness-110 transition-all duration-200"
           >
-            <span
-              style={{
-                fontFamily: SORA,
-                fontWeight: 700,
-                fontSize: "20px",
-                lineHeight: "28px",
-                letterSpacing: "2px",
-                textTransform: "uppercase",
-                color: "#522300",
-              }}
-            >
+            <span className="font-sora font-bold text-[18px] md:text-[20px] leading-[28px] tracking-[2px] uppercase text-[#522300]">
               Join Our Discord
             </span>
             <svg
@@ -471,136 +209,37 @@ export default function OnboardingSuccess() {
           <Link
             id="success-go-inventory"
             href="/dashboard/inventory"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "326px",
-              height: "80px",
-              border: "2px solid #FF7A00",
-              textDecoration: "none",
-              flexShrink: 0,
-            }}
-            className="hover:bg-[rgba(255,122,0,0.05)] transition-all duration-200"
+            className="flex items-center justify-center w-full sm:w-[326px] h-[80px] border-2 border-[#FF7A00] no-underline shrink-0 hover:bg-[rgba(255,122,0,0.05)] transition-all duration-200"
           >
-            <span
-              style={{
-                fontFamily: SORA,
-                fontWeight: 700,
-                fontSize: "20px",
-                lineHeight: "28px",
-                letterSpacing: "2px",
-                textTransform: "uppercase",
-                color: "#FFB68B",
-              }}
-            >
+            <span className="font-sora font-bold text-[18px] md:text-[20px] leading-[28px] tracking-[2px] uppercase text-[#FFB68B]">
               Go To Inventory
             </span>
           </Link>
         </div>
 
         {/* ── BENTO-LITE CARDS ── */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "24px",
-            width: "100%",
-            maxWidth: "896px",
-            marginBottom: "120px",
-          }}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] w-full max-w-[896px] mb-[80px] md:mb-[120px]">
           {/* Card 1 — Hardware Sync */}
-          <div
-            style={{
-              background: "#1C1B1C",
-              borderTop: "2px solid #FFB68B",
-              padding: "26px 24px 28px",
-              minHeight: "144px",
-              position: "relative",
-            }}
-          >
+          <div className="bg-[#1C1B1C] border-t-2 border-[#FFB68B] p-[26px_24px_28px] min-h-[144px] relative">
             {/* Icon — rect placeholder */}
-            <div
-              style={{
-                width: "18px",
-                height: "18px",
-                background: "#FFB68B",
-                marginBottom: "10px",
-              }}
-            />
-            <p
-              style={{
-                fontFamily: MONO,
-                fontWeight: 700,
-                fontSize: "12px",
-                lineHeight: "12px",
-                letterSpacing: "1.2px",
-                color: "#E5E2E3",
-                margin: "0 0 16px",
-                textTransform: "uppercase",
-              }}
-            >
+            <div className="w-[18px] h-[18px] bg-[#FFB68B] mb-[10px]" />
+            <p className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E5E2E3] m-0 mb-[16px] uppercase">
               Hardware Sync
             </p>
-            <p
-              style={{
-                fontFamily: SORA,
-                fontWeight: 400,
-                fontSize: "14px",
-                lineHeight: "20px",
-                color: "#E0C0AF",
-                margin: 0,
-              }}
-            >
+            <p className="font-sora font-normal text-[14px] leading-[20px] text-[#E0C0AF] m-0">
               Vitals and system performance linked to your neural link profile.
             </p>
           </div>
 
           {/* Card 2 — Season Zero Pass */}
-          <div
-            style={{
-              background: "#1C1B1C",
-              borderTop: "2px solid #00DBE9",
-              padding: "26px 24px 28px",
-              minHeight: "144px",
-              position: "relative",
-            }}
-          >
-            <div
-              style={{
-                width: "10px",
-                height: "20px",
-                background: "#00DBE9",
-                marginBottom: "10px",
-              }}
-            />
-            <p
-              style={{
-                fontFamily: MONO,
-                fontWeight: 700,
-                fontSize: "12px",
-                lineHeight: "12px",
-                letterSpacing: "1.2px",
-                color: "#E5E2E3",
-                margin: "0 0 16px",
-                textTransform: "uppercase",
-              }}
-            >
+          <div className="bg-[#1C1B1C] border-t-2 border-[#00DBE9] p-[26px_24px_28px] min-h-[144px] relative">
+            <div className="w-[10px] h-[20px] bg-[#00DBE9] mb-[10px]" />
+            <p className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E5E2E3] m-0 mb-[16px] uppercase">
               Season Zero Pass
             </p>
-            <p
-              style={{
-                fontFamily: SORA,
-                fontWeight: 400,
-                fontSize: "14px",
-                lineHeight: "20px",
-                color: "#E0C0AF",
-                margin: 0,
-              }}
-            >
+            <p className="font-sora font-normal text-[14px] leading-[20px] text-[#E0C0AF] m-0">
               Exclusive legacy content unlocked for{" "}
-              <span style={{ color: "#FFB68B", fontWeight: 600 }}>
+              <span className="text-[#FFB68B] font-semibold">
                 {user.nickname}
               </span>
               .
@@ -608,90 +247,22 @@ export default function OnboardingSuccess() {
           </div>
 
           {/* Card 3 — Team Channel */}
-          <div
-            style={{
-              background: "#1C1B1C",
-              borderTop: "2px solid #753400",
-              padding: "26px 24px 28px",
-              minHeight: "144px",
-              position: "relative",
-            }}
-          >
-            <div
-              style={{
-                width: "20px",
-                height: "20px",
-                background: "#753400",
-                marginBottom: "10px",
-              }}
-            />
-            <p
-              style={{
-                fontFamily: MONO,
-                fontWeight: 700,
-                fontSize: "12px",
-                lineHeight: "12px",
-                letterSpacing: "1.2px",
-                color: "#E5E2E3",
-                margin: "0 0 16px",
-                textTransform: "uppercase",
-              }}
-            >
+          <div className="bg-[#1C1B1C] border-t-2 border-[#753400] p-[26px_24px_28px] min-h-[144px] relative">
+            <div className="w-[20px] h-[20px] bg-[#753400] mb-[10px]" />
+            <p className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E5E2E3] m-0 mb-[16px] uppercase">
               Team Channel
             </p>
-            <p
-              style={{
-                fontFamily: SORA,
-                fontWeight: 400,
-                fontSize: "14px",
-                lineHeight: "20px",
-                color: "#E0C0AF",
-                margin: 0,
-              }}
-            >
+            <p className="font-sora font-normal text-[14px] leading-[20px] text-[#E0C0AF] m-0">
               Assigned to Collective Vanguard for the upcoming campaign.
             </p>
           </div>
         </div>
 
         {/* ── SUCCESS VISUAL ELEMENT ── */}
-        <div
-          style={{
-            width: "100%",
-            maxWidth: "1312px",
-            height: "256px",
-            position: "relative",
-            overflow: "hidden",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "48px",
-          }}
-        >
+        <div className="w-full max-w-[1312px] h-[256px] relative overflow-hidden flex items-center justify-center mb-[48px]">
           {/* Glowing platform visual */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "20px",
-              width: "440px",
-              height: "40px",
-              background:
-                "radial-gradient(ellipse 80% 100% at 50% 100%, rgba(255,122,0,0.55) 0%, rgba(255,122,0,0) 80%)",
-              borderRadius: "50%",
-              filter: "blur(4px)",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              bottom: "32px",
-              width: "520px",
-              height: "6px",
-              background: "rgba(255,122,0,0.25)",
-              borderRadius: "50%",
-              filter: "blur(2px)",
-            }}
-          />
+          <div className="absolute bottom-[20px] w-full max-w-[440px] h-[40px] bg-[radial-gradient(ellipse_80%_100%_at_50%_100%,rgba(255,122,0,0.55)_0%,rgba(255,122,0,0)_80%)] rounded-full blur-[4px]" />
+          <div className="absolute bottom-[32px] w-full max-w-[520px] h-[6px] bg-[rgba(255,122,0,0.25)] rounded-full blur-[2px]" />
           {/* Central trophy / gear ring */}
           <svg
             width="160"
@@ -699,7 +270,7 @@ export default function OnboardingSuccess() {
             viewBox="0 0 160 160"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            style={{ position: "relative", zIndex: 1, opacity: 0.7 }}
+            className="relative z-10 opacity-70"
             aria-label="Success gear"
           >
             <circle
@@ -741,97 +312,36 @@ export default function OnboardingSuccess() {
       </main>
 
       {/* ── FOOTER ── */}
-      <footer
-        style={{
-          background: "#131314",
-          borderTop: "2px solid #353436",
-          height: "142px",
-          display: "flex",
-          alignItems: "center",
-          boxSizing: "border-box",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1440px",
-            width: "100%",
-            margin: "0 auto",
-            padding: "0 64px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+      <footer className="bg-[#131314] border-t-2 border-[#353436] py-8 md:h-[142px] flex items-center box-border relative z-10">
+        <div className="max-w-[1440px] w-full mx-auto px-6 md:px-16 flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Left: Logo + Tagline */}
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                marginBottom: "8px",
-              }}
-            >
-              <div
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  position: "relative",
-                  flexShrink: 0,
-                }}
-              >
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex items-center gap-[12px] mb-[8px]">
+              <div className="w-[32px] h-[32px] relative shrink-0">
                 <Image
                   src="/gdclogo.png"
                   alt="GDC Logo"
                   fill
-                  style={{ objectFit: "contain" }}
+                  className="object-contain"
                   sizes="32px"
                 />
               </div>
-              <span
-                style={{
-                  fontFamily: SORA,
-                  fontWeight: 700,
-                  fontSize: "16px",
-                  lineHeight: "24px",
-                  color: "#FFB68B",
-                }}
-              >
+              <span className="font-sora font-bold text-[16px] leading-[24px] text-[#FFB68B]">
                 GAME DEV CLUB
               </span>
             </div>
-            <p
-              style={{
-                fontFamily: MONO,
-                fontWeight: 600,
-                fontSize: "12px",
-                lineHeight: "12px",
-                letterSpacing: "1.2px",
-                color: "#E0C0AF",
-                margin: 0,
-              }}
-            >
+            <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] m-0">
               © 2024 GAME DEV COLLECTIVE. BUILT FOR PERFORMANCE.
             </p>
           </div>
 
           {/* Right: Footer nav links */}
-          <div style={{ display: "flex", gap: "32px" }}>
+          <div className="flex gap-[32px]">
             {["Support", "GitHub", "Discord", "Terms"].map((l) => (
               <a
                 key={l}
                 href="#"
-                style={{
-                  fontFamily: MONO,
-                  fontWeight: 600,
-                  fontSize: "12px",
-                  lineHeight: "12px",
-                  letterSpacing: "1.2px",
-                  color: "#E0C0AF",
-                  textDecoration: "none",
-                }}
+                className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B]"
               >
                 {l}
               </a>
