@@ -315,7 +315,7 @@ function MemberCard({ member }: { member: (typeof MOCK_TEAM)[0] }) {
           left: 0,
           right: 0,
           height: "2px",
-          background: "linear-gradient(90deg, #FF7A00 0%, rgba(255,122,0,0) 100%)",
+          background: "linear-gradient(90deg, #ffffffff 0%, rgba(255,122,0,0) 100%)",
           zIndex: 2,
         }}
       />
