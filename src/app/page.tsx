@@ -135,7 +135,7 @@ export default function Home() {
         <div className="absolute top-[-80px] left-1/2 -translate-x-1/2 w-[700px] max-w-full h-[400px] rounded-full bg-[#FF7A00]/5 blur-[120px] pointer-events-none" />
 
         <h1 className="font-sora font-normal text-[clamp(48px,6.67vw,96px)] leading-none text-[#E5E2E3] mx-auto mb-[32px] max-w-[640px]">
-          Welcome to Game Dev Collective.
+          Welcome to <span className="text-neon-orange">Game Dev Collective.</span>
         </h1>
 
         <p className="font-sora font-normal text-[18px] leading-[28px] text-[#E0C0AF] max-w-[600px] mx-auto mb-[48px]">
@@ -143,26 +143,27 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-[24px] justify-center items-center">
-          <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
-            <button className="bg-[#FF7A00] w-full sm:w-[211.66px] h-[52px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200">
-              {!loading && user ? "ENTER FORGE →" : "INITIATE PROTOCOL →"}
+          <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"} className="w-full sm:w-auto">
+            <button className="bg-[#FF7A00] w-full sm:w-[248.48px] h-[52px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200">
+              {!loading && user ? "ENTER THE CLUB →" : "JOIN US →"}
             </button>
           </Link>
+
           <a href="#jam" className="w-full sm:w-auto">
-            <button className="bg-transparent border border-[#FF7A00] w-full sm:w-[195.6px] h-[54px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] cursor-pointer hover:bg-[#FF7A00]/5 transition-colors duration-200">
-              DOX SOURCE →
+            <button className="bg-transparent border border-[#FF7A00] w-full sm:w-[248.48px] h-[52px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] cursor-pointer hover:bg-[#FF7A00]/5 transition-colors duration-200">
+              View Quest →
             </button>
           </a>
         </div>
-      </section>
+      </section >
 
       {/* ── THREE WAYS ── */}
-      <section
+      < section
         className="max-w-[1200px] mx-auto px-[24px] pb-[96px] md:border-l md:border-r md:border-[#584235]/20"
         id="sprint"
       >
         {/* Header */}
-        <div className="text-center mb-[48px] pt-[48px]">
+        < div className="text-center mb-[48px] pt-[48px]" >
           <p className="font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FFB68B] uppercase mb-[26px]">
             FEATURES
           </p>
@@ -172,38 +173,40 @@ export default function Home() {
           <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] max-w-[672px] mx-auto">
             Give every discipline a forge for growth, collaboration, and high-community activity.
           </p>
-        </div>
+        </div >
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] justify-center max-w-[1020px] mx-auto">
-          {features.map((f) => (
-            <div key={f.title} className="flex flex-col items-center text-center md:items-start md:text-left mx-auto max-w-[340px]">
-              {/* Image card */}
-              <div className="w-[340px] max-w-full h-[191.25px] bg-[#201F20] border border-[#584235] rounded-[8px] overflow-hidden relative">
-                <Image src={f.img} alt={f.title} fill className="object-cover" />
+        < div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] justify-center max-w-[1020px] mx-auto" >
+          {
+            features.map((f) => (
+              <div key={f.title} className="flex flex-col items-center text-center md:items-start md:text-left mx-auto max-w-[340px]">
+                {/* Image card */}
+                <div className="w-[340px] max-w-full h-[191.25px] bg-[#201F20] border border-[#584235] rounded-[8px] overflow-hidden relative">
+                  <Image src={f.img} alt={f.title} fill className="object-cover" />
+                </div>
+                {/* Title */}
+                <h3 className="font-sora font-normal text-[24px] leading-[32px] text-[#FFB68B] mt-[24px] mb-[16px]">
+                  {f.title}
+                </h3>
+                {/* Desc */}
+                <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] mb-[16px] max-w-[322px]">
+                  {f.desc}
+                </p>
+                {/* Explore link */}
+                <a
+                  href="#"
+                  className="inline-flex items-center gap-[8px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] no-underline hover:text-[#FFB68B] transition-colors duration-200"
+                >
+                  Explore →
+                </a>
               </div>
-              {/* Title */}
-              <h3 className="font-sora font-normal text-[24px] leading-[32px] text-[#FFB68B] mt-[24px] mb-[16px]">
-                {f.title}
-              </h3>
-              {/* Desc */}
-              <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] mb-[16px] max-w-[322px]">
-                {f.desc}
-              </p>
-              {/* Explore link */}
-              <a
-                href="#"
-                className="inline-flex items-center gap-[8px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] no-underline hover:text-[#FFB68B] transition-colors duration-200"
-              >
-                Explore →
-              </a>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))
+          }
+        </div >
+      </section >
 
       {/* ── STATS ── */}
-      <section className="max-w-[1280px] mx-auto px-4 md:px-[80px] pb-[96px] pt-[48px]" id="meets">
+      < section className="max-w-[1280px] mx-auto px-4 md:px-[80px] pb-[96px] pt-[48px]" id="meets" >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-[64px] items-center">
           {/* Left */}
           <div className="px-0 md:px-[64px] text-center lg:text-left flex flex-col items-center lg:items-start">
@@ -242,22 +245,22 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section >
 
       {/* ── COMMUNITY / ABOUT ── */}
-      <section
+      < section
         className="max-w-[1280px] mx-auto border-t border-b border-[#584235]/50 px-4 md:px-[80px] min-h-[580px] flex flex-col md:flex-row items-stretch"
         id="community"
       >
         {/* Left vertical label */}
-        <div className="hidden md:flex w-[48px] border-r border-[#584235]/30 items-center justify-center shrink-0">
+        < div className="hidden md:flex w-[48px] border-r border-[#584235]/30 items-center justify-center shrink-0" >
           <span className="font-mono font-normal text-[10px] leading-[15px] text-[#A78B7C] -rotate-90 whitespace-nowrap">
             GDSC SCT — GAME DEV CLUB
           </span>
-        </div>
+        </div >
 
         {/* Left content */}
-        <div className="flex-1 p-6 md:p-[80px] flex flex-col justify-center text-center md:text-left items-center md:items-start">
+        < div className="flex-1 p-6 md:p-[80px] flex flex-col justify-center text-center md:text-left items-center md:items-start" >
           <p className="font-mono font-bold text-[12px] tracking-[1.2px] text-[#FF7A00] uppercase mb-[16px]">
             CONNECTED
           </p>
@@ -272,10 +275,10 @@ export default function Home() {
               Connect
             </button>
           </Link>
-        </div>
+        </div >
 
         {/* Right image */}
-        <div className="w-full md:w-[677.59px] h-[300px] md:h-auto relative shrink-0 overflow-hidden">
+        < div className="w-full md:w-[677.59px] h-[300px] md:h-auto relative shrink-0 overflow-hidden" >
           <Image
             src="/community_grind.png"
             alt="Game dev community working together"
@@ -284,11 +287,11 @@ export default function Home() {
           />
           {/* Left-fade gradient overlay */}
           <div className="absolute inset-0 md:left-0 md:w-[128px] md:h-full bg-gradient-to-b md:bg-gradient-to-r from-[#131314] to-transparent pointer-events-none" />
-        </div>
-      </section>
+        </div >
+      </section >
 
       {/* ── SPRING JAM ── */}
-      <section
+      < section
         id="jam"
         className="bg-[#1C1B1C] border-b border-[#584235]/30 py-[96px] px-4"
       >
@@ -357,10 +360,10 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* ── FOOTER ── */}
-      <footer className="bg-[#131314] border-t border-[#584235] py-[49px] px-4 md:px-[64px]">
+      < footer className="bg-[#131314] border-t border-[#584235] py-[49px] px-4 md:px-[64px]" >
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Left: logo + copyright */}
           <div className="flex flex-col md:flex-row items-center gap-[24px] text-center md:text-left">
@@ -385,7 +388,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </footer>
-    </div>
+      </footer >
+    </div >
   );
 }
