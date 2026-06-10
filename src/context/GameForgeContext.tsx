@@ -29,9 +29,17 @@ export const GameForgeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Load user data on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem("gameforge_user");
-    const savedGames = localStorage.getItem("gameforge_games");
-    const savedLeaderboard = localStorage.getItem("gameforge_leaderboard");
+    let savedUser = null;
+    let savedGames = null;
+    let savedLeaderboard = null;
+
+    try {
+      savedUser = localStorage.getItem("gameforge_user");
+      savedGames = localStorage.getItem("gameforge_games");
+      savedLeaderboard = localStorage.getItem("gameforge_leaderboard");
+    } catch (e) {
+      console.warn("localStorage is disabled or not accessible:", e);
+    }
 
     setTimeout(() => {
       if (savedUser) {

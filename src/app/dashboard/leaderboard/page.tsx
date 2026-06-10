@@ -7,8 +7,6 @@ import { Award, Terminal, Trophy, Flame } from "lucide-react";
 export default function HighScores() {
   const { user, leaderboard } = useGameForge();
 
-  if (!user) return null;
-
   // Visual classes for Top 3 ranks
   const getRankStyles = (rank: number) => {
     switch (rank) {
@@ -138,7 +136,7 @@ export default function HighScores() {
             ) : (
               leaderboard.map((entry) => {
                 const styles = getRankStyles(entry.rank);
-                const isCurrentUser = entry.player === user.nickname;
+                const isCurrentUser = user ? entry.player === user.nickname : false;
                 return (
                   <div
                     key={`${entry.player}-${entry.gameTitle}-${entry.rank}`}

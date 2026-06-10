@@ -1,13 +1,18 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useGameForge } from "@/context/GameForgeContext";
+import { Button } from "@/components/ui/Button";
 import { Shield, Sparkles, Award, Zap, Package } from "lucide-react";
 
 export default function Inventory() {
   const { user } = useGameForge();
 
-  if (!user) return null;
+  const guestStats = { tech: 10, design: 10, agility: 10, strength: 10 };
+  const completedQuests = user ? user.completedQuests : [];
+  const stats = user ? user.stats : guestStats;
+  const loadout = user ? user.loadout : "None";
 
   // Custom visual loadout details
   const getLoadoutGear = (loadout: string) => {
@@ -50,7 +55,7 @@ export default function Inventory() {
     }
   };
 
-  const gear = getLoadoutGear(user.loadout);
+  const gear = getLoadoutGear(loadout);
 
 
 
@@ -80,10 +85,10 @@ export default function Inventory() {
 
             <div className="space-y-5">
               {[
-                { key: "tech", label: "Tech Core", color: "bg-neon-blue", val: user.stats.tech },
-                { key: "design", label: "Design Matrix", color: "bg-neon-purple", val: user.stats.design },
-                { key: "agility", label: "Agility Code", color: "bg-neon-orange", val: user.stats.agility },
-                { key: "strength", label: "Endurance Spec", color: "bg-neon-green", val: user.stats.strength },
+                { key: "tech", label: "Tech Core", color: "bg-neon-blue", val: stats.tech },
+                { key: "design", label: "Design Matrix", color: "bg-neon-purple", val: stats.design },
+                { key: "agility", label: "Agility Code", color: "bg-neon-orange", val: stats.agility },
+                { key: "strength", label: "Endurance Spec", color: "bg-neon-green", val: stats.strength },
               ].map((stat) => {
                 // Calculate percentage out of maximum (e.g. 20)
                 const percentage = Math.min(100, Math.floor((stat.val / 20) * 100));
@@ -142,20 +147,29 @@ export default function Inventory() {
           <div className="bg-cyber-card border border-cyber-border p-6 rounded-lg clip-cyber shadow-lg min-h-[480px]">
             <h2 className="font-display font-bold text-sm text-white uppercase tracking-wider mb-6 flex items-center gap-2">
               <Award className="w-4.5 h-4.5 text-neon-purple" />
-              Unlocked Badges ({user.completedQuests.length})
+              Unlocked Badges ({completedQuests.length})
             </h2>
 
-            {user.completedQuests.length === 0 ? (
+            {completedQuests.length === 0 ? (
               <div className="h-96 border border-dashed border-zinc-900 bg-black/20 rounded flex flex-col items-center justify-center text-zinc-550 font-mono text-xs uppercase p-6 text-center space-y-3">
                 <Shield className="w-10 h-10 text-zinc-800" />
                 <span>NO BADGES RETRIEVED</span>
                 <p className="text-[10px] text-zinc-600 lowercase max-w-xs leading-relaxed">
                   Badges are awarded automatically upon resolving quests. Access the quest board to begin challenges.
                 </p>
+                {!user && (
+                  <div className="pt-4 font-sans">
+                    <Link href="/onboarding">
+                      <Button variant="primary" size="sm" className="cursor-pointer">
+                        INITIATE PROTOCOL TO UNLOCK
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {user.completedQuests.map((questId) => {
+                {completedQuests.map((questId) => {
                   // Resolve badge details directly
                   // Let's resolve the badge name.
                   // Each quest completion maps to `badgeAwarded` in MOCK_QUESTS.

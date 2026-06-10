@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useGameForge } from "@/context/GameForgeContext";
 import { Button } from "@/components/ui/Button";
 import { Game } from "@/types";
@@ -8,14 +9,12 @@ import { Gamepad2, Award, Star, Play, X, ShieldAlert, Cpu, Sparkles } from "luci
 
 export default function ArcadeWall() {
   const { user, games, submitScore } = useGameForge();
-  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
-  
+
   // Game session simulation states
   const [simulating, setSimulating] = useState(false);
   const [simLog, setSimLog] = useState<string[]>([]);
   const [simResult, setSimResult] = useState<number | null>(null);
-
-  if (!user) return null;
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
   // Custom game card background styles representing retro game cartridge colors
   const getGameGradients = (gameId: string) => {
@@ -93,7 +92,7 @@ export default function ArcadeWall() {
       {/* Games list grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {games.map((game) => {
-          const userBest = user.highScores[game.id];
+          const userBest = user ? user.highScores[game.id] : undefined;
           return (
             <div
               key={game.id}
@@ -201,7 +200,17 @@ export default function ArcadeWall() {
 
               {/* Simulation Box */}
               <div className="mt-8 bg-black/75 border border-zinc-850 p-4 rounded relative z-10 font-mono text-center min-h-[160px] flex flex-col justify-center">
-                {selectedGame.playable ? (
+                {!user ? (
+                  <div className="space-y-4">
+                    <span className="block text-[10px] text-zinc-500 uppercase tracking-widest">ARCADE_INTERFACE</span>
+                    <p className="text-[10px] text-zinc-400">Join GDSC SCT Game Dev Club to play games and register high scores.</p>
+                    <Link href="/onboarding" className="block w-full">
+                      <Button variant="secondary" size="sm" className="w-full cursor-pointer">
+                        JOIN US TO PLAY
+                      </Button>
+                    </Link>
+                  </div>
+                ) : selectedGame.playable ? (
                   !simulating && simResult === null ? (
                     <div className="space-y-4">
                       <span className="block text-[10px] text-zinc-500 uppercase tracking-widest">ARCADE_INTERFACE</span>
@@ -302,7 +311,7 @@ export default function ArcadeWall() {
                           key={index}
                           className={`
                             flex items-center justify-between px-3 py-2 border-b border-zinc-900/60
-                            ${score.player === user.nickname ? "bg-neon-orange/5 text-neon-orange font-bold" : "text-zinc-400"}
+                            ${user && score.player === user.nickname ? "bg-neon-orange/5 text-neon-orange font-bold" : "text-zinc-400"}
                           `}
                         >
                           <div className="flex items-center gap-2">

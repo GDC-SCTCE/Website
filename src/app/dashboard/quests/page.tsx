@@ -73,6 +73,7 @@ const pastQuests = [
 // CARD 1 — Cyberpunk Level Design (Active)
 // ─────────────────────────────────────────────
 function Card1() {
+  const { user } = useGameForge();
   const timer = useCountdown(CARD1_TARGET_MS);
   const pad = (n: number) => String(n).padStart(2, "0");
   const seatsTotal = 50;
@@ -222,26 +223,28 @@ function Card1() {
         </div>
 
         {/* CTA Button */}
-        <button
-          className="mt-6 mb-6 w-full flex items-center justify-center gap-2 transition-opacity hover:opacity-90 cursor-pointer"
-          style={{
-            height: "48px",
-            background: "#FF7A00",
-          }}
-        >
-          <span
+        {user && (
+          <button
+            className="mt-6 mb-6 w-full flex items-center justify-center gap-2 transition-opacity hover:opacity-90 cursor-pointer"
             style={{
-              fontFamily: "var(--font-jetbrains-mono), monospace",
-              fontWeight: 600,
-              fontSize: "12px",
-              lineHeight: "12px",
-              letterSpacing: "1.2px",
-              color: "#5C2800",
+              height: "48px",
+              background: "#FF7A00",
             }}
           >
-            Accept Quest →
-          </span>
-        </button>
+            <span
+              style={{
+                fontFamily: "var(--font-jetbrains-mono), monospace",
+                fontWeight: 600,
+                fontSize: "12px",
+                lineHeight: "12px",
+                letterSpacing: "1.2px",
+                color: "#5C2800",
+              }}
+            >
+              Accept Quest →
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );
@@ -251,6 +254,7 @@ function Card1() {
 // CARD 2 — Sound Design Masterclass (Soon)
 // ─────────────────────────────────────────────
 function Card2() {
+  const { user } = useGameForge();
   const timer = useCountdown(CARD2_TARGET_MS);
   const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -385,31 +389,33 @@ function Card2() {
         <div className="mt-4" style={{ height: "2px", background: "#353436" }} />
 
         {/* CTA Button — outlined */}
-        <button
-          className="mt-6 mb-6 w-full flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/5 cursor-pointer"
-          style={{
-            height: "56px",
-            border: "2px solid #FFB68B",
-            background: "transparent",
-          }}
-        >
-          <Bell
-            className="w-4 h-5"
-            style={{ color: "#FFB68B" }}
-          />
-          <span
+        {user && (
+          <button
+            className="mt-6 mb-6 w-full flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/5 cursor-pointer"
             style={{
-              fontFamily: "var(--font-jetbrains-mono), monospace",
-              fontWeight: 600,
-              fontSize: "12px",
-              lineHeight: "12px",
-              letterSpacing: "1.2px",
-              color: "#FFB68B",
+              height: "56px",
+              border: "2px solid #FFB68B",
+              background: "transparent",
             }}
           >
-            Notify Me
-          </span>
-        </button>
+            <Bell
+              className="w-4 h-5"
+              style={{ color: "#FFB68B" }}
+            />
+            <span
+              style={{
+                fontFamily: "var(--font-jetbrains-mono), monospace",
+                fontWeight: 600,
+                fontSize: "12px",
+                lineHeight: "12px",
+                letterSpacing: "1.2px",
+                color: "#FFB68B",
+              }}
+            >
+              Notify Me
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );
@@ -422,8 +428,6 @@ export default function QuestBoard() {
   const { user } = useGameForge();
   const [activeFilter, setActiveFilter] = useState("All");
   const [search, setSearch] = useState("");
-
-  if (!user) return null;
 
   return (
     <div

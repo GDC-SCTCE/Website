@@ -54,7 +54,11 @@ export interface TeamMember {
   subRole: string;
   bio: string;
   speciality: string[];
-  avatarSeed: string; // Used to generate placeholder avatar avatars
+  avatarSeed: string;
+  department: "ALL" | "DESIGN" | "TECH" | "MEDIA" | "COMMUNITY" | "EVENT" | "MARKETING" | "E-SPORTS";
+  isLead?: boolean;
+  stats?: { label: string; value: number }[];
+  gamePreview?: { title: string; label: string };
   github?: string;
   linkedin?: string;
   portfolio?: string;

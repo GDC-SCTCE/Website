@@ -10,30 +10,26 @@ const sora = "var(--font-sora), sans-serif";
 const mono = "var(--font-jetbrains-mono), monospace";
 
 const navLinks = [
-  { label: "Quest Board",     href: "/dashboard/quests" },
-  { label: "Arcade Wall",     href: "/dashboard/arcade" },
-  { label: "Character Select",href: "/dashboard/team" },
-  { label: "Hall Of Fame",    href: "/dashboard/leaderboard" },
-  { label: "Inventory",       href: "/dashboard/inventory" },
+  { label: "Quest Board", href: "/dashboard/quests" },
+  { label: "Arcade Wall", href: "/dashboard/arcade" },
+  { label: "Character Select", href: "/dashboard/team" },
+  { label: "Hall Of Fame", href: "/dashboard/leaderboard" },
+  { label: "Inventory", href: "/dashboard/inventory" },
 ];
 
 const footerLinks = [
   { label: "Privacy_Protocol", href: "#" },
   { label: "Terms_of_Service", href: "#" },
-  { label: "Debug_Logs",       href: "#" },
+  { label: "Debug_Logs", href: "#" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useGameForge();
-  const router   = useRouter();
+  const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  useEffect(() => {
-    if (!loading && !user) router.push("/onboarding");
-  }, [user, loading, router]);
-
-  if (loading || !user) {
+  if (loading) {
     return (
       <div style={{ minHeight: "100vh", background: "#131314", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontFamily: mono, fontSize: "12px", color: "#FF7A00", letterSpacing: "1.2px" }}>
@@ -118,24 +114,46 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* Right side: CTA + mobile toggle */}
           <div style={{ display: "flex", alignItems: "center", gap: "16px", flexShrink: 0 }}>
-            <button
-              onClick={handleLogout}
-              style={{
-                background: "#FF7A00",
-                width: "98.41px",
-                height: "28px",
-                fontFamily: mono,
-                fontWeight: 600,
-                fontSize: "12px",
-                lineHeight: "12px",
-                letterSpacing: "1.2px",
-                color: "#5C2800",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Sign Out
-            </button>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                style={{
+                  background: "#FF7A00",
+                  width: "98.41px",
+                  height: "28px",
+                  fontFamily: mono,
+                  fontWeight: 600,
+                  fontSize: "12px",
+                  lineHeight: "12px",
+                  letterSpacing: "1.2px",
+                  color: "#5C2800",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                Sign Out
+              </button>
+            ) : (
+              <Link href="/onboarding">
+                <button
+                  style={{
+                    background: "#FF7A00",
+                    width: "98.41px",
+                    height: "28px",
+                    fontFamily: mono,
+                    fontWeight: 600,
+                    fontSize: "12px",
+                    lineHeight: "12px",
+                    letterSpacing: "1.2px",
+                    color: "#5C2800",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  Join Us
+                </button>
+              </Link>
+            )}
             <button
               className="md:hidden"
               onClick={() => setMobileOpen(!mobileOpen)}
