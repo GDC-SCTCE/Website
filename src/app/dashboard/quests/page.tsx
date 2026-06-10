@@ -3,205 +3,16 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useGameForge } from "@/context/GameForgeContext";
-import { Search, Bell, ExternalLink } from "lucide-react";
-import { useCountdown } from "@/hooks/useCountdown";
+import { Search, ExternalLink } from "lucide-react";
 
-// Date constants defined OUTSIDE components so they never change reference
-const CARD1_TARGET_MS = new Date("2025-05-16T23:59:00").getTime();
-const CARD2_TARGET_MS = new Date("2025-06-02T09:00:00").getTime();
-
-// ─────────────────────────────────────────────
-// FILTER TABS
-// ─────────────────────────────────────────────
-const filters = ["All", "Workshops", "Base Jams", "Talks"];
-
-// ─────────────────────────────────────────────
-// PAST QUESTS DATA
-// ─────────────────────────────────────────────
-const pastQuests = [
-  {
-    id: "p1",
-    image: "/past_game_jam.png",
-    title: "Game Jam #1 · April 2025",
-    meta: "#1 attended  🏆 1.0",
-  },
-  {
-    id: "p2",
-    image: "/past_unity_workshop.png",
-    title: "Unity Workshop · March 2025",
-    meta: "#1 attended  🏆 3",
-  },
-];
-
-// ─────────────────────────────────────────────
-// CARD 1 — Cyberpunk Level Design (Active)
-// ─────────────────────────────────────────────
-function Card1() {
-  const { user } = useGameForge();
-  const timer = useCountdown(CARD1_TARGET_MS);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const seatsTotal = 50;
-  const seatsTaken = 12;
-  const progressPct = (seatsTaken / seatsTotal) * 100;
-
-  return (
-    <div className="flex flex-col flex-1 bg-gradient-to-b from-[#161618] to-[#131314] border-t border-[#FF7A00]">
-      {/* Image area */}
-      <div className="relative mx-6 mt-6 h-[290px]">
-        <Image
-          src="/quest_cyberpunk_level.png"
-          alt="Cyberpunk Level Design Workshop"
-          fill
-          className="object-cover"
-        />
-        {/* Active badge */}
-        <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 bg-[#131314]/80 border border-[#FFB68B] backdrop-blur-[2px]">
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-[#FF7A00]" />
-          <span className="font-mono font-normal text-[10px] leading-[15px] text-[#FFB68B]">
-            Active
-          </span>
-        </div>
-      </div>
-
-      {/* Card body */}
-      <div className="mx-6 mt-6 flex flex-col flex-1">
-        {/* Title */}
-        <h3 className="font-sora font-normal text-[24px] sm:text-[32px] leading-[36px] sm:leading-[48px] text-[#E5E2E3]">
-          Cyberpunk Level Design
-        </h3>
-
-        {/* Date / Location */}
-        <p className="mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] text-[#E0C0AF]">
-          May 14-16 · Virtual
-        </p>
-
-        {/* Separator */}
-        <div className="mt-6 border-t border-[#584235]" />
-
-        {/* Timer + Seats */}
-        <div className="flex items-start justify-between mt-6">
-          <div>
-            <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
-              Time Remaining
-            </p>
-            <p className="mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] text-[#FFB68B]">
-              {pad(timer.d)}d : {pad(timer.h)}h : {pad(timer.m)}m
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
-              Seats Available
-            </p>
-            <p className="mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] text-[#E5E2E3]">
-              {seatsTaken} / {seatsTotal}
-            </p>
-          </div>
-        </div>
-
-        {/* Progress bar track */}
-        <div className="mt-4 relative h-[2px] bg-[#353436]">
-          {/* Active fill with gradient */}
-          <div
-            className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#93000A] via-[#FF7A00] to-[#FDD400]"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
-
-        {/* CTA Button */}
-        {user && (
-          <button className="mt-6 mb-6 w-full h-[48px] bg-[#FF7A00] flex items-center justify-center gap-2 transition-opacity hover:opacity-90 cursor-pointer border-none">
-            <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800]">
-              Accept Quest →
-            </span>
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────
-// CARD 2 — Sound Design Masterclass (Soon)
-// ─────────────────────────────────────────────
-function Card2() {
-  const { user } = useGameForge();
-  const timer = useCountdown(CARD2_TARGET_MS);
-  const pad = (n: number) => String(n).padStart(2, "0");
-
-  return (
-    <div className="flex flex-col flex-1 bg-gradient-to-b from-[#161618] to-[#131314] border-t border-[#FF7A00] opacity-90">
-      {/* Image area */}
-      <div className="relative mx-6 mt-6 h-[290px]">
-        <Image
-          src="/quest_sound_design.png"
-          alt="Sound Design Masterclass"
-          fill
-          className="object-cover"
-        />
-        {/* Soon badge */}
-        <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 bg-[#131314]/80 border border-[#A78B7C] backdrop-blur-[2px]">
-          <span className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
-            Soon
-          </span>
-        </div>
-      </div>
-
-      {/* Card body */}
-      <div className="mx-6 mt-6 flex flex-col flex-1">
-        {/* Title */}
-        <h3 className="font-sora font-normal text-[24px] sm:text-[32px] leading-[36px] sm:leading-[48px] text-[#E5E2E3]">
-          Sound Design Masterclass
-        </h3>
-
-        {/* Date / Location */}
-        <p className="mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] text-[#E0C0AF]">
-          June 02 · Main Hall
-        </p>
-
-        {/* Separator */}
-        <div className="mt-6 border-t border-[#584235]" />
-
-        {/* Timer + Reservation */}
-        <div className="flex items-start justify-between mt-6">
-          <div>
-            <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
-              Unlocks In
-            </p>
-            <p className="mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] text-[#E5E2E3]">
-              {pad(timer.d)}d : {pad(timer.h)}h : {pad(timer.m)}m
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
-              Reservation
-            </p>
-            <p className="mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] text-[#E5E2E3]">
-              0 / 30
-            </p>
-          </div>
-        </div>
-
-        {/* Divider grey */}
-        <div className="mt-4 h-[2px] bg-[#353436]" />
-
-        {/* CTA Button — outlined */}
-        {user && (
-          <button className="mt-6 mb-6 w-full h-[56px] border-2 border-[#FFB68B] bg-transparent flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/5 cursor-pointer">
-            <Bell className="w-4 h-5 text-[#FFB68B]" />
-            <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFB68B]">
-              Notify Me
-            </span>
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
+import { CARD1_TARGET_MS, CARD2_TARGET_MS, filters, pastQuests } from "./constants";
+import { QuestCard } from "./components/QuestCard";
 
 // ─────────────────────────────────────────────
 // PAGE
 // ─────────────────────────────────────────────
 export default function QuestBoard() {
+  const { user } = useGameForge();
   const [activeFilter, setActiveFilter] = useState("All");
   const [search, setSearch] = useState("");
 
@@ -255,10 +66,31 @@ export default function QuestBoard() {
       {/* ── ACTIVE QUEST CARDS ── */}
       <div className="px-6 md:px-16 mt-10 flex flex-col md:flex-row gap-[44px]">
         <div className="flex-1 flex">
-          <Card1 />
+          <QuestCard
+            user={user}
+            imageSrc="/quest_cyberpunk_level.png"
+            imageAlt="Cyberpunk Level Design Workshop"
+            title="Cyberpunk Level Design"
+            subtitle="May 14-16 · Virtual"
+            targetMs={CARD1_TARGET_MS}
+            isUpcoming={false}
+            seatsTaken={12}
+            seatsTotal={50}
+            progressPct={(12 / 50) * 100}
+          />
         </div>
         <div className="flex-1 flex">
-          <Card2 />
+          <QuestCard
+            user={user}
+            imageSrc="/quest_sound_design.png"
+            imageAlt="Sound Design Masterclass"
+            title="Sound Design Masterclass"
+            subtitle="June 02 · Main Hall"
+            targetMs={CARD2_TARGET_MS}
+            isUpcoming={true}
+            seatsTaken={0}
+            seatsTotal={30}
+          />
         </div>
       </div>
 
