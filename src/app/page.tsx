@@ -83,12 +83,12 @@ export default function Home() {
           style={{
             maxWidth: "1440px",
             margin: "0 auto",
-            padding: "0 64px",
             height: "79px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
           }}
+          className="px-4 md:px-16"
         >
           {/* Logo */}
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
@@ -171,7 +171,15 @@ export default function Home() {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div style={{ background: "#131314", borderTop: "1px solid rgba(88,66,53,0.3)", padding: "16px 64px" }}>
+          <div
+            style={{
+              background: "#131314",
+              borderTop: "1px solid rgba(88,66,53,0.3)",
+              paddingTop: "16px",
+              paddingBottom: "16px",
+            }}
+            className="px-4 md:px-16 md:hidden"
+          >
             {navLinks.map((l) => (
               <button
                 key={l.label}

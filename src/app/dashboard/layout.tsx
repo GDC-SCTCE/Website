@@ -59,11 +59,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             width: "100%",
             maxWidth: "1440px",
             margin: "0 auto",
-            padding: "0 64px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
           }}
+          className="px-4 md:px-16"
         >
           {/* Logo */}
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", flexShrink: 0 }}>
@@ -85,7 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
 
           {/* Desktop Nav */}
-          <nav style={{ display: "flex", alignItems: "center", gap: "40px" }} className="hidden md:flex">
+          <nav style={{ alignItems: "center", gap: "40px" }} className="hidden md:flex">
             {navLinks.map((l) => {
               const isActive = pathname === l.href;
               return (
@@ -167,7 +167,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Mobile dropdown */}
         {mobileOpen && (
-          <div style={{ position: "absolute", top: "79px", left: 0, right: 0, background: "#131314", borderTop: "1px solid rgba(88,66,53,0.4)", padding: "16px 64px", zIndex: 60 }}>
+          <div
+            style={{
+              position: "absolute",
+              top: "79px",
+              left: 0,
+              right: 0,
+              background: "#131314",
+              borderTop: "1px solid rgba(88,66,53,0.4)",
+              paddingTop: "16px",
+              paddingBottom: "16px",
+              zIndex: 60,
+            }}
+            className="px-4 md:px-16 md:hidden"
+          >
             {navLinks.map((l) => (
               <Link
                 key={l.label}
