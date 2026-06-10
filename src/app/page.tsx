@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
 
 // Stable timestamp constant — avoids new Date() creating a new reference on every render
-const JAM_TARGET_MS = new Date("2025-04-20T09:00:00").getTime();
+const JAM_TARGET_MS = new Date("2026-07-20T09:00:00").getTime();
 
 // ─────────────────────────────────────────────
 // COUNTDOWN HOOK  (accepts number, not Date)
@@ -36,11 +36,11 @@ function useCountdown(targetMs: number) {
 // NAV LINKS  (all protected — redirect to onboarding if no user)
 // ─────────────────────────────────────────────
 const navLinks = [
-  { label: "Quest Board",     href: "/dashboard/quests" },
-  { label: "Arcade Wall",     href: "/dashboard/arcade" },
-  { label: "Character Select",href: "/dashboard/team" },
-  { label: "Hall Of Fame",    href: "/dashboard/leaderboard" },
-  { label: "Inventory",       href: "/dashboard/inventory" },
+  { label: "Quest Board", href: "/dashboard/quests" },
+  { label: "Arcade Wall", href: "/dashboard/arcade" },
+  { label: "Character Select", href: "/dashboard/team" },
+  { label: "Hall Of Fame", href: "/dashboard/leaderboard" },
+  { label: "Inventory", href: "/dashboard/inventory" },
 ];
 
 // ─────────────────────────────────────────────
@@ -88,13 +88,9 @@ export default function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pad = (n: number) => String(n).padStart(2, "0");
 
-  // Guard: navigate to onboarding if not logged in, else to the route
+  // Navigate directly to the route (accessible for both guest and authenticated users)
   const handleNavLink = (href: string) => {
-    if (!loading && user) {
-      router.push(href);
-    } else {
-      router.push("/onboarding");
-    }
+    router.push(href);
   };
 
   return (
