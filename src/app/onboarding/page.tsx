@@ -1,274 +1,836 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
-import { Button } from "@/components/ui/Button";
-import { ChevronRight, ChevronLeft, Plus, Minus, Terminal, CheckCircle } from "lucide-react";
 
-export default function Onboarding() {
+const mono = "var(--font-jetbrains-mono), monospace";
+const sora = "var(--font-sora), sans-serif";
+
+const DEV_TOOLS = ["Unity", "Godot", "Unreal", "Blender", "Figma"];
+const YEAR_OPTIONS = ["1st", "2nd", "3rd", "4th"];
+
+const XP_LEVELS = [
+  {
+    id: "Newbie" as const,
+    label: "Newbie",
+    desc: "Fresh onto the grid. Ready to learn the fundamentals of the hub.",
+  },
+  {
+    id: "Apprentice" as const,
+    label: "Apprentice",
+    desc: "Active contributor with basic project deployment experience.",
+  },
+  {
+    id: "Veteran" as const,
+    label: "Veteran",
+    desc: "Elite architect of the Ignition ecosystem. Multi-project leads.",
+  },
+] as const;
+
+type XPLevel = "Newbie" | "Apprentice" | "Veteran";
+
+const navLinks = [
+  { label: "Quest Board", href: "/dashboard/quests" },
+  { label: "Arcade Wall", href: "/dashboard/arcade" },
+  { label: "Members", href: "/dashboard/members" },
+  { label: "Hall Of Fame", href: "/dashboard/leaderboard" },
+  { label: "Inventory", href: "/dashboard/inventory" },
+];
+
+export default function OnboardingPage() {
   const { user, login, loading } = useGameForge();
   const router = useRouter();
 
-  // Onboarding steps: 1 = Name, 2 = Loadout, 3 = Stats
-  const [step, setStep] = useState(1);
-  const [nickname, setNickname] = useState("");
-  const [loadout, setLoadout] = useState<"Developer" | "Artist" | "Musician" | "Designer" | "">("");
-  
-  // Stats distribution
-  const [points, setPoints] = useState(10);
-  const [stats, setStats] = useState({
-    tech: 10,
-    design: 10,
-    agility: 10,
-    strength: 10,
-  });
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [rollNo, setRollNo] = useState("");
+  const [year, setYear] = useState("1st");
+  const [selectedTools, setSelectedTools] = useState<string[]>(["Unity"]);
+  const [xpLevel, setXpLevel] = useState<XPLevel>("Newbie");
+  const [submitting, setSubmitting] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Redirect if already logged in
   useEffect(() => {
     if (!loading && user) {
       router.push("/dashboard/quests");
     }
   }, [user, loading, router]);
 
+  const toggleTool = (tool: string) => {
+    setSelectedTools((prev) =>
+      prev.includes(tool) ? prev.filter((t) => t !== tool) : [...prev, tool]
+    );
+  };
+
+  const handleJoin = () => {
+    if (!fullName.trim()) return;
+    setSubmitting(true);
+    // Map XP level → loadout for the context
+    const loadoutMap: Record<XPLevel, "Developer" | "Artist" | "Musician" | "Designer"> = {
+      Newbie: "Developer",
+      Apprentice: "Artist",
+      Veteran: "Designer",
+    };
+    const stats = { tech: 10, design: 10, agility: 10, strength: 10 };
+    login(fullName.trim(), loadoutMap[xpLevel], stats);
+    router.push("/dashboard/quests");
+  };
+
   if (loading || user) {
     return (
-      <div className="min-h-screen bg-cyber-dark flex items-center justify-center font-mono">
-        <div className="text-neon-orange animate-pulse text-sm">CONNECTING TO COMPILER...</div>
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#131314",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: mono,
+            fontSize: "12px",
+            color: "#FF7A00",
+            letterSpacing: "1.2px",
+          }}
+        >
+          CONNECTING TO COMPILER...
+        </span>
       </div>
     );
   }
 
-  const handleNext = () => {
-    if (step === 1 && nickname.trim().length < 3) return;
-    if (step === 2 && !loadout) return;
-    setStep(step + 1);
-  };
-
-  const handlePrev = () => {
-    setStep(step - 1);
-  };
-
-  // Stats operations
-  const adjustStat = (stat: keyof typeof stats, amount: number) => {
-    if (amount > 0 && points > 0) {
-      setStats({ ...stats, [stat]: stats[stat] + 1 });
-      setPoints(points - 1);
-    } else if (amount < 0 && stats[stat] > 10) {
-      setStats({ ...stats, [stat]: stats[stat] - 1 });
-      setPoints(points + 1);
-    }
-  };
-
-  const handleFinalize = () => {
-    if (points > 0) return; // Must distribute all points
-    login(nickname, loadout, stats);
-    router.push("/dashboard/quests");
-  };
-
   return (
-    <div className="min-h-screen bg-cyber-dark cyber-grid flex items-center justify-center p-6 relative font-sans">
-      <div className="absolute inset-0 bg-cyber-grid-dots opacity-30 pointer-events-none" />
-      
-      {/* Glow */}
-      <div className="absolute w-[400px] h-[400px] bg-neon-orange/10 blur-[100px] rounded-full pointer-events-none" />
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(135.04deg, #131314 0%, #1C1B1C 100%)",
+        color: "#E5E2E3",
+        position: "relative",
+        overflowX: "hidden",
+      }}
+    >
+      {/* ── Ambient blobs ── */}
+      <div
+        style={{
+          position: "absolute",
+          width: "512px",
+          height: "746px",
+          left: "-136px",
+          top: "79px",
+          background: "#FFB68B",
+          opacity: 0.03,
+          filter: "blur(60px)",
+          transform: "rotate(12deg)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          width: "640px",
+          height: "622px",
+          left: "870px",
+          top: "242px",
+          background: "#00DBE9",
+          opacity: 0.03,
+          filter: "blur(75px)",
+          transform: "rotate(-12deg)",
+          pointerEvents: "none",
+        }}
+      />
 
-      {/* Main card */}
-      <div className="w-full max-w-lg bg-black/80 border border-cyber-border rounded-lg clip-cyber p-8 md:p-10 shadow-[0_4px_30px_rgba(0,0,0,0.8)] relative z-10 scanlines">
-        
-        {/* Terminal Header */}
-        <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-8 pb-4 border-b border-zinc-900">
-          <Terminal className="w-4 h-4 text-neon-orange" />
-          <span>USER_INITIALIZATION_PROTOCOL_EXE // STEP 0{step}</span>
+      {/* ── NAVBAR ── */}
+      <header
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          background: "rgba(19,19,20,0.96)",
+          borderBottom: "1px solid rgba(88,66,53,0.3)",
+          backdropFilter: "blur(8px)",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1440px",
+            margin: "0 auto",
+            padding: "0 64px",
+            height: "79px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* Logo */}
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
+            <div style={{ width: "39px", height: "40px", position: "relative", flexShrink: 0 }}>
+              <Image src="/gdclogo.png" alt="GDC Logo" fill style={{ objectFit: "contain" }} sizes="39px" />
+            </div>
+            <span
+              style={{
+                fontFamily: sora,
+                fontWeight: 800,
+                fontSize: "24px",
+                lineHeight: "32px",
+                letterSpacing: "-1.2px",
+                color: "#FFB68B",
+              }}
+            >
+              GAME DEV CLUB
+            </span>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+            {navLinks.map((l) => (
+              <Link
+                key={l.label}
+                href={l.href}
+                style={{
+                  fontFamily: mono,
+                  fontWeight: 600,
+                  fontSize: "12px",
+                  lineHeight: "12px",
+                  letterSpacing: "1.2px",
+                  color: "#E0C0AF",
+                  textDecoration: "none",
+                }}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* CTA + mobile */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <button
+              style={{
+                background: "#FF7A00",
+                width: "98.41px",
+                height: "28px",
+                fontFamily: mono,
+                fontWeight: 600,
+                fontSize: "12px",
+                letterSpacing: "1.2px",
+                color: "#5C2800",
+                border: "none",
+                cursor: "pointer",
+              }}
+              disabled
+            >
+              Join Us
+            </button>
+            <button
+              className="md:hidden"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              style={{ color: "#E0C0AF", background: "none", border: "none", cursor: "pointer" }}
+            >
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
+                <rect y="3" width="22" height="2" rx="1" />
+                <rect y="10" width="22" height="2" rx="1" />
+                <rect y="17" width="22" height="2" rx="1" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        {mobileOpen && (
+          <div style={{ background: "#131314", borderTop: "1px solid rgba(88,66,53,0.3)", padding: "16px 64px" }}>
+            {navLinks.map((l) => (
+              <Link
+                key={l.label}
+                href={l.href}
+                onClick={() => setMobileOpen(false)}
+                style={{ display: "block", padding: "10px 0", fontFamily: mono, fontSize: "12px", letterSpacing: "1.2px", color: "#E0C0AF", textDecoration: "none" }}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </header>
+
+      {/* ── MAIN ── */}
+      <main
+        style={{
+          maxWidth: "1440px",
+          margin: "0 auto",
+          padding: "0 64px 80px",
+        }}
+      >
+        {/* ── PROGRESS HEADER ── */}
+        <div style={{ textAlign: "center", paddingTop: "96px", marginBottom: "56px" }}>
+          {/* Phase label */}
+          <p
+            style={{
+              fontFamily: mono,
+              fontWeight: 600,
+              fontSize: "12px",
+              lineHeight: "12px",
+              letterSpacing: "1.2px",
+              color: "#00DBE9",
+              marginBottom: "28px",
+            }}
+          >
+            PHASE 02 / CHARACTER DATA
+          </p>
+
+          {/* Heading */}
+          <h1
+            style={{
+              fontFamily: sora,
+              fontWeight: 700,
+              fontSize: "48px",
+              lineHeight: "53px",
+              letterSpacing: "-2.4px",
+              textTransform: "uppercase",
+              color: "#FFB68B",
+              margin: "0 0 24px 0",
+            }}
+          >
+            Initialize Protocol
+          </h1>
+
+          {/* Progress bar */}
+          <div
+            style={{
+              display: "inline-block",
+              width: "128px",
+              position: "relative",
+            }}
+          >
+            {/* Shadow layer */}
+            <div
+              style={{
+                position: "absolute",
+                width: "128px",
+                height: "4px",
+                top: 0,
+                left: 0,
+                background: "rgba(255,255,255,0.002)",
+                boxShadow: "0px 4px 20px -5px rgba(255,182,139,0.6)",
+              }}
+            />
+            {/* Fill */}
+            <div
+              style={{
+                width: "128px",
+                height: "4px",
+                background: "#FFB68B",
+                marginTop: "4px",
+              }}
+            />
+          </div>
         </div>
 
-        {/* STEP 1: Nickname Input */}
-        {step === 1 && (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="font-display font-black text-2xl text-white uppercase tracking-wider">
-                Select Your Handle
-              </h2>
-              <p className="text-xs text-zinc-400 font-mono">
-                Enter your terminal moniker. This is how you will appear in the high scores board.
-              </p>
-            </div>
-
-            <div className="relative">
-              <input
-                type="text"
-                maxLength={12}
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value.replace(/[^a-zA-Z0-9]/g, ""))}
-                placeholder="NICKNAME_PROMPT"
-                className="w-full bg-cyber-dark border border-zinc-800 focus:border-neon-orange px-5 py-4 font-mono text-white text-base rounded uppercase focus:outline-none tracking-widest focus:shadow-[0_0_12px_rgba(255,107,0,0.25)] transition-all duration-300"
-              />
-              <span className="absolute right-4 top-4 font-mono text-xs text-zinc-600">
-                {nickname.length}/12
+        {/* ── TWO COLUMN FORM ── */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "738.67px 1fr",
+            gap: "64px",
+            alignItems: "start",
+          }}
+        >
+          {/* ───── LEFT: BASE STATS ───── */}
+          <div>
+            {/* Section title */}
+            <div style={{ display: "flex", alignItems: "baseline", gap: "16px", marginBottom: "48px" }}>
+              <span
+                style={{
+                  fontFamily: sora,
+                  fontWeight: 700,
+                  fontSize: "48px",
+                  lineHeight: "53px",
+                  letterSpacing: "-0.96px",
+                  color: "#353436",
+                }}
+              >
+                03
+              </span>
+              <span
+                style={{
+                  fontFamily: sora,
+                  fontWeight: 700,
+                  fontSize: "32px",
+                  lineHeight: "48px",
+                  textTransform: "uppercase",
+                  color: "#E5E2E3",
+                }}
+              >
+                BASE STATS
               </span>
             </div>
 
-            {nickname.trim().length > 0 && nickname.trim().length < 3 && (
-              <p className="text-xs text-red-500 font-mono">
-                ! MONIKER MUST BE AT LEAST 3 CHARACTERS
-              </p>
-            )}
-
-            <div className="pt-4 flex justify-end">
-              <Button
-                variant="primary"
-                onClick={handleNext}
-                disabled={nickname.trim().length < 3}
-              >
-                Next Option <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: Loadout Selection */}
-        {step === 2 && (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="font-display font-black text-2xl text-white uppercase tracking-wider">
-                Choose Your Loadout
-              </h2>
-              <p className="text-xs text-zinc-400 font-mono">
-                Select your core specialization. This alters your starter inventory badge.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {([
-                { id: "Developer", desc: "Engine compiler, mechanics scripter, bug hunter." },
-                { id: "Artist", desc: "Pixel painting, asset voxel modeller, layout designer." },
-                { id: "Musician", desc: "Synthwave loop engineer, SFX composer." },
-                { id: "Designer", desc: "Interactive builder, narrative playtester." },
-              ] as const).map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setLoadout(item.id)}
-                  className={`
-                    p-5 text-left border rounded transition-all duration-300 relative
-                    ${loadout === item.id 
-                      ? "bg-neon-orange/10 border-neon-orange shadow-[0_0_15px_rgba(255,107,0,0.2)]" 
-                      : "bg-cyber-dark/60 border-zinc-800/80 hover:border-zinc-700 hover:bg-cyber-dark"}
-                  `}
+            {/* Row 1: Full Name + Email */}
+            <div style={{ display: "grid", gridTemplateColumns: "357.33px 357.33px", gap: "24px", marginBottom: "36px" }}>
+              {/* Full Name */}
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontFamily: mono,
+                    fontWeight: 700,
+                    fontSize: "12px",
+                    lineHeight: "12px",
+                    letterSpacing: "1.2px",
+                    color: "#E0C0AF",
+                    marginBottom: "20px",
+                    paddingLeft: "4px",
+                  }}
                 >
-                  <span className={`
-                    block font-display text-sm font-bold uppercase tracking-wider mb-2
-                    ${loadout === item.id ? "text-neon-orange text-shadow-orange" : "text-white"}
-                  `}>
-                    {item.id}
-                  </span>
-                  <span className="block text-[10px] text-zinc-500 font-sans leading-relaxed">
-                    {item.desc}
-                  </span>
-                  {loadout === item.id && (
-                    <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-neon-orange" />
-                  )}
-                </button>
-              ))}
+                  FULL NAME
+                </label>
+                <div style={{ borderBottom: "1px solid #D0D0D0", paddingBottom: "13px" }}>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="e.g. Jaxen Sterling"
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      fontFamily: sora,
+                      fontWeight: 400,
+                      fontSize: "16px",
+                      lineHeight: "20px",
+                      color: "#353436",
+                      caretColor: "#FFB68B",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontFamily: mono,
+                    fontWeight: 700,
+                    fontSize: "12px",
+                    lineHeight: "12px",
+                    letterSpacing: "1.2px",
+                    color: "#E0C0AF",
+                    marginBottom: "20px",
+                    paddingLeft: "4px",
+                  }}
+                >
+                  EMAIL ADDRESS
+                </label>
+                <div style={{ borderBottom: "1px solid #D0D0D0", paddingBottom: "13px" }}>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="jaxen@ignition.hub"
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      fontFamily: sora,
+                      fontWeight: 400,
+                      fontSize: "16px",
+                      lineHeight: "20px",
+                      color: "#353436",
+                      caretColor: "#FFB68B",
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="pt-4 flex justify-between">
-              <Button variant="outline" onClick={handlePrev}>
-                <ChevronLeft className="w-4 h-4" /> Back
-              </Button>
-              <Button variant="primary" onClick={handleNext} disabled={!loadout}>
-                Next Option <ChevronRight className="w-4 h-4" />
-              </Button>
+            {/* Row 2: Roll No + Academic Year */}
+            <div style={{ display: "grid", gridTemplateColumns: "357.33px 357.33px", gap: "24px" }}>
+              {/* Roll No */}
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontFamily: mono,
+                    fontWeight: 700,
+                    fontSize: "12px",
+                    lineHeight: "12px",
+                    letterSpacing: "1.2px",
+                    color: "#E0C0AF",
+                    marginBottom: "20px",
+                    paddingLeft: "4px",
+                  }}
+                >
+                  ROLL NO.
+                </label>
+                <div style={{ borderBottom: "1px solid #D0D0D0", paddingBottom: "13px" }}>
+                  <input
+                    type="text"
+                    value={rollNo}
+                    onChange={(e) => setRollNo(e.target.value)}
+                    placeholder="IH-8829-X"
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      fontFamily: sora,
+                      fontWeight: 400,
+                      fontSize: "16px",
+                      lineHeight: "20px",
+                      color: "#353436",
+                      caretColor: "#FFB68B",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Academic Year */}
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontFamily: mono,
+                    fontWeight: 700,
+                    fontSize: "12px",
+                    lineHeight: "12px",
+                    letterSpacing: "1.2px",
+                    color: "#E0C0AF",
+                    marginBottom: "20px",
+                    paddingLeft: "4px",
+                  }}
+                >
+                  ACADEMIC YEAR
+                </label>
+                <div style={{ display: "flex" }}>
+                  {YEAR_OPTIONS.map((y) => {
+                    const isActive = year === y;
+                    return (
+                      <button
+                        key={y}
+                        onClick={() => setYear(y)}
+                        style={{
+                          width: "83.33px",
+                          height: "48px",
+                          background: isActive ? "#FF7A00" : "transparent",
+                          border: isActive ? "1px solid #FF7A00" : "1px solid #353436",
+                          fontFamily: mono,
+                          fontWeight: 400,
+                          fontSize: "10px",
+                          lineHeight: "15px",
+                          color: isActive ? "#522300" : "#E5E2E3",
+                          cursor: "pointer",
+                          textTransform: "uppercase",
+                          transition: "all 0.15s ease",
+                        }}
+                      >
+                        {y}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
-        )}
 
-        {/* STEP 3: Stats Allocation */}
-        {step === 3 && (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="font-display font-black text-2xl text-white uppercase tracking-wider">
-                Distribute Stats
-              </h2>
-              <p className="text-xs text-zinc-400 font-mono">
-                Allocate your 10 remaining memory blocks to configure your base abilities.
-              </p>
-            </div>
-
-            {/* Point Pool indicator */}
-            <div className="p-4 bg-cyber-dark border border-zinc-800 rounded flex justify-between items-center font-mono">
-              <span className="text-xs text-zinc-500 uppercase">MEMORY_BLOCKS_LEFT</span>
-              <span className={`text-xl font-bold ${points > 0 ? "text-neon-blue animate-pulse" : "text-neon-green"}`}>
-                {points} PTS
+          {/* ───── RIGHT: LOADOUT ───── */}
+          <div>
+            {/* Section title */}
+            <div style={{ display: "flex", alignItems: "baseline", gap: "16px", marginBottom: "48px" }}>
+              <span
+                style={{
+                  fontFamily: sora,
+                  fontWeight: 700,
+                  fontSize: "48px",
+                  lineHeight: "53px",
+                  letterSpacing: "-0.96px",
+                  color: "#353436",
+                }}
+              >
+                04
+              </span>
+              <span
+                style={{
+                  fontFamily: sora,
+                  fontWeight: 700,
+                  fontSize: "32px",
+                  lineHeight: "48px",
+                  textTransform: "uppercase",
+                  color: "#E5E2E3",
+                }}
+              >
+                LOADOUT
               </span>
             </div>
 
-            <div className="space-y-4">
-              {([
-                { key: "tech", label: "Tech (Scripting & Engine Math)" },
-                { key: "design", label: "Design (Mechanics & Layout)" },
-                { key: "agility", label: "Agility (Refactoring Speed)" },
-                { key: "strength", label: "Strength (Bug Resilience)" },
-              ] as const).map((stat) => {
-                const currentVal = stats[stat.key];
-                return (
-                  <div key={stat.key} className="flex items-center justify-between border-b border-zinc-900 pb-3">
-                    <div className="space-y-0.5">
-                      <span className="block text-xs uppercase font-display font-bold text-white tracking-wider">
-                        {stat.label.split(" (")[0]}
-                      </span>
-                      <span className="block text-[9px] font-mono text-zinc-500">
-                        {stat.label.split(" (")[1].replace(")", "")}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <button
-                        onClick={() => adjustStat(stat.key, -1)}
-                        disabled={currentVal <= 10}
-                        className="w-8 h-8 rounded border border-zinc-800 hover:border-neon-orange flex items-center justify-center text-zinc-400 disabled:opacity-30 disabled:hover:border-zinc-800"
-                      >
-                        <Minus className="w-3.5 h-3.5" />
-                      </button>
-                      
-                      <span className="font-mono text-base font-bold text-neon-orange w-6 text-center">
-                        {currentVal}
-                      </span>
-
-                      <button
-                        onClick={() => adjustStat(stat.key, 1)}
-                        disabled={points === 0}
-                        className="w-8 h-8 rounded border border-zinc-800 hover:border-neon-blue flex items-center justify-center text-zinc-400 disabled:opacity-30 disabled:hover:border-zinc-800"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+            {/* Development Tools */}
+            <div style={{ marginBottom: "56px" }}>
+              <p
+                style={{
+                  fontFamily: mono,
+                  fontWeight: 600,
+                  fontSize: "12px",
+                  lineHeight: "12px",
+                  letterSpacing: "1.2px",
+                  color: "#E0C0AF",
+                  marginBottom: "28px",
+                }}
+              >
+                DEVELOPMENT TOOLS
+              </p>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                {DEV_TOOLS.map((tool) => {
+                  const isSelected = selectedTools.includes(tool);
+                  return (
+                    <button
+                      key={tool}
+                      onClick={() => toggleTool(tool)}
+                      style={{
+                        height: "33px",
+                        padding: "0 16px",
+                        background: isSelected ? "#FFB68B" : "transparent",
+                        border: isSelected ? "none" : "1px solid #353436",
+                        fontFamily: mono,
+                        fontWeight: 400,
+                        fontSize: "10px",
+                        lineHeight: "15px",
+                        color: isSelected ? "#522300" : "#E0C0AF",
+                        cursor: "pointer",
+                        boxShadow: isSelected ? "0px 4px 20px -5px rgba(255,182,139,0.6)" : "none",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {tool}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="pt-4 flex justify-between">
-              <Button variant="outline" onClick={handlePrev}>
-                <ChevronLeft className="w-4 h-4" /> Back
-              </Button>
-              <Button
-                variant={points === 0 ? "green" : "outline"}
-                onClick={handleFinalize}
-                disabled={points > 0}
-                className="w-44"
+            {/* XP Classification */}
+            <div>
+              <p
+                style={{
+                  fontFamily: mono,
+                  fontWeight: 600,
+                  fontSize: "12px",
+                  lineHeight: "12px",
+                  letterSpacing: "1.2px",
+                  color: "#E0C0AF",
+                  marginBottom: "28px",
+                }}
               >
-                {points === 0 ? (
-                  <>
-                    Finalize Compile <CheckCircle className="w-4 h-4 ml-1" />
-                  </>
-                ) : (
-                  `Distribute ${points} Pts`
-                )}
-              </Button>
+                XP CLASSIFICATION
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {XP_LEVELS.map((lvl) => {
+                  const isSelected = xpLevel === lvl.id;
+                  return (
+                    <button
+                      key={lvl.id}
+                      onClick={() => setXpLevel(lvl.id)}
+                      style={{
+                        width: "100%",
+                        height: "69px",
+                        background: "#1C1B1C",
+                        border: isSelected ? "1px solid #FFB68B" : "1px solid #353436",
+                        padding: "17px 17px 17px 49px",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        position: "relative",
+                        boxSizing: "border-box",
+                        transition: "border-color 0.15s ease",
+                      }}
+                    >
+                      {/* Radio circle */}
+                      <span
+                        style={{
+                          position: "absolute",
+                          left: "17px",
+                          top: "26.5px",
+                          width: "16px",
+                          height: "16px",
+                          border: "2px solid #353436",
+                          borderRadius: "50%",
+                          display: "inline-block",
+                          background: isSelected ? "#FFB68B" : "transparent",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                      <p
+                        style={{
+                          fontFamily: mono,
+                          fontWeight: 400,
+                          fontSize: "12px",
+                          lineHeight: "18px",
+                          color: "#FFB68B",
+                          margin: "0 0 2px 0",
+                        }}
+                      >
+                        {lvl.label}
+                      </p>
+                      <p
+                        style={{
+                          fontFamily: sora,
+                          fontWeight: 400,
+                          fontSize: "11px",
+                          lineHeight: "16px",
+                          color: "#E0C0AF",
+                          margin: 0,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {lvl.desc}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+
+        {/* ── CTA BUTTON ── */}
+        <div style={{ textAlign: "center", marginTop: "96px" }}>
+          <div style={{ display: "inline-block", position: "relative" }}>
+            {/* Glow behind button */}
+            <div
+              style={{
+                position: "absolute",
+                inset: "-4px",
+                background: "linear-gradient(90deg, #FFB68B 0%, #FDD400 100%)",
+                opacity: 0.25,
+                filter: "blur(4px)",
+                pointerEvents: "none",
+              }}
+            />
+            <button
+              onClick={handleJoin}
+              disabled={submitting || !fullName.trim()}
+              style={{
+                position: "relative",
+                width: "469.81px",
+                height: "78px",
+                background: !fullName.trim() ? "#584235" : "#FFB68B",
+                border: "none",
+                fontFamily: sora,
+                fontWeight: 400,
+                fontSize: "20px",
+                lineHeight: "30px",
+                letterSpacing: "4px",
+                textTransform: "uppercase",
+                color: "#522300",
+                cursor: fullName.trim() ? "pointer" : "not-allowed",
+                transition: "background 0.2s ease, transform 0.15s ease",
+                opacity: !fullName.trim() ? 0.6 : 1,
+              }}
+              onMouseEnter={(e) => {
+                if (fullName.trim()) (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.01)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
+              }}
+            >
+              {submitting ? "INITIALIZING..." : "JOIN THE COLLECTIVE →"}
+            </button>
+          </div>
+          <p
+            style={{
+              fontFamily: mono,
+              fontWeight: 400,
+              fontSize: "10px",
+              lineHeight: "15px",
+              color: "#353436",
+              marginTop: "20px",
+            }}
+          >
+            By joining, you agree to the Terms of Service
+          </p>
+        </div>
+      </main>
+
+      {/* ── FOOTER ── */}
+      <footer
+        style={{
+          background: "#131314",
+          borderTop: "2px solid #353436",
+          height: "142px",
+          display: "flex",
+          alignItems: "center",
+          boxSizing: "border-box",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1440px",
+            width: "100%",
+            margin: "0 auto",
+            padding: "0 64px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* Left: Logo + Tagline */}
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+              <div style={{ width: "32px", height: "32px", position: "relative", flexShrink: 0 }}>
+                <Image src="/gdclogo.png" alt="GDC Logo" fill style={{ objectFit: "contain" }} sizes="32px" />
+              </div>
+              <span
+                style={{
+                  fontFamily: sora,
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  lineHeight: "24px",
+                  color: "#FFB68B",
+                }}
+              >
+                GAME DEV CLUB
+              </span>
+            </div>
+            <p
+              style={{
+                fontFamily: mono,
+                fontWeight: 600,
+                fontSize: "12px",
+                lineHeight: "12px",
+                letterSpacing: "1.2px",
+                color: "#E0C0AF",
+                margin: 0,
+              }}
+            >
+              © 2024 GAME DEV COLLECTIVE. BUILT FOR PERFORMANCE.
+            </p>
+          </div>
+
+          {/* Right: Footer links */}
+          <div style={{ display: "flex", gap: "32px" }}>
+            {["Support", "GitHub", "Discord", "Terms"].map((l) => (
+              <a
+                key={l}
+                href="#"
+                style={{
+                  fontFamily: mono,
+                  fontWeight: 600,
+                  fontSize: "12px",
+                  lineHeight: "12px",
+                  letterSpacing: "1.2px",
+                  color: "#E0C0AF",
+                  textDecoration: "none",
+                }}
+              >
+                {l}
+              </a>
+            ))}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
