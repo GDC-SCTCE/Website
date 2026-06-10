@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 import { MOCK_TEAM } from "@/constants/mockData";
+import { MONO, SORA } from "@/constants/fonts";
 
-const mono = "var(--font-jetbrains-mono), monospace";
-const sora = "var(--font-sora), sans-serif";
+const mono = MONO;
+const sora = SORA;
+
 
 type Department = "ALL" | "DESIGN" | "TECH" | "MEDIA" | "COMMUNITY" | "EVENT" | "MARKETING" | "E-SPORTS";
 

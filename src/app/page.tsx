@@ -1,47 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
+import { NAV_LINKS } from "@/constants/navigation";
+import { MONO, SORA } from "@/constants/fonts";
+import { useCountdown } from "@/hooks/useCountdown";
 
 // Stable timestamp constant — avoids new Date() creating a new reference on every render
 const JAM_TARGET_MS = new Date("2026-07-20T09:00:00").getTime();
 
-// ─────────────────────────────────────────────
-// COUNTDOWN HOOK  (accepts number, not Date)
-// ─────────────────────────────────────────────
-function useCountdown(targetMs: number) {
-  const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
-  useEffect(() => {
-    const tick = () => {
-      const diff = targetMs - Date.now();
-      if (diff <= 0) { setTimeLeft({ d: 0, h: 0, m: 0, s: 0 }); return; }
-      setTimeLeft({
-        d: Math.floor(diff / 86400000),
-        h: Math.floor((diff % 86400000) / 3600000),
-        m: Math.floor((diff % 3600000) / 60000),
-        s: Math.floor((diff % 60000) / 1000),
-      });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [targetMs]);
-  return timeLeft;
-}
-
-// ─────────────────────────────────────────────
-// NAV LINKS  (all protected — redirect to onboarding if no user)
-// ─────────────────────────────────────────────
-const navLinks = [
-  { label: "Quest Board", href: "/dashboard/quests" },
-  { label: "Arcade Wall", href: "/dashboard/arcade" },
-  { label: "Character Select", href: "/dashboard/team" },
-  { label: "Hall Of Fame", href: "/dashboard/leaderboard" },
-  { label: "Inventory", href: "/dashboard/inventory" },
-];
+const navLinks = NAV_LINKS;
 
 // ─────────────────────────────────────────────
 // FEATURE CARDS
@@ -75,8 +47,9 @@ const stats = [
 ];
 
 // Shared font styles
-const mono = "var(--font-jetbrains-mono), monospace";
-const sora = "var(--font-sora), sans-serif";
+const mono = MONO;
+const sora = SORA;
+
 
 // ─────────────────────────────────────────────
 // PAGE

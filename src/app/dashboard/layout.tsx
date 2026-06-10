@@ -1,27 +1,24 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
+import { NAV_LINKS } from "@/constants/navigation";
+import { MONO, SORA } from "@/constants/fonts";
 
-const sora = "var(--font-sora), sans-serif";
-const mono = "var(--font-jetbrains-mono), monospace";
+const sora = SORA;
+const mono = MONO;
 
-const navLinks = [
-  { label: "Quest Board", href: "/dashboard/quests" },
-  { label: "Arcade Wall", href: "/dashboard/arcade" },
-  { label: "Character Select", href: "/dashboard/team" },
-  { label: "Hall Of Fame", href: "/dashboard/leaderboard" },
-  { label: "Inventory", href: "/dashboard/inventory" },
-];
+const navLinks = NAV_LINKS;
 
 const footerLinks = [
   { label: "Privacy_Protocol", href: "#" },
   { label: "Terms_of_Service", href: "#" },
   { label: "Debug_Logs", href: "#" },
 ];
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useGameForge();

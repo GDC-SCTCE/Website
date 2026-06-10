@@ -5,9 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
+import { NAV_LINKS } from "@/constants/navigation";
+import { MONO, SORA } from "@/constants/fonts";
 
-const mono = "var(--font-jetbrains-mono), monospace";
-const sora = "var(--font-sora), sans-serif";
+const mono = MONO;
+const sora = SORA;
 
 const DEV_TOOLS = ["Unity", "Godot", "Unreal", "Blender", "Figma"];
 const YEAR_OPTIONS = ["1st", "2nd", "3rd", "4th"];
@@ -32,13 +34,8 @@ const XP_LEVELS = [
 
 type XPLevel = "Newbie" | "Apprentice" | "Veteran";
 
-const navLinks = [
-  { label: "Quest Board", href: "/dashboard/quests" },
-  { label: "Arcade Wall", href: "/dashboard/arcade" },
-  { label: "Members", href: "/dashboard/members" },
-  { label: "Hall Of Fame", href: "/dashboard/leaderboard" },
-  { label: "Inventory", href: "/dashboard/inventory" },
-];
+const navLinks = NAV_LINKS;
+
 
 export default function OnboardingPage() {
   const { user, login, loading } = useGameForge();

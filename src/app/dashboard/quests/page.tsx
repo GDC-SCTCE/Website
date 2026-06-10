@@ -1,46 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+
 import Image from "next/image";
 import { useGameForge } from "@/context/GameForgeContext";
 import { Search, Bell, ExternalLink } from "lucide-react";
+import { useCountdown } from "@/hooks/useCountdown";
 
-// ─────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────
-interface TimeLeft {
-  d: number;
-  h: number;
-  m: number;
-  s: number;
-}
-
-// ─────────────────────────────────────────────
-// COUNTDOWN HOOK
-// Uses a timestamp (number) to avoid new Date() object reference changing every render
-// ─────────────────────────────────────────────
-function useCountdown(targetMs: number): TimeLeft {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ d: 0, h: 0, m: 0, s: 0 });
-  useEffect(() => {
-    const tick = () => {
-      const diff = targetMs - Date.now();
-      if (diff <= 0) {
-        setTimeLeft({ d: 0, h: 0, m: 0, s: 0 });
-        return;
-      }
-      setTimeLeft({
-        d: Math.floor(diff / 86400000),
-        h: Math.floor((diff % 86400000) / 3600000),
-        m: Math.floor((diff % 3600000) / 60000),
-        s: Math.floor((diff % 60000) / 1000),
-      });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [targetMs]);
-  return timeLeft;
-}
 
 // Date constants defined OUTSIDE components so they never change reference
 const CARD1_TARGET_MS = new Date("2025-05-16T23:59:00").getTime();
@@ -425,9 +391,9 @@ function Card2() {
 // PAGE
 // ─────────────────────────────────────────────
 export default function QuestBoard() {
-  const { user } = useGameForge();
   const [activeFilter, setActiveFilter] = useState("All");
   const [search, setSearch] = useState("");
+
 
   return (
     <div
