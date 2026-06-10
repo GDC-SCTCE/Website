@@ -162,7 +162,7 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
       {/* ── PAGE HEADER ── */}
-      <div className="pt-[100px] md:pt-[179px] px-6 md:px-16 pb-0">
+      <div className="pt-[60px] md:pt-[100px] px-6 md:px-16 pb-0">
         {/* Section label */}
         <div className="flex items-center gap-0 mb-[28px]">
           <div className="w-[32px] h-[2px] bg-[#FF7A00] mr-[8px]" />
@@ -172,12 +172,27 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
         </div>
 
         {/* Heading */}
-        <h1 className="font-sora font-extrabold text-[40px] md:text-[80px] leading-[48px] md:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 mb-[36px]">
+        <h1 className="font-sora font-extrabold text-[40px] md:text-[80px] leading-[48px] md:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 mb-[40px] md:mb-[60px]">
           MEET THE <span className="text-[#FF7A00]">GANG</span>.
         </h1>
 
+      </div>
+
+      {/* ── LEADER CARDS ── */}
+      <div className="px-6 md:px-16 mt-[40px] flex flex-col lg:flex-row gap-[57px] items-center lg:items-start">
+        {leads.map((lead, idx) => (
+          <LeaderCard key={lead.id} member={lead} isFirst={idx === 0} />
+        ))}
+      </div>
+
+      {/* ── EVERYONE BUILDING ── */}
+      <div className="pt-[100px] md:pt-[156px] px-6 md:px-16 pb-0">
+        <h2 className="font-sora font-bold text-[32px] md:text-[48px] leading-[40px] md:leading-[53px] tracking-[-2.4px] uppercase text-[#E5E2E3] m-0 mb-[30px] md:mb-[40px]">
+          EVERYONE BUILDING.
+        </h2>
+
         {/* Filter row */}
-        <div className="pt-[32px] pb-[16px]">
+        <div className="pb-[60px] md:pb-[80px]">
           <div className="flex items-center gap-[12px] flex-wrap">
             {filters.map((f) => {
               const isActive = activeFilter === f;
@@ -208,20 +223,6 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
             })}
           </div>
         </div>
-      </div>
-
-      {/* ── LEADER CARDS ── */}
-      <div className="px-6 md:px-16 mt-[45px] flex flex-col lg:flex-row gap-[57px] items-center lg:items-start">
-        {leads.map((lead, idx) => (
-          <LeaderCard key={lead.id} member={lead} isFirst={idx === 0} />
-        ))}
-      </div>
-
-      {/* ── EVERYONE BUILDING ── */}
-      <div className="pt-[100px] md:pt-[156px] px-6 md:px-16 pb-0">
-        <h2 className="font-sora font-bold text-[32px] md:text-[48px] leading-[40px] md:leading-[53px] tracking-[-2.4px] uppercase text-[#E5E2E3] m-0 mb-[60px] md:mb-[157px]">
-          EVERYONE BUILDING.
-        </h2>
       </div>
 
       {/* ── MEMBER CARDS GRID ── */}
