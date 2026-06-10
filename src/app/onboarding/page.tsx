@@ -51,10 +51,11 @@ export default function OnboardingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && !submitting) {
+      // Already logged in — go directly to dashboard
       router.push("/dashboard/quests");
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, submitting]);
 
   const toggleTool = (tool: string) => {
     setSelectedTools((prev) =>
@@ -73,10 +74,10 @@ export default function OnboardingPage() {
     };
     const stats = { tech: 10, design: 10, agility: 10, strength: 10 };
     login(fullName.trim(), loadoutMap[xpLevel], stats);
-    router.push("/dashboard/quests");
+    router.push("/onboarding/success");
   };
 
-  if (loading || user) {
+  if (loading || (user && !submitting)) {
     return (
       <div
         style={{
@@ -156,12 +157,12 @@ export default function OnboardingPage() {
           style={{
             maxWidth: "1440px",
             margin: "0 auto",
-            padding: "0 64px",
             height: "79px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
           }}
+          className="px-4 md:px-16"
         >
           {/* Logo */}
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
@@ -183,7 +184,10 @@ export default function OnboardingPage() {
           </Link>
 
           {/* Desktop nav */}
-          <nav style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+          <nav
+            style={{ alignItems: "center", gap: "40px" }}
+            className="hidden md:flex"
+          >
             {navLinks.map((l) => (
               <Link
                 key={l.label}
@@ -236,7 +240,15 @@ export default function OnboardingPage() {
           </div>
         </div>
         {mobileOpen && (
-          <div style={{ background: "#131314", borderTop: "1px solid rgba(88,66,53,0.3)", padding: "16px 64px" }}>
+          <div
+            style={{
+              background: "#131314",
+              borderTop: "1px solid rgba(88,66,53,0.3)",
+              paddingTop: "16px",
+              paddingBottom: "16px",
+            }}
+            className="px-4 md:px-16 md:hidden"
+          >
             {navLinks.map((l) => (
               <Link
                 key={l.label}
