@@ -304,7 +304,7 @@ function MemberCard({ member }: { member: (typeof MOCK_TEAM)[0] }) {
         position: "relative",
         flexShrink: 0,
         boxSizing: "border-box",
-        border: "1px solid #201F20",
+        border: "1px solid transparent",
       }}
     >
       {/* Orange gradient top divider */}
@@ -473,7 +473,7 @@ export default function MembersPage() {
             margin: "0 0 36px 0",
           }}
         >
-          MEET THE GANG.
+          MEET THE <span style={{ color: "#FF7A00" }}>GANG</span>.
         </h1>
 
         {/* Filter row */}
@@ -546,10 +546,10 @@ export default function MembersPage() {
       {/* ── MEMBER CARDS GRID ── */}
       <div
         style={{
-          padding: "0 120px 120px",
+          padding: "0 100px 80px",
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, 270px)",
-          gap: "100px 40px",
+          gridTemplateColumns: "repeat(4, minmax(240px, 1fr))",
+          gap: "80px 20px",
           justifyContent: "space-between",
         }}
       >

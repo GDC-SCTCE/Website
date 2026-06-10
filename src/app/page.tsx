@@ -213,7 +213,7 @@ export default function Home() {
       </header>
 
       {/* ── HERO ── */}
-      <section style={{ textAlign: "center", paddingTop: "208px", paddingBottom: "128px", position: "relative", overflow: "hidden" }}>
+      <section style={{ textAlign: "center", paddingTop: "15dvh", paddingBottom: "10dvh", position: "relative", overflow: "hidden" }}>
         {/* Ambient glow */}
         <div style={{ position: "absolute", top: "-80px", left: "50%", transform: "translateX(-50%)", width: "700px", height: "400px", borderRadius: "50%", background: "rgba(255,122,0,0.06)", filter: "blur(120px)", pointerEvents: "none" }} />
 
