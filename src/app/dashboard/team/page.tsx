@@ -1,7 +1,5 @@
-"use client";
-
 import React from "react";
-import { MOCK_TEAM } from "@/constants/mockData";
+import prisma from "@/lib/prisma";
 import { Users, Monitor } from "lucide-react";
 
 const Github = (props: React.SVGProps<SVGSVGElement>) => (
@@ -35,7 +33,13 @@ const Linkedin = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export default function MeetTheClub() {
+export const dynamic = "force-dynamic";
+
+export default async function MeetTheClub() {
+  const teamMembers = await prisma.teamMember.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
   // Color presets for avatar profiles based on roles
   const getRoleColors = (role: string) => {
     if (role.includes("Lead") && !role.includes("Co-Lead")) {
@@ -74,7 +78,7 @@ export default function MeetTheClub() {
 
       {/* Team grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {MOCK_TEAM.map((member) => {
+        {teamMembers.map((member) => {
           const colors = getRoleColors(member.role);
           return (
             <div

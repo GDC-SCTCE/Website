@@ -24,7 +24,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Game Forge // GDSC SCT Game Dev Collective",
+  title: "Game Development Club SCTCE",
   description: "Initialize your game dev protocol. Track quests, build games, and climb the leaderboard at the GDSC SCT (GDG on Campus SCTCE) Game Dev Club.",
 };
 

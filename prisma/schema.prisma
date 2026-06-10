@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Quest {
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  category     String
+  difficulty   String
+  xpReward     Int      @default(0)
+  badgeAwarded String?
+  objective    String?
+  createdAt    DateTime @default(now())
+}
+
+model Game {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  genre       String
+  developer   String
+  rating      Float?
+  coverUrl    String?
+  releaseYear String?
+  features    String[]
+  playable    Boolean       @default(false)
+  highScores  GameHighScore[]
+  createdAt   DateTime      @default(now())
+}
+
+model GameHighScore {
+  id        String   @id @default(uuid())
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player    String
+  score     Float
+  date      String
+  createdAt DateTime @default(now())
+}
+
+
+
+model TeamMember {
+  id          String     @id @default(uuid())
+  name        String
+  role        String
+  speciality  String[]
+  avatarSeed  String?
+  department  String
+  isLead      Boolean    @default(false)
+  stats       Json?
+  gamePreview Json?
+  createdAt   DateTime   @default(now())
+}
+
+model Leaderboard {
+  id        String   @id @default(uuid())
+  rank      Int
+  player    String
+  score     Float
+  gameTitle String
+  date      String
+  createdAt DateTime @default(now())
+}

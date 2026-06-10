@@ -1,0 +1,72 @@
+"use client";
+
+import React, { useState } from "react";
+import TeamForm from "./TeamForm";
+import Avatar from "@/components/Avatar";
+
+export default function TeamAdminClient({ members }: { members: any[] }) {
+  // Select the first member initially, which should be Campus Lead due to createdAt asc sorting
+  const [selectedMember, setSelectedMember] = useState(members[0] || null);
+
+  React.useEffect(() => {
+    if (selectedMember) {
+      const updated = members.find(m => m.id === selectedMember.id);
+      if (updated) setSelectedMember(updated);
+    } else {
+      setSelectedMember(members[0] || null);
+    }
+  }, [members]);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Cards List (Left side, col-span-2) */}
+      <div className="lg:col-span-2 flex flex-col gap-4">
+        {members.map((member, index) => (
+          <div 
+            key={member.id} 
+            onClick={() => setSelectedMember(member)}
+            className={`bg-[#1A1A1B] border ${selectedMember?.id === member.id ? 'border-[#FF7A00]' : 'border-[#584235] hover:border-[#FF7A00]/50'} p-4 flex gap-4 cursor-pointer transition-colors items-center`}
+          >
+            {/* Avatar / Photo */}
+            <div className="w-[64px] h-[64px] shrink-0 border border-[#584235] overflow-hidden mix-blend-luminosity hover:mix-blend-normal transition-all">
+              {member.avatarSeed && !member.avatarSeed.startsWith('http') && member.avatarSeed.includes('.') ? (
+                 <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover" />
+              ) : member.avatarSeed && member.avatarSeed.startsWith('http') ? (
+                 <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover" />
+              ) : (
+                <Avatar name={member.name} size={64} />
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 flex flex-col gap-1">
+              <div className="flex justify-between items-center">
+                <h3 className="font-sora font-bold text-[18px] text-[#FFB68B]">
+                  {member.name}
+                </h3>
+                <span className="font-mono text-[10px] bg-[#584235] text-[#FFB68B] px-2 py-1 rounded-sm">
+                  {member.role}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+        {members.length === 0 && (
+          <div className="text-center font-mono text-[12px] text-[#A78B7C] p-8 border border-dashed border-[#584235]">
+            NO TEAM MEMBERS FOUND IN DATABASE.
+          </div>
+        )}
+      </div>
+
+      {/* Edit Form (Right side, col-span-1) */}
+      <div className="lg:col-span-1 bg-[#1A1A1B] border border-[#584235] p-6 h-fit sticky top-24">
+        <h2 className="font-sora font-bold text-[20px] text-white mb-6">EDIT MEMBER</h2>
+        {selectedMember ? (
+          <TeamForm key={`${selectedMember.id}-${selectedMember.updatedAt}`} member={selectedMember} />
+        ) : (
+          <p className="text-white font-mono text-[12px]">NO MEMBERS FOUND.</p>
+        )}
+      </div>
+    </div>
+  );
+}

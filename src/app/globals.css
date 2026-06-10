@@ -130,3 +130,7 @@ body {
 .clip-cyber-header {
   clip-path: polygon(0px 0px, 100% 0px, calc(100% - 15px) 100%, 0px 100%);
 }
+
+button {
+  cursor: pointer !important;
+}

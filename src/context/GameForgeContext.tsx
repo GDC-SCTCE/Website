@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User, Quest, Game, LeaderboardEntry } from "../types";
-import { MOCK_QUESTS, MOCK_GAMES, MOCK_LEADERBOARD } from "../constants/mockData";
+import { fetchInitialData } from "../actions/dataActions";
 
 interface GameForgeContextType {
   user: User | null;
@@ -22,52 +22,44 @@ const XP_PER_LEVEL = 300;
 
 export const GameForgeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [quests] = useState<Quest[]>(MOCK_QUESTS);
-  const [games, setGames] = useState<Game[]>(MOCK_GAMES);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(MOCK_LEADERBOARD);
+  const [quests, setQuests] = useState<any[]>([]);
+  const [games, setGames] = useState<any[]>([]);
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Load user data on mount
   useEffect(() => {
     let savedUser = null;
-    let savedGames = null;
-    let savedLeaderboard = null;
 
     try {
       savedUser = localStorage.getItem("gameforge_user");
-      savedGames = localStorage.getItem("gameforge_games");
-      savedLeaderboard = localStorage.getItem("gameforge_leaderboard");
     } catch (e) {
       console.warn("localStorage is disabled or not accessible:", e);
     }
 
-    setTimeout(() => {
-      if (savedUser) {
-        try {
-          setUser(JSON.parse(savedUser));
-        } catch (e) {
-          console.error("Error parsing saved user", e);
-        }
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {
+        console.error("Error parsing saved user", e);
       }
-      
-      if (savedGames) {
-        try {
-          setGames(JSON.parse(savedGames));
-        } catch (e) {
-          console.error("Error parsing saved games", e);
-        }
+    }
+
+    // Fetch initial database data instead of local mock data
+    const loadData = async () => {
+      try {
+        const { quests: dbQuests, games: dbGames, leaderboard: dbLeaderboard } = await fetchInitialData();
+        setQuests(dbQuests as any);
+        setGames(dbGames as any);
+        setLeaderboard(dbLeaderboard as any);
+      } catch (e) {
+        console.error("Failed to load data from database", e);
+      } finally {
+        setLoading(false);
       }
-      
-      if (savedLeaderboard) {
-        try {
-          setLeaderboard(JSON.parse(savedLeaderboard));
-        } catch (e) {
-          console.error("Error parsing saved leaderboard", e);
-        }
-      }
-      
-      setLoading(false);
-    }, 0);
+    };
+
+    loadData();
   }, []);
 
   // Sync helpers to localStorage
