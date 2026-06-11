@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
 import { useGameForge } from "@/context/GameForgeContext";
-import { NAV_LINKS } from "@/constants/navigation";
 
 export default function OnboardingSuccess() {
   const { user, loading } = useGameForge();
@@ -49,78 +49,10 @@ export default function OnboardingSuccess() {
       />
 
       {/* ── NAVBAR ── */}
-      <header className="sticky top-0 z-50 bg-[#131314] border-b border-[#584235]/30 h-[79px] flex items-center">
-        <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between px-4 md:px-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-[12px] no-underline shrink-0">
-            <div className="w-[39px] h-[40px] relative">
-              <Image
-                src="/gdclogo.png"
-                alt="GDC Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <span className="font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] text-[#FFB68B] hidden min-[420px]:inline-block">
-              GAME DEV CLUB
-            </span>
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-[40px]">
-            {NAV_LINKS.map((l) => (
-              <Link
-                key={l.label}
-                href={l.href}
-                className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B] transition-colors duration-200"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* CTA — already logged in, show "Dashboard" */}
-          <div className="flex items-center gap-[16px] shrink-0">
-            <Link href="/dashboard/quests">
-              <button className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200">
-                DASHBOARD
-              </button>
-            </Link>
-
-            {/* Mobile hamburger */}
-            <button
-              className="md:hidden text-[#E0C0AF] bg-transparent border-none cursor-pointer p-1"
-              onClick={() => setMobileOpen((o) => !o)}
-              aria-label="Toggle menu"
-            >
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
-                <rect y="3" width="22" height="2" rx="1" />
-                <rect y="10" width="22" height="2" rx="1" />
-                <rect y="17" width="22" height="2" rx="1" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <div className="absolute top-[79px] left-0 right-0 bg-[#131314] border-t border-[#584235]/30 py-[16px] z-60 px-4 md:px-16 md:hidden flex flex-col gap-[16px]">
-            {NAV_LINKS.map((l) => (
-              <Link
-                key={l.label}
-                href={l.href}
-                onClick={() => setMobileOpen(false)}
-                className="font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B]"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </div>
-        )}
-      </header>
+      <Navbar />
 
       {/* ── MAIN CONTENT ── */}
-      <main className="relative z-10 flex flex-col items-center pt-[100px] pb-[60px] md:pt-[178px] md:pb-[80px] px-4 md:px-16 max-w-[1440px] mx-auto box-border">
+      <main className="relative z-10 flex flex-col items-center pt-[100px] pb-[60px] md:pt-32 lg:pt-40 md:pb-[80px] px-4 md:px-16 max-w-[1440px] mx-auto box-border">
         {/* ── SUCCESS INDICATOR ── */}
         <div className="relative w-[128px] h-[128px] mb-[48px]">
           {/* Outer decorative border — rotated 45° */}

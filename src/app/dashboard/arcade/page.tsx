@@ -239,7 +239,10 @@ export default function ArcadeWallPage() {
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateY(0)" : "translateY(24px)",
             transitionDelay: "100ms",
-            animation: mounted ? "glitch 6s steps(1) infinite" : "none",
+            animationName: mounted ? "glitch" : "none",
+            animationDuration: "6s",
+            animationTimingFunction: "steps(1)",
+            animationIterationCount: "infinite",
             animationDelay: "3s",
           }}
         >

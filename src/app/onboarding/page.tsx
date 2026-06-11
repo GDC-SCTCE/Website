@@ -4,14 +4,11 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
 import { useGameForge } from "@/context/GameForgeContext";
-import { NAV_LINKS } from "@/constants/navigation";
 
 import { XPLevel } from "./types";
 import { DEV_TOOLS, YEAR_OPTIONS, XP_LEVELS } from "./constants";
-
-const navLinks = NAV_LINKS;
-
 
 export default function OnboardingPage() {
   const { user, login, loading } = useGameForge();
@@ -24,7 +21,6 @@ export default function OnboardingPage() {
   const [selectedTools, setSelectedTools] = useState<string[]>(["Unity"]);
   const [xpLevel, setXpLevel] = useState<XPLevel>("Newbie");
   const [submitting, setSubmitting] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && user && !submitting) {
@@ -70,67 +66,7 @@ export default function OnboardingPage() {
       <div className="absolute w-[640px] h-[622px] left-[870px] top-[242px] bg-[#00DBE9]/3 blur-[75px] -rotate-12 pointer-events-none" />
 
       {/* ── NAVBAR ── */}
-      <header className="sticky top-0 z-50 bg-[#131314]/96 border-b border-[#584235]/30 backdrop-blur-md">
-        <div className="max-w-[1440px] mx-auto h-[79px] flex items-center justify-between px-4 md:px-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-[12px] no-underline">
-            <div className="w-[39px] h-[40px] relative shrink-0">
-              <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" sizes="39px" />
-            </div>
-            <span className="font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] text-[#FFB68B] hidden min-[420px]:inline-block">
-              GAME DEV CLUB
-            </span>
-          </Link>
-
-          <nav
-            className="hidden md:flex items-center gap-[40px]"
-          >
-            {navLinks.map((l) => (
-              <Link
-                key={l.label}
-                href={l.href}
-                className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B] transition-colors duration-200"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* CTA + mobile */}
-          <div className="flex items-center gap-[16px]">
-            <button
-              className="bg-[#FF7A00]/50 w-[98.41px] h-[28px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#5C2800]/60 border-none cursor-not-allowed"
-              disabled
-            >
-              Join Us
-            </button>
-            <button
-              className="md:hidden text-[#E0C0AF] bg-transparent border-none cursor-pointer p-1"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
-                <rect y="3" width="22" height="2" rx="1" />
-                <rect y="10" width="22" height="2" rx="1" />
-                <rect y="17" width="22" height="2" rx="1" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        {mobileOpen && (
-          <div className="bg-[#131314] border-t border-[#584235]/30 py-[16px] px-4 md:px-16 md:hidden">
-            {navLinks.map((l) => (
-              <Link
-                key={l.label}
-                href={l.href}
-                onClick={() => setMobileOpen(false)}
-                className="block py-[10px] font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B] transition-colors duration-200"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </div>
-        )}
-      </header>
+      <Navbar />
 
       {/* ── MAIN ── */}
       <main className="max-w-[1440px] mx-auto px-4 md:px-[64px] pb-[80px]">
@@ -156,7 +92,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* ── TWO COLUMN FORM ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[738.67px_1fr] gap-[64px] items-start max-w-[1280px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-[64px] items-start max-w-[1280px] mx-auto">
           {/* ───── LEFT: BASE STATS ───── */}
           <div>
             {/* Section title */}
@@ -170,7 +106,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* Row 1: Full Name + Email */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mb-[36px] max-w-[738.67px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mb-[36px] w-full">
               {/* Full Name */}
               <div>
                 <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
@@ -205,7 +141,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* Row 2: Roll No + Academic Year */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] max-w-[738.67px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] w-full">
               {/* Roll No */}
               <div>
                 <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">

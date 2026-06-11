@@ -81,7 +81,7 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
       </div>
 
       {/* ── EVERYONE BUILDING ── */}
-      <div className="pt-[100px] md:pt-[156px] px-6 md:px-16 pb-0">
+      <div className="pt-24 md:pt-32 px-6 md:px-16 pb-0">
         <h2
           className="font-sora font-bold text-[32px] md:text-[48px] leading-[40px] md:leading-[53px] tracking-[-2.4px] uppercase text-[#E5E2E3] m-0 mb-[30px] md:mb-[40px] transition-all duration-700"
           style={{

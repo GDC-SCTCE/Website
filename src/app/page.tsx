@@ -5,8 +5,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
 import { useGameForge } from "@/context/GameForgeContext";
-import { NAV_LINKS } from "@/constants/navigation";
 
 import { useCountdown } from "@/hooks/useCountdown";
 
@@ -31,8 +31,6 @@ function useInView(threshold = 0.15) {
 
 // Stable timestamp constant — avoids new Date() creating a new reference on every render
 const JAM_TARGET_MS = new Date("2026-07-20T09:00:00").getTime();
-
-const navLinks = NAV_LINKS;
 
 // ─────────────────────────────────────────────
 // FEATURE CARDS
@@ -166,74 +164,7 @@ export default function Home() {
       )}
 
       {/* ── NAVBAR ── */}
-      <header
-        className="sticky top-0 z-50 bg-[#131314] border-b border-[#584235]/30 transition-all duration-700 ease-out"
-        style={{
-          opacity: mounted ? 1 : 0,
-          transform: mounted ? "translateY(0)" : "translateY(-10px)",
-        }}
-      >
-        <div className="max-w-[1440px] mx-auto h-[79px] flex items-center justify-between px-4 md:px-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-[12px] no-underline">
-            <div className="w-[39px] h-[40px] relative shrink-0">
-              <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" />
-            </div>
-            <span className="font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] text-[#FFB68B] hidden min-[420px]:inline-block">
-              GAME DEV CLUB
-            </span>
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-10">
-            {navLinks.map((l) => (
-              <button
-                key={l.label}
-                onClick={() => handleNavLink(l.href)}
-                className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] bg-none border-none cursor-pointer p-0 hover:text-[#FFB68B] transition-colors duration-300 relative group"
-              >
-                {l.label}
-                <span className="absolute bottom-[-4px] left-0 w-full h-[1px] bg-[#FFB68B] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-              </button>
-            ))}
-          </nav>
-
-          {/* CTA + Mobile toggle */}
-          <div className="flex items-center gap-[16px]">
-            <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
-              <button className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-300 hover:shadow-md hover:shadow-[#FF7A00]/20 relative overflow-hidden group/btn-nav">
-                <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover/btn-nav:translate-x-[300%] transition-transform duration-500 ease-in-out" />
-                <span className="relative z-10">{!loading && user ? "Terminal" : "Join Us"}</span>
-              </button>
-            </Link>
-            <button
-              className="md:hidden text-[#E0C0AF] bg-none border-none cursor-pointer p-1"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
-                <rect y="3" width="22" height="2" rx="1" />
-                <rect y="10" width="22" height="2" rx="1" />
-                <rect y="17" width="22" height="2" rx="1" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileOpen && (
-          <div className="bg-[#131314] border-t border-[#584235]/30 py-[16px] px-4 md:px-16 md:hidden">
-            {navLinks.map((l) => (
-              <button
-                key={l.label}
-                onClick={() => { handleNavLink(l.href); setMobileOpen(false); }}
-                className="block w-full text-left py-[10px] font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] bg-none border-none cursor-pointer hover:text-[#FFB68B] transition-colors duration-200"
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </header>
+      <Navbar />
 
       {/* ── HERO ── */}
       <section className="text-center pt-[15dvh] pb-[10dvh] relative overflow-hidden px-4">

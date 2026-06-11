@@ -338,7 +338,7 @@ export default function HallOfFamePage() {
     <div className="bg-[#131314] min-h-screen">
 
       {/* ── Section 6.1: Header ──────────────────────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-[144px] pt-24 pb-0">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 pt-24 pb-0">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
           {/* Left: label + heading */}
           <div

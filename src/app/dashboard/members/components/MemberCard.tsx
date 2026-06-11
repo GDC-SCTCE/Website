@@ -24,7 +24,7 @@ export function MemberCard({
         {/* Orange gradient top divider */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-white to-transparent z-10" />
         {/* Photo container */}
-        <div className="w-full h-[300px] relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden">
           <div className="w-full h-full transition-transform duration-700 group-hover/member:scale-105">
             {member.avatarSeed && (member.avatarSeed.startsWith('http') || member.avatarSeed.includes('.')) ? (
                  <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover" />
@@ -34,7 +34,7 @@ export function MemberCard({
           </div>
         </div>
         {/* Info strip container */}
-        <div className="absolute w-full h-[74px] left-0 top-[300px] bg-gradient-to-t from-black to-transparent p-[15px_16px] box-border">
+        <div className="absolute w-full bottom-0 left-0 bg-gradient-to-t from-[#1C1B1C] to-transparent p-[15px_16px] box-border pt-12">
           {/* Name */}
           <h3 className="font-sora font-normal text-[20px] leading-[30px] uppercase text-[#E5E2E3] m-0 white-space-nowrap overflow-hidden text-ellipsis transition-colors duration-200 group-hover/member:text-[#FF7A00]">
             {member.name}
