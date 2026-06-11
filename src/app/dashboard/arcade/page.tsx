@@ -1,337 +1,309 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
-import { useGameForge } from "@/context/GameForgeContext";
-import { Button } from "@/components/ui/Button";
-import { Game } from "@/types";
-import { Gamepad2, Award, Star, Play, X, ShieldAlert, Cpu, Sparkles } from "lucide-react";
+import Image from "next/image";
+import { Play, ArrowRight } from "lucide-react";
 
-export default function ArcadeWall() {
-  const { user, games, submitScore } = useGameForge();
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-  // Game session simulation states
-  const [simulating, setSimulating] = useState(false);
-  const [simLog, setSimLog] = useState<string[]>([]);
-  const [simResult, setSimResult] = useState<number | null>(null);
-  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+type FilterTag = "ALL" | "UNITY" | "GODOT" | "WEB" | "UNREAL" | "2024" | "2023";
 
-  // Custom game card background styles representing retro game cartridge colors
-  const getGameGradients = (gameId: string) => {
-    switch (gameId) {
-      case "g1": return "from-pink-900 via-purple-900 to-black";
-      case "g2": return "from-emerald-950 via-teal-900 to-black";
-      case "g3": return "from-cyan-950 via-blue-900 to-black";
-      default: return "from-zinc-900 via-neutral-900 to-black";
-    }
-  };
+interface Game {
+  id: string;
+  title: string;
+  engine: string;
+  genre: string;
+  image: string;
+  tags: FilterTag[];
+}
 
-  const handleLaunchGame = (game: Game) => {
-    setSelectedGame(game);
-    setSimResult(null);
-    setSimulating(false);
-    setSimLog([]);
-  };
+interface FeaturedGame {
+  title: string;
+  description: string;
+  engine: string;
+  genre: string;
+  duration: string;
+  year: string;
+  image: string;
+  playUrl: string;
+}
 
-  const handleSimulateGame = async (game: Game) => {
-    setSimulating(true);
-    setSimResult(null);
-    setSimLog(["[SYSTEM] INITIALIZING GAME PROTOCOL...", "[SYSTEM] LOADING CORE ENGINE MODULES..."]);
+// ─── Mock Data ────────────────────────────────────────────────────────────────
 
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const GAMES: Game[] = [
+  {
+    id: "neon-drift",
+    title: "NEON DRIFT",
+    engine: "Unity · 2D",
+    genre: "Racing",
+    image: "/game_neon_drift.png",
+    tags: ["ALL", "UNITY", "2024"],
+  },
+  {
+    id: "hollow-maze",
+    title: "HOLLOW MAZE",
+    engine: "Godot · 3D",
+    genre: "Puzzle",
+    image: "/game_hollow_maze.png",
+    tags: ["ALL", "GODOT", "2024"],
+  },
+  {
+    id: "grid-runner",
+    title: "GRID RUNNER",
+    engine: "Web · Custom",
+    genre: "Arcade",
+    image: "/game_grid_runner.png",
+    tags: ["ALL", "WEB", "2023"],
+  },
+];
 
-    await delay(500);
-    setSimLog((prev) => [...prev, "[LOADER] LOADING GRAPHICS / SHADER BUFFER..."]);
-    
-    await delay(600);
-    setSimLog((prev) => [...prev, "[LOADER] MOUNTING CONTROLS AND AUDIO CHANNELS..."]);
-    
-    await delay(500);
-    setSimLog((prev) => [...prev, "[PLAY] GAME LAUNCHED! SIMULATING ACTION SESSIONS..."]);
+const FEATURED: FeaturedGame = {
+  title: "Coda: The Last Protocol",
+  description:
+    "A deep-space terminal simulation where every keystroke determines the fate of the colony. Decode the signal before the clock hits zero.",
+  engine: "Custom",
+  genre: "Thriller",
+  duration: "2h",
+  year: "2025",
+  image: "/game_coda_protocol.png",
+  playUrl: "#",
+};
 
-    await delay(800);
-    setSimLog((prev) => [...prev, "[PLAY] USER COMPLETED 3 SECTIONS ON GRID INTERCEPT."]);
+const FILTER_TAGS: FilterTag[] = [
+  "ALL",
+  "UNITY",
+  "GODOT",
+  "WEB",
+  "UNREAL",
+  "2024",
+  "2023",
+];
 
-    await delay(600);
-    // Generate scores based on game specs
-    let generatedScore = 0;
-    if (game.id === "g1") {
-      generatedScore = Math.floor(Math.random() * 5000) + 5000; // 5k - 10k
-    } else if (game.id === "g2") {
-      generatedScore = Number((Math.random() * 40 + 60).toFixed(1)); // 60.0 - 100.0
-    } else {
-      generatedScore = Math.floor(Math.random() * 6000) + 4000; // 4k - 10k
-    }
+// ─── Game Column Card ─────────────────────────────────────────────────────────
 
-    setSimLog((prev) => [
-      ...prev,
-      "[SYSTEM] GAME OVER REACHED.",
-      `[STATS] FINAL SCORE GENERATED: ${generatedScore}`,
-      `[DATABASE] BROADCASTING COMPOSITE HIGH SCORES TO GAMEFORGE BOARD...`
-    ]);
+function GameColumn({
+  game,
+  isLast,
+}: {
+  game: Game;
+  isLast: boolean;
+}) {
+  return (
+    <div
+      className={`flex flex-col group cursor-pointer ${!isLast ? "border-r border-[#584235]/30" : ""}`}
+    >
+      {/* Thumbnail */}
+      <div className="relative w-full aspect-[479/400] overflow-hidden">
+        <Image
+          src={game.image}
+          alt={game.title}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
+      </div>
 
-    await delay(400);
-    setSimResult(generatedScore);
-    submitScore(game.id, generatedScore);
-    setSimulating(false);
-  };
+      {/* Info strip */}
+      <div className="px-6 py-6 flex flex-col gap-4 flex-1">
+        <div className="flex items-end justify-between gap-4">
+          {/* Title */}
+          <h3 className="font-sora font-bold text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.1] tracking-[-0.96px] uppercase text-[#E5E2E3] m-0 flex-1">
+            {game.title}
+          </h3>
+          {/* Play link */}
+          <a
+            href="#"
+            className="flex items-center gap-1.5 shrink-0 font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFB68B] no-underline hover:text-white transition-colors duration-200 self-end pb-1"
+          >
+            Play <Play className="w-3 h-3 fill-current" />
+          </a>
+        </div>
+        {/* Engine tag */}
+        <span className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
+          {game.engine}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function ArcadeWallPage() {
+  const [activeFilter, setActiveFilter] = useState<FilterTag>("ALL");
+
+  const filtered = GAMES.filter((g) => g.tags.includes(activeFilter));
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="font-display font-black text-2xl md:text-3xl text-white tracking-widest uppercase flex items-center gap-3">
-          <Gamepad2 className="w-7 h-7 text-neon-orange" />
-          The Arcade Wall
-        </h1>
-        <p className="text-xs text-zinc-400 font-mono mt-2 uppercase tracking-wider">
-          Play retro games compiled by club developers and conquer the high scores board.
+    <div className="bg-[#131314] min-h-screen">
+
+      {/* ── Header Section ───────────────────────────────────────────────── */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 pt-[120px] pb-0">
+        {/* Label */}
+        <p className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#FFB68B] mb-7">
+          ALL BUILDS
         </p>
-      </div>
 
-      {/* Games list grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {games.map((game) => {
-          const userBest = user ? user.highScores[game.id] : undefined;
-          return (
-            <div
-              key={game.id}
-              className="bg-cyber-card border border-cyber-border rounded-lg clip-cyber p-6 flex flex-col justify-between hover:border-zinc-700 transition-all duration-300 relative group shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
-            >
-              {/* Cover Art Box placeholder - Cyber style */}
-              <div className={`w-full h-40 bg-gradient-to-br ${getGameGradients(game.id)} rounded border border-zinc-800 flex flex-col justify-between p-4 mb-6 relative overflow-hidden`}>
-                <div className="absolute inset-0 bg-cyber-grid opacity-20 pointer-events-none" />
-                
-                {/* Tech logo badge */}
-                <div className="flex justify-between items-start z-10">
-                  <span className="font-mono text-[8px] bg-black/80 px-2 py-0.5 rounded border border-zinc-800 text-zinc-500">
-                    ID: {game.id.toUpperCase()}
-                  </span>
-                  {game.playable ? (
-                    <span className="font-mono text-[8px] bg-neon-green/10 text-neon-green px-2 py-0.5 rounded border border-neon-green/30 tracking-widest uppercase animate-pulse">
-                      PLAYABLE
-                    </span>
-                  ) : (
-                    <span className="font-mono text-[8px] bg-zinc-900 text-zinc-500 px-2 py-0.5 rounded border border-zinc-800 tracking-widest uppercase">
-                      IN DEVELOPMENT
-                    </span>
-                  )}
-                </div>
+        {/* Heading */}
+        <h1 className="font-sora font-extrabold text-[56px] sm:text-[80px] leading-[56px] sm:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 mb-8">
+          THE ARCADE WALL.
+        </h1>
 
-                {/* Big retro style typography for title */}
-                <div className="z-10 text-center">
-                  <h3 className="font-display font-black text-2xl md:text-3xl tracking-widest uppercase text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-all duration-300">
-                    {game.title}
-                  </h3>
-                </div>
-
-                {/* Cover Footer specs */}
-                <div className="flex justify-between items-center z-10 font-mono text-[9px] text-zinc-500">
-                  <span>DEV: {game.developer.split(" & ")[0]}</span>
-                  <span>{game.releaseYear} {"// PORTAL"}</span>
-                </div>
-              </div>
-
-              {/* Game Metadata and Info */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-zinc-500 uppercase">{game.genre}</span>
-                  <div className="flex items-center gap-1 font-mono text-xs text-yellow-500">
-                    <Star className="w-3.5 h-3.5 fill-yellow-500" />
-                    <span>{game.rating}</span>
-                  </div>
-                </div>
-
-                <p className="text-xs text-zinc-400 leading-relaxed min-h-[48px]">
-                  {game.description}
-                </p>
-
-                {/* Score panel */}
-                <div className="flex justify-between items-center p-3 bg-black/50 border border-zinc-900 rounded font-mono text-[10px]">
-                  <span className="text-zinc-500">YOUR BEST SCORE:</span>
-                  <span className={`font-bold ${userBest ? "text-neon-orange" : "text-zinc-600"}`}>
-                    {userBest !== undefined ? userBest : "NO RECORD"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="pt-6 mt-6 border-t border-zinc-900/60 flex justify-end">
-                <Button
-                  variant={game.playable ? "primary" : "outline"}
-                  onClick={() => handleLaunchGame(game)}
-                  className="cursor-pointer"
+        {/* Filter Row */}
+        <div className="border-y border-[#584235] py-[17px] overflow-x-auto">
+          <div className="flex items-center gap-8 min-w-max">
+            {FILTER_TAGS.map((tag) => {
+              const isActive = activeFilter === tag;
+              return (
+                <button
+                  key={tag}
+                  onClick={() => setActiveFilter(tag)}
+                  className={`flex items-center gap-2 font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] uppercase border-none bg-transparent cursor-pointer transition-colors duration-200 p-0 ${
+                    isActive ? "text-[#FFB68B]" : "text-[#E0C0AF] hover:text-[#FFB68B]"
+                  }`}
                 >
-                  {game.playable ? "Launch Arcade" : "Review Details"}
-                </Button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Game Detail Modal overlay */}
-      {selectedGame && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl bg-cyber-card border border-zinc-800 rounded-lg clip-cyber shadow-[0_0_30px_rgba(0,0,0,0.9)] relative overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
-            <button
-              onClick={() => setSelectedGame(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white z-10 cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Left side: Cartridge style and Play Simulator */}
-            <div className={`w-full md:w-1/2 bg-gradient-to-b ${getGameGradients(selectedGame.id)} p-8 flex flex-col justify-between relative border-b md:border-b-0 md:border-r border-zinc-800`}>
-              <div className="absolute inset-0 bg-cyber-grid opacity-20 pointer-events-none" />
-
-              <div className="space-y-4 relative z-10">
-                <span className="inline-block bg-black/80 px-2 py-0.5 border border-zinc-800 rounded font-mono text-[9px] text-zinc-500 uppercase">
-                  {selectedGame.genre}
-                </span>
-                <h2 className="font-display font-black text-3xl uppercase tracking-widest text-white">
-                  {selectedGame.title}
-                </h2>
-                <div className="font-mono text-[10px] text-zinc-400">
-                  <div>BY: {selectedGame.developer}</div>
-                  <div>RELEASE: {selectedGame.releaseYear}</div>
-                </div>
-              </div>
-
-              {/* Simulation Box */}
-              <div className="mt-8 bg-black/75 border border-zinc-850 p-4 rounded relative z-10 font-mono text-center min-h-[160px] flex flex-col justify-center">
-                {!user ? (
-                  <div className="space-y-4">
-                    <span className="block text-[10px] text-zinc-500 uppercase tracking-widest">ARCADE_INTERFACE</span>
-                    <p className="text-[10px] text-zinc-400">Join GDSC SCT Game Dev Club to play games and register high scores.</p>
-                    <Link href="/onboarding" className="block w-full">
-                      <Button variant="secondary" size="sm" className="w-full cursor-pointer">
-                        JOIN US TO PLAY
-                      </Button>
-                    </Link>
-                  </div>
-                ) : selectedGame.playable ? (
-                  !simulating && simResult === null ? (
-                    <div className="space-y-4">
-                      <span className="block text-[10px] text-zinc-500 uppercase tracking-widest">ARCADE_INTERFACE</span>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleSimulateGame(selectedGame)}
-                        className="w-full cursor-pointer"
-                      >
-                        <Play className="w-4 h-4 fill-black mr-1" /> RUN SIMULATOR
-                      </Button>
-                    </div>
-                  ) : simulating ? (
-                    <div className="text-left space-y-1 text-[9px] text-neon-blue h-28 overflow-y-auto">
-                      {simLog.map((log, index) => (
-                        <div key={index} className="truncate">
-                          {log}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-center gap-1.5 text-neon-green text-[10px] uppercase font-bold">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>SESSION COMPLETE</span>
-                      </div>
-                      
-                      <div>
-                        <span className="block text-[8px] text-zinc-500 uppercase">SCORE SUBMITTED</span>
-                        <span className="text-2xl font-black text-neon-orange font-mono animate-pulse">
-                          {simResult}
-                        </span>
-                      </div>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleLaunchGame(selectedGame)}
-                        className="w-full cursor-pointer"
-                      >
-                        PLAY AGAIN
-                      </Button>
-                    </div>
-                  )
-                ) : (
-                  <div className="space-y-3">
-                    <ShieldAlert className="w-8 h-8 text-zinc-500 mx-auto" />
-                    <span className="block text-[9px] text-zinc-500 uppercase">SYSTEMS_OFFLINE</span>
-                    <span className="block text-[10px] text-zinc-400 leading-relaxed">
-                      Cartridge compiling. Source code commits pending.
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Right side: Roster / details and high scores */}
-            <div className="w-full md:w-1/2 p-8 overflow-y-auto flex flex-col justify-between">
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-display font-bold text-xs text-white uppercase tracking-wider mb-2">
-                    Description
-                  </h3>
-                  <p className="text-xs text-zinc-450 leading-relaxed">
-                    {selectedGame.description}
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="font-display font-bold text-xs text-white uppercase tracking-wider mb-2">
-                    Key Features
-                  </h3>
-                  <ul className="space-y-1.5 font-mono text-[10px] text-zinc-450">
-                    {selectedGame.features.map((feat, idx) => (
-                      <li key={idx} className="flex items-center gap-2">
-                        <Cpu className="w-3 h-3 text-neon-blue" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Scoreboard List */}
-                <div>
-                  <h3 className="font-display font-bold text-xs text-white uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                    <Award className="w-4 h-4 text-neon-orange" />
-                    Leaderboard
-                  </h3>
-
-                  {selectedGame.highScores.length === 0 ? (
-                    <div className="text-[10px] font-mono text-zinc-500 uppercase p-2 border border-dashed border-zinc-850 rounded text-center">
-                      No session scores recorded.
-                    </div>
-                  ) : (
-                    <div className="border border-zinc-900 rounded bg-black/30 overflow-hidden font-mono text-[10px]">
-                      {selectedGame.highScores.map((score, index) => (
-                        <div
-                          key={index}
-                          className={`
-                            flex items-center justify-between px-3 py-2 border-b border-zinc-900/60
-                            ${user && score.player === user.nickname ? "bg-neon-orange/5 text-neon-orange font-bold" : "text-zinc-400"}
-                          `}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-zinc-650">#{index + 1}</span>
-                            <span className="uppercase">{score.player}</span>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <span>{score.score}</span>
-                            <span className="text-[8px] text-zinc-600 hidden sm:inline">{score.date}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  {isActive && (
+                    <span className="w-[6px] h-[6px] rounded-full bg-[#FFB68B] shrink-0" />
                   )}
-                </div>
-              </div>
-            </div>
+                  {tag}
+                </button>
+              );
+            })}
           </div>
         </div>
-      )}
+      </div>
+
+      {/* ── Game Grid Section (3-column, edge-to-edge) ───────────────────── */}
+      <div className="w-full mt-8">
+        {filtered.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((game, idx) => (
+              <GameColumn
+                key={game.id}
+                game={game}
+                isLast={idx === filtered.length - 1}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center justify-center py-32 font-mono text-[12px] text-[#584235] uppercase tracking-widest">
+            No games matching this filter yet
+          </div>
+        )}
+      </div>
+
+      {/* ── Featured Game Section (Full-bleed spotlight) ─────────────────── */}
+      <div className="w-full bg-[#131314] mt-8">
+        <div className="flex flex-col lg:flex-row min-h-[600px]">
+
+          {/* Left: content */}
+          <div className="flex-1 flex flex-col justify-center px-4 sm:px-8 lg:px-16 py-16 lg:py-[64px] max-w-[720px]">
+            {/* Editor's pick label */}
+            <p className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#00DBE9] mb-10">
+              EDITOR&apos;S PICK
+            </p>
+
+            {/* Title */}
+            <h2 className="font-sora font-extrabold text-[56px] sm:text-[72px] lg:text-[80px] leading-[56px] sm:leading-[72px] lg:leading-[80px] tracking-[-3.2px] text-[#E5E2E3] m-0 mb-10">
+              {FEATURED.title}
+            </h2>
+
+            {/* Description */}
+            <p className="font-sora font-normal text-[16px] leading-[26px] text-[#E0C0AF] max-w-[510px] mb-10">
+              {FEATURED.description}
+            </p>
+
+            {/* Metadata row */}
+            <div className="border-y border-[#584235]/30 py-6 mb-10 flex items-start gap-12 flex-wrap">
+              <div>
+                <p className="font-mono font-normal text-[10px] leading-[15px] uppercase text-[#A78B7C] mb-2">
+                  ENGINE
+                </p>
+                <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E5E2E3]">
+                  {FEATURED.engine}
+                </p>
+              </div>
+              <div>
+                <p className="font-mono font-normal text-[10px] leading-[15px] uppercase text-[#A78B7C] mb-2">
+                  GENRE
+                </p>
+                <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E5E2E3]">
+                  {FEATURED.genre}
+                </p>
+              </div>
+              <div>
+                <p className="font-mono font-normal text-[10px] leading-[15px] uppercase text-[#A78B7C] mb-2">
+                  DURATION
+                </p>
+                <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E5E2E3]">
+                  {FEATURED.duration}
+                </p>
+              </div>
+              <div>
+                <p className="font-mono font-normal text-[10px] leading-[15px] uppercase text-[#A78B7C] mb-2">
+                  YEAR
+                </p>
+                <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E5E2E3]">
+                  {FEATURED.year}
+                </p>
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-6 flex-wrap">
+              <a
+                href={FEATURED.playUrl}
+                className="flex items-center gap-3 h-12 px-6 bg-[#FFB68B] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#522300] no-underline hover:brightness-110 transition-all duration-200"
+              >
+                PLAY NOW <Play className="w-3.5 h-3.5 fill-current" />
+              </a>
+              <a
+                href="#"
+                className="flex items-center gap-3 h-12 px-6 border-2 border-[#FFF3D2] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#FFF3D2] no-underline hover:bg-[#FFF3D2]/5 transition-all duration-200"
+              >
+                TEAM INFO <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+
+          {/* Right: game image */}
+          <div className="w-full lg:w-[720px] h-[400px] lg:h-auto shrink-0 relative overflow-hidden">
+            <Image
+              src={FEATURED.image}
+              alt={FEATURED.title}
+              fill
+              className="object-cover"
+            />
+            {/* Overlays matching Figma spec */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.06) 0%, rgba(0,255,0,0.02) 50%, rgba(0,0,255,0.06) 100%)",
+              }}
+            />
+            <div
+              className="absolute top-0 left-0 right-0 h-[100px] pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(255,182,139,0) 0%, rgba(255,182,139,0.1) 50%, rgba(255,182,139,0) 100%)",
+              }}
+            />
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: "rgba(255,122,0,0.1)",
+                mixBlendMode: "color",
+              }}
+            />
+            {/* Left edge gradient fade into content */}
+            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#131314] to-transparent pointer-events-none lg:block hidden" />
+          </div>
+
+        </div>
+      </div>
+
     </div>
   );
 }
