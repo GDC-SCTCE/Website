@@ -138,265 +138,183 @@ const data = {
   ],
   "gameHighScores": [],
   "teamMembers": [
-    {
-      "id": "t15",
-      "name": "Keshav Nair N",
-      "role": "Community Lead",
-      "speciality": [],
-      "avatarSeed": "keshav",
-      "department": "COMMUNITY",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:24.720Z"
-    },
-    {
-      "id": "t14",
-      "name": "Madhav U Menon",
-      "role": "Media Co Lead",
-      "speciality": [],
-      "avatarSeed": "madhav",
-      "department": "MEDIA",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:24.058Z"
-    },
-    {
-      "id": "t13",
-      "name": "Bhagath Sunand",
-      "role": "Media Co Lead",
-      "speciality": [],
-      "avatarSeed": "bhagath",
-      "department": "MEDIA",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:23.402Z"
-    },
-    {
-      "id": "t16",
-      "name": "Bhavana Sunil",
-      "role": "Community Co Lead",
-      "speciality": [],
-      "avatarSeed": "bhayana",
-      "department": "COMMUNITY",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:25.376Z"
-    },
-    {
-      "id": "t12",
-      "name": "Fadi Haris",
-      "role": "Media Lead",
-      "speciality": [],
-      "avatarSeed": "fadi",
-      "department": "MEDIA",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:22.731Z"
-    },
-    {
-      "id": "t11",
-      "name": "Sanjay K S",
-      "role": "E-Sports Co Lead",
-      "speciality": [],
-      "avatarSeed": "sanjay",
-      "department": "E-SPORTS",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:22.074Z"
-    },
-    {
-      "id": "t10",
-      "name": "Manas Joby Joseph",
-      "role": "E-Sports Lead",
-      "speciality": [],
-      "avatarSeed": "manas",
-      "department": "E-SPORTS",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:21.415Z"
-    },
-    {
-      "id": "t9",
-      "name": "Arjun S M",
-      "role": "Design Co Lead",
-      "speciality": [],
-      "avatarSeed": "arjun",
-      "department": "DESIGN",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:20.700Z"
-    },
-    {
-      "id": "t8",
-      "name": "Aleena Thomas",
-      "role": "Design Lead",
-      "speciality": [],
-      "avatarSeed": "aleena",
-      "department": "DESIGN",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:20.015Z"
-    },
-    {
-      "id": "t7",
-      "name": "Abhirag R Nair",
-      "role": "Marketing Co Lead",
-      "speciality": [],
-      "avatarSeed": "abhirag",
-      "department": "MARKETING",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:19.356Z"
-    },
-    {
-      "id": "t6",
-      "name": "Johan Gejo",
-      "role": "Marketing Co Lead",
-      "speciality": [],
-      "avatarSeed": "johan",
-      "department": "MARKETING",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:18.691Z"
-    },
-    {
-      "id": "t5",
-      "name": "Alen Dev P",
-      "role": "Marketing Lead",
-      "speciality": [],
-      "avatarSeed": "alen",
-      "department": "MARKETING",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:18.034Z"
-    },
-    {
-      "id": "t4",
-      "name": "Abhai Sankar P R",
-      "role": "Tech Co Lead",
-      "speciality": [],
-      "avatarSeed": "abhai",
-      "department": "TECH",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:17.375Z"
-    },
-    {
-      "id": "t3",
-      "name": "Akhileswaran K R",
-      "role": "Tech Lead",
-      "speciality": [],
-      "avatarSeed": "akhil",
-      "department": "TECH",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:16.701Z"
-    },
-    {
-      "id": "t2",
-      "name": "Athul Krishna S",
-      "role": "Event Co Lead",
-      "speciality": [],
-      "avatarSeed": "athul",
-      "department": "EVENT",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:16.042Z"
-    },
-    {
-      "id": "t1",
-      "name": "Aswin Binoy",
-      "role": "Event Lead",
-      "speciality": [],
-      "avatarSeed": "aswin",
-      "department": "EVENT",
-      "isLead": false,
-      "stats": null,
-      "gamePreview": null,
-      "createdAt": "2026-06-10T16:03:15.348Z"
-    },
-    {
-      "id": "t-lead-1",
-      "name": "Gagandeep M",
-      "role": "Campus Lead",
-      "speciality": [
-        "Godot Engine",
-        "C++ Coding",
-        "Shader Writing",
-        "Physics Math"
-      ],
-      "avatarSeed": "https://ansperazeazzjpjmzwtt.supabase.co/storage/v1/object/public/team/gagandeep_m_1781122525995.png",
-      "department": "ALL",
-      "isLead": true,
-      "stats": [
-        {
-          "label": "TECH",
-          "value": 80
-        },
-        {
-          "label": "MEDIA_COMP",
-          "value": 60
-        },
-        {
-          "label": "XREF",
-          "value": 50
-        }
-      ],
-      "gamePreview": {
-        "label": "CURRENT PROJECT",
-        "title": "NEON DRIFT"
+  {
+    "name": "Gagandeep M",
+    "role": "Campus Lead",
+    "avatar": "",
+    "department": "ALL",
+    "stats": [
+      {
+        "label": "TECH",
+        "value": 80
       },
-      "createdAt": "2026-06-10T16:03:13.990Z"
-    },
-    {
-      "id": "t-lead-2",
-      "name": "Nidhi M Nair",
-      "role": "Campus Co Lead",
-      "speciality": [
-        "DAW Synth",
-        "Spatial Audio",
-        "Foley Recording",
-        "Ambience"
-      ],
-      "avatarSeed": "nidhim",
-      "department": "ALL",
-      "isLead": true,
-      "stats": [
-        {
-          "label": "DESIGN",
-          "value": 90
-        },
-        {
-          "label": "MEDIA_COMP",
-          "value": 70
-        },
-        {
-          "label": "DEEPLINK",
-          "value": 80
-        }
-      ],
-      "gamePreview": {
-        "label": "CURRENT PROJECT",
-        "title": "HOLLOW MAZE"
+      {
+        "label": "MEDIA_COMP",
+        "value": 60
       },
-      "createdAt": "2026-06-10T16:03:14.657Z"
+      {
+        "label": "XREF",
+        "value": 50
+      }
+    ],
+    "gamePreview": {
+      "title": "NEON DRIFT",
+      "image": ""
     }
-  ],
+  },
+  {
+    "name": "Nidhi M Nair",
+    "role": "Campus Co Lead",
+    "avatar": "",
+    "department": "ALL",
+    "stats": [
+      {
+        "label": "DESIGN",
+        "value": 90
+      },
+      {
+        "label": "MEDIA_COMP",
+        "value": 70
+      },
+      {
+        "label": "DEEPLINK",
+        "value": 80
+      }
+    ],
+    "gamePreview": {
+      "title": "HOLLOW MAZE",
+      "image": ""
+    }
+  },
+  {
+    "name": "Aswin Binoy",
+    "role": "Event Lead",
+    "avatar": "",
+    "department": "EVENT",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Athul Krishna S",
+    "role": "Event Co Lead",
+    "avatar": "",
+    "department": "EVENT",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Akhileswaran K R",
+    "role": "Tech Lead",
+    "avatar": "",
+    "department": "TECH",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Abhai Sankar P R",
+    "role": "Tech Co Lead",
+    "avatar": "",
+    "department": "TECH",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Alen Dev P",
+    "role": "Marketing Lead",
+    "avatar": "",
+    "department": "MARKETING",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Johan Gejo",
+    "role": "Marketing Co Lead",
+    "avatar": "",
+    "department": "MARKETING",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Abhirag R Nair",
+    "role": "Marketing Co Lead",
+    "avatar": "",
+    "department": "MARKETING",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Aleena Thomas",
+    "role": "Design Lead",
+    "avatar": "",
+    "department": "DESIGN",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Arjun S M",
+    "role": "Design Co Lead",
+    "avatar": "",
+    "department": "DESIGN",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Manas Joby Joseph",
+    "role": "E-Sports Lead",
+    "avatar": "",
+    "department": "E-SPORTS",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Sanjay K S",
+    "role": "E-Sports Co Lead",
+    "avatar": "",
+    "department": "E-SPORTS",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Fadi Haris",
+    "role": "Media Lead",
+    "avatar": "",
+    "department": "MEDIA",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Bhagath Sunand",
+    "role": "Media Co Lead",
+    "avatar": "",
+    "department": "MEDIA",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Madhav U Menon",
+    "role": "Media Co Lead",
+    "avatar": "",
+    "department": "MEDIA",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Keshav Nair N",
+    "role": "Community Lead",
+    "avatar": "",
+    "department": "COMMUNITY",
+    "stats": null,
+    "gamePreview": null
+  },
+  {
+    "name": "Bhavana Sunil",
+    "role": "Community Co Lead",
+    "avatar": "",
+    "department": "COMMUNITY",
+    "stats": null,
+    "gamePreview": null
+  }
+],
   "leaderboards": [
     {
       "id": "c6137a72-d88b-4d73-9020-8d1fd9317e52",

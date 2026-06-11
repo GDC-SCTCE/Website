@@ -31,8 +31,8 @@ export function LeaderCard({
             <div className="absolute w-full h-[2px] left-0 top-0 bg-gradient-to-r from-[#FF7A00] to-transparent z-20 pointer-events-none" />
 
             <div className="w-full h-full relative overflow-hidden transition-transform duration-700 group-hover/card:scale-105">
-              {member.avatarSeed && (member.avatarSeed.startsWith('http') || member.avatarSeed.includes('.')) ? (
-                 <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover transition-transform duration-700" />
+              {member.avatar ? (
+                 <img src={member.avatar} alt={member.name} className="w-full h-full object-cover transition-transform duration-700" />
               ) : (
                 <Avatar name={member.name} size={300} />
               )}
@@ -72,18 +72,22 @@ export function LeaderCard({
 
           {/* Game preview panel */}
           {member.gamePreview && (
-            <div className="bg-[#353436]/30 p-[12px] flex gap-[16px] items-center mt-auto h-[87px] box-border w-full">
+            <div className="bg-[#353436]/30 p-[12px] flex gap-[16px] items-center mt-auto h-auto min-h-[87px] box-border w-full">
               {/* Play Button Thumbnail */}
-              <div className="w-[80px] h-[48px] bg-[#FF7A00]/10 border border-[#584235] shrink-0 flex items-center justify-center cursor-pointer hover:bg-[#FF7A00]/25 transition-all duration-200">
-                <span className="font-mono text-[10px] text-[#FF7A00] font-bold">
-                  ▶ PLAY
-                </span>
+              <div className="w-[80px] h-[48px] bg-[#FF7A00]/10 border border-[#584235] shrink-0 flex items-center justify-center cursor-pointer hover:bg-[#FF7A00]/25 transition-all duration-200 overflow-hidden relative">
+                {member.gamePreview.image && member.gamePreview.image.trim() !== "" ? (
+                  <img src={member.gamePreview.image} alt={member.gamePreview.title} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="font-mono text-[10px] text-[#FF7A00] font-bold">
+                    ▶ PLAY
+                  </span>
+                )}
               </div>
-              <div className="min-w-0">
-                <p className="font-mono text-[10px] leading-[15px] text-[#E0C0AF] opacity-60 m-0 mb-[2px] truncate">
-                  {member.gamePreview.label}
+              <div className="min-w-0 flex-1">
+                <p className="font-mono text-[10px] leading-[15px] text-[#E0C0AF] opacity-60 m-0 mb-[2px]">
+                  SIGNATURE GAME
                 </p>
-                <p className="font-sora font-bold text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] text-[#FF7A00] m-0 truncate">
+                <p className="font-sora font-bold text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] text-[#FF7A00] m-0 whitespace-normal break-words">
                   {member.gamePreview.title}
                 </p>
               </div>

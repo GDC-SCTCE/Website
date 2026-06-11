@@ -4,11 +4,16 @@ import React, { useRef, useState, useEffect } from "react";
 import { updateTeamMember } from "@/actions/adminActions";
 import { createClient } from "@/utils/supabase/client";
 import Avatar from "@/components/Avatar";
+import { filters } from "@/app/dashboard/members/types";
 
 export default function TeamForm({ member }: { member: any }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [department, setDepartment] = useState(member.department || "ALL");
+  const [stats, setStats] = useState<{label: string, value: number}[]>(
+    member.stats || []
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -16,20 +21,21 @@ export default function TeamForm({ member }: { member: any }) {
     setUploadError("");
     
     const formData = new FormData(e.currentTarget);
-    let finalAvatarUrl = member.avatarSeed || "";
+    let finalAvatarUrl = member.avatar || "";
+    let finalGpImageUrl = member.gamePreview?.image || "";
 
-    // Handle Image Upload
+    const supabase = createClient();
+
+    // Handle Avatar Image Upload
     const imageFile = formData.get("imageFile") as File;
     if (imageFile && imageFile.size > 0) {
       const fileExt = imageFile.name.split('.').pop();
       const sanitizedName = member.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
       const fileName = `${sanitizedName}_${Date.now()}.${fileExt}`;
       
-      const supabase = createClient();
-      
       // Delete old avatar if it exists in our bucket
-      if (member.avatarSeed && member.avatarSeed.includes('/storage/v1/object/public/team/')) {
-        const oldFileName = member.avatarSeed.split('/').pop();
+      if (member.avatar) {
+        const oldFileName = member.avatar.split('/').pop();
         if (oldFileName) {
           await supabase.storage.from("team").remove([oldFileName]);
         }
@@ -40,7 +46,7 @@ export default function TeamForm({ member }: { member: any }) {
         .upload(fileName, imageFile);
 
       if (uploadErr) {
-        setUploadError(`Upload failed: ${uploadErr.message}`);
+        setUploadError(`Avatar upload failed: ${uploadErr.message}`);
         setLoading(false);
         return;
       }
@@ -52,29 +58,85 @@ export default function TeamForm({ member }: { member: any }) {
       finalAvatarUrl = publicUrlData.publicUrl;
     }
 
+    // Handle Game Preview Image Upload
+    if (department === "ALL") {
+      const gpImageFile = formData.get("gpImageFile") as File;
+      if (gpImageFile && gpImageFile.size > 0) {
+        const fileExt = gpImageFile.name.split('.').pop();
+        const sanitizedName = member.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        const fileName = `${sanitizedName}_gp_${Date.now()}.${fileExt}`;
+        
+        // Delete old preview if it exists in our bucket
+        if (member.gamePreview?.image) {
+          const oldFileName = member.gamePreview.image.split('/').pop();
+          if (oldFileName) {
+            await supabase.storage.from("team").remove([oldFileName]);
+          }
+        }
+
+        const { error: uploadErr } = await supabase.storage
+          .from("team")
+          .upload(fileName, gpImageFile);
+
+        if (uploadErr) {
+          setUploadError(`Game Preview image upload failed: ${uploadErr.message}`);
+          setLoading(false);
+          return;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("team")
+          .getPublicUrl(fileName);
+          
+        finalGpImageUrl = publicUrlData.publicUrl;
+      }
+    }
+
     const data = {
       name: formData.get("name") as string,
       role: formData.get("role") as string,
-      department: formData.get("department") as string || "ALL",
-      speciality: formData.get("specialty") ? (formData.get("specialty") as string).split(",").map(s => s.trim()) : [],
-      avatarSeed: finalAvatarUrl || null,
+      department: department,
+      avatar: finalAvatarUrl || null,
+      stats: department === "ALL" ? stats : null,
+      gamePreview: department === "ALL" ? {
+        title: formData.get("gpTitle") as string,
+        image: finalGpImageUrl
+      } : null,
     };
 
     await updateTeamMember(member.id, data);
     setLoading(false);
   };
 
+  const handleAddStat = () => {
+    setStats([...stats, { label: "NEW_STAT", value: 50 }]);
+  };
+
+  const handleRemoveStat = (index: number) => {
+    setStats(stats.filter((_, i) => i !== index));
+  };
+
+  const handleStatChange = (index: number, field: "label" | "value", val: string | number) => {
+    const newStats = [...stats];
+    newStats[index] = { ...newStats[index], [field]: val };
+    setStats(newStats);
+  };
+
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
       {/* Avatar Preview */}
       <div className="flex justify-center mb-2">
-        <div className="w-[120px] h-[120px] shrink-0 border border-[#584235] overflow-hidden mix-blend-luminosity">
-          {member.avatarSeed && (member.avatarSeed.startsWith('http') || member.avatarSeed.includes('.')) ? (
-            <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover" />
+        <div className="w-[120px] h-[120px] shrink-0 border border-[#584235] overflow-hidden mix-blend-luminosity relative group">
+          {member.avatar ? (
+            <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
           ) : (
             <Avatar name={member.name} size={120} />
           )}
         </div>
+      </div>
+      <div>
+        <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">AVATAR IMAGE (Optional - Upload to replace)</label>
+        <input name="imageFile" type="file" accept="image/*" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00] file:bg-[#FF7A00] file:text-[#5C2800] file:border-none file:px-3 file:py-1 file:mr-4 file:font-mono file:text-[10px] file:tracking-[1.2px] hover:file:brightness-110 cursor-pointer" />
       </div>
 
       <div>
@@ -89,30 +151,78 @@ export default function TeamForm({ member }: { member: any }) {
         </div>
         <div>
           <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">DEPARTMENT</label>
-          <select name="department" defaultValue={member.department || "ALL"} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]">
-            <option value="ALL">ALL</option>
-            <option value="DESIGN">DESIGN</option>
-            <option value="TECH">TECH</option>
-            <option value="MEDIA">MEDIA</option>
-            <option value="COMMUNITY">COMMUNITY</option>
-            <option value="EVENT">EVENT</option>
-            <option value="MARKETING">MARKETING</option>
-            <option value="E-SPORTS">E-SPORTS</option>
+          <select 
+            name="department" 
+            value={department} 
+            onChange={(e) => setDepartment(e.target.value)}
+            className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]"
+          >
+            {filters.map((f) => (
+              <option key={f} value={f}>
+                {f === "ALL" ? "ALL (Campus Lead)" : f}
+              </option>
+            ))}
           </select>
         </div>
       </div>
-      {member.isLead && (
-        <div className="grid grid-cols-1 gap-4">
+
+      {department === "ALL" && (
+        <div className="mt-4 border-t border-[#584235] pt-4">
+          <h3 className="font-mono text-[#FF7A00] font-bold text-[14px] mb-4">CAMPUS LEAD SETTINGS</h3>
+          
+          {/* Stats Config */}
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <label className="block font-mono text-[10px] text-[#FFB68B] tracking-[1.2px]">STAT BARS</label>
+              <button type="button" onClick={handleAddStat} className="text-[#FF7A00] hover:text-white font-mono text-[10px]">
+                + ADD STAT
+              </button>
+            </div>
+            {stats.map((stat, i) => (
+              <div key={i} className="flex gap-2 mb-2 items-center">
+                <input 
+                  type="text" 
+                  value={stat.label} 
+                  onChange={(e) => handleStatChange(i, "label", e.target.value)}
+                  placeholder="LABEL (e.g. TECH)"
+                  className="w-1/2 bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" 
+                />
+                <input 
+                  type="number" 
+                  value={stat.value} 
+                  onChange={(e) => handleStatChange(i, "value", parseInt(e.target.value) || 0)}
+                  placeholder="VALUE (0-100)"
+                  min="0" max="100"
+                  className="w-1/4 bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" 
+                />
+                <button type="button" onClick={() => handleRemoveStat(i)} className="text-red-500 hover:text-white font-mono text-[10px] w-1/4 text-right">
+                  REMOVE
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Game Preview Config */}
           <div>
-            <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">SPECIALTY (Comma separated)</label>
-            <input name="specialty" type="text" required defaultValue={member.speciality?.join(", ")} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+            <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">GAME PREVIEW (Signature Game)</label>
+            <div className="bg-[#1C1B1C] border border-[#584235] p-4 flex flex-col gap-4">
+              <div>
+                <label className="block font-mono text-[10px] text-[#E0C0AF] mb-1">TITLE</label>
+                <input name="gpTitle" type="text" defaultValue={member.gamePreview?.title || ""} placeholder="e.g. NEON DRIFT" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+              </div>
+              <div>
+                <label className="block font-mono text-[10px] text-[#E0C0AF] mb-1">IMAGE OVERRIDE (Upload image, else shows generic box)</label>
+                {member.gamePreview?.image && (
+                  <div className="mb-2 w-[120px] h-[72px] border border-[#584235]">
+                    <img src={member.gamePreview.image} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <input name="gpImageFile" type="file" accept="image/*" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00] file:bg-[#FF7A00] file:text-[#5C2800] file:border-none file:px-3 file:py-1 file:mr-4 file:font-mono file:text-[10px] file:tracking-[1.2px] hover:file:brightness-110 cursor-pointer" />
+              </div>
+            </div>
           </div>
         </div>
       )}
-      <div>
-        <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">AVATAR IMAGE (Optional - Upload to replace)</label>
-        <input name="imageFile" type="file" accept="image/*" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00] file:bg-[#FF7A00] file:text-[#5C2800] file:border-none file:px-3 file:py-1 file:mr-4 file:font-mono file:text-[10px] file:tracking-[1.2px] hover:file:brightness-110 cursor-pointer" />
-      </div>
 
 
       {uploadError && (
@@ -125,4 +235,3 @@ export default function TeamForm({ member }: { member: any }) {
     </form>
   );
 }
-

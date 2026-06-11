@@ -25,8 +25,8 @@ export function MemberCard({
         {/* Photo container */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="w-full h-full transition-transform duration-700 group-hover/member:scale-105">
-            {member.avatarSeed && (member.avatarSeed.startsWith('http') || member.avatarSeed.includes('.')) ? (
-                 <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover" />
+            {member.avatar ? (
+                 <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
             ) : (
               <Avatar name={member.name} size={100} />
             )}

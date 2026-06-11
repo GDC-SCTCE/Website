@@ -53,10 +53,8 @@ export interface TeamMember {
   role: string;
   subRole: string;
   bio: string;
-  speciality: string[];
-  avatarSeed: string;
+  avatar?: string | null;
   department: "ALL" | "DESIGN" | "TECH" | "MEDIA" | "COMMUNITY" | "EVENT" | "MARKETING" | "E-SPORTS";
-  isLead?: boolean;
   stats?: { label: string; value: number }[];
   gamePreview?: { title: string; label: string };
   github?: string;

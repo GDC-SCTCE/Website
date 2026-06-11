@@ -29,10 +29,8 @@ export default function TeamAdminClient({ members }: { members: any[] }) {
           >
             {/* Avatar / Photo */}
             <div className="w-[64px] h-[64px] shrink-0 border border-[#584235] overflow-hidden mix-blend-luminosity hover:mix-blend-normal transition-all">
-              {member.avatarSeed && !member.avatarSeed.startsWith('http') && member.avatarSeed.includes('.') ? (
-                 <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover" />
-              ) : member.avatarSeed && member.avatarSeed.startsWith('http') ? (
-                 <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover" />
+              {member.avatar ? (
+                 <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
               ) : (
                 <Avatar name={member.name} size={64} />
               )}
@@ -59,7 +57,7 @@ export default function TeamAdminClient({ members }: { members: any[] }) {
       </div>
 
       {/* Edit Form (Right side, col-span-1) */}
-      <div className="lg:col-span-1 bg-[#1A1A1B] border border-[#584235] p-6 h-fit sticky top-24">
+      <div className="lg:col-span-1 bg-[#1A1A1B] border border-[#584235] p-6 h-fit sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
         <h2 className="font-sora font-bold text-[20px] text-white mb-6">EDIT MEMBER</h2>
         {selectedMember ? (
           <TeamForm key={`${selectedMember.id}-${selectedMember.updatedAt}`} member={selectedMember} />

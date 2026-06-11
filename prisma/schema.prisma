@@ -49,10 +49,8 @@ model TeamMember {
   id          String     @id @default(uuid())
   name        String
   role        String
-  speciality  String[]
-  avatarSeed  String?
+  avatar      String?
   department  String
-  isLead      Boolean    @default(false)
   stats       Json?
   gamePreview Json?
   createdAt   DateTime   @default(now())

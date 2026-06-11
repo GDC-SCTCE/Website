@@ -33,11 +33,11 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
     }, 220);
   };
 
-  const leads = initialMembers.filter((m) => m.isLead);
-  const members = initialMembers.filter((m) => !m.isLead);
+  const leads = initialMembers.filter((m) => m.department === "ALL");
+  const members = initialMembers.filter((m) => m.department !== "ALL");
 
   const filteredMembers =
-    activeFilter === "ALL"
+    activeFilter === "ALL" // In case the activeFilter defaults to ALL initially
       ? members
       : members.filter((m) => m.department === activeFilter);
 
@@ -107,6 +107,7 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
               {filters.map((f) => {
                 const isActive = activeFilter === f;
                 // Fluid padding instead of hardcoded width
+                if (f === "ALL") return null; // "ALL" is now reserved for Campus Leads at the top
                 return (
                   <button
                     key={f}
