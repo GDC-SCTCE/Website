@@ -14,6 +14,8 @@ export interface QuestCardProps {
   seatsTotal?: number;
   progressPct?: number;
   user: any; // Using any for simplicity as per original
+  delay?: number;
+  visible?: boolean;
 }
 
 export function QuestCard({
@@ -27,6 +29,8 @@ export function QuestCard({
   seatsTotal = 30,
   progressPct = 0,
   user,
+  delay = 0,
+  visible = true,
 }: QuestCardProps) {
   const timer = useCountdown(targetMs);
   const pad = (n: number) => String(n).padStart(2, "0");

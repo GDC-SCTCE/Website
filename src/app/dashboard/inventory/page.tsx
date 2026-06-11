@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Hexagon,
@@ -162,12 +162,58 @@ function useCountdown(targetDate: Date) {
   return time;
 }
 
+// ─── Intersection Observer Hook ──────────────────────────────────────────────
+
+function useInView(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setInView(true); },
+      { threshold }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold]);
+  return { ref, inView };
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function InventoryPage() {
   const [activeCategory, setActiveCategory] = useState<Category>("ALL");
   const [selectedTool, setSelectedTool] = useState<Tool>(TOOLS[0]);
   const [loadout, setLoadout] = useState<Set<string>>(new Set(["unity"]));
+  const [mounted, setMounted] = useState(false);
+  const [gridVisible, setGridVisible] = useState(false);
+
+  // Featured sections scroll-in observer refs
+  const { ref: pathRef, inView: pathVisible } = useInView(0.15);
+  const { ref: challengeRef, inView: challengeVisible } = useInView(0.15);
+
+  // Entrance mount animation
+  useEffect(() => {
+    const t1 = setTimeout(() => setMounted(true), 50);
+    const t2 = setTimeout(() => setGridVisible(true), 300);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
+
+  // Filter change transition (fade-out, swap data, fade-in)
+  const handleCategoryChange = (cat: Category) => {
+    if (cat === activeCategory) return;
+    setGridVisible(false);
+    setTimeout(() => {
+      setActiveCategory(cat);
+      setTimeout(() => {
+        setGridVisible(true);
+      }, 60);
+    }, 220);
+  };
 
   // Next Sunday as deadline
   const nextSunday = (() => {
@@ -202,7 +248,13 @@ export default function InventoryPage() {
         {/* ── Section 5.1: Header ─────────────────────────────────────────── */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
           {/* Left: Title */}
-          <div>
+          <div
+            className="transition-all duration-700"
+            style={{
+              opacity: mounted ? 1 : 0,
+              transform: mounted ? "translateY(0)" : "translateY(24px)",
+            }}
+          >
             <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#00DBE9] mb-5 uppercase">
               YOUR LOADOUT
             </p>
@@ -214,11 +266,18 @@ export default function InventoryPage() {
           </div>
 
           {/* Right: Category filter buttons */}
-          <div className="flex flex-wrap gap-[12px]">
+          <div
+            className="flex flex-wrap gap-[12px] transition-all duration-500"
+            style={{
+              opacity: mounted ? 1 : 0,
+              transform: mounted ? "translateY(0)" : "translateY(12px)",
+              transitionDelay: "150ms",
+            }}
+          >
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => handleCategoryChange(cat)}
                 className={`h-[28px] px-6 font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] border-none cursor-pointer transition-all duration-200 ${activeCategory === cat
                   ? "bg-[#FF7A00] text-[#522300] shadow-[0_0_20px_rgba(255,122,0,0.2)]"
                   : "bg-[#201F20] text-[#E0C0AF] hover:bg-[#2e2d2e] hover:text-white"
@@ -235,23 +294,28 @@ export default function InventoryPage() {
           {/* Left: Inventory Grid */}
           <div className="flex-1 min-w-0">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-[16px]">
-              {filtered.map((tool) => {
+              {filtered.map((tool, idx) => {
                 const isSelected = selectedTool.id === tool.id;
                 return (
                   <button
                     key={tool.id}
                     onClick={() => setSelectedTool(tool)}
-                    className={`relative flex flex-col items-center justify-center aspect-square bg-gradient-to-b from-[#1C1B1C] to-[#131314] cursor-pointer transition-all duration-200 overflow-hidden group border-t ${isSelected
+                    className={`relative flex flex-col items-center justify-center aspect-square bg-gradient-to-b from-[#1C1B1C] to-[#131314] cursor-pointer transition-all duration-300 overflow-hidden group border-t ${isSelected
                       ? "border-t-[#FF7A00]"
                       : "border-t-[#584235] hover:border-t-[#FF7A00]"
                       }`}
+                    style={{
+                      opacity: gridVisible ? 1 : 0,
+                      transform: gridVisible ? "translateY(0) scale(1)" : "translateY(16px) scale(0.98)",
+                      transition: `all 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 40}ms`,
+                    }}
                   >
                     {/* Dark inner bg */}
                     <div className="absolute inset-[4px_4px_0_4px] bg-[#0E0E0F]" />
 
                     {/* Icon */}
                     <div
-                      className={`relative z-10 transition-colors duration-200 ${isSelected
+                      className={`relative z-10 transition-all duration-300 transform group-hover:scale-110 ${isSelected
                         ? "text-[#FF7A00]"
                         : "text-[#00DBE9]/60 group-hover:text-[#00DBE9]"
                         }`}
@@ -266,7 +330,7 @@ export default function InventoryPage() {
 
                     {/* Equipped dot */}
                     {loadout.has(tool.id) && (
-                      <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#39ff14] rounded-full z-20" />
+                      <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#39ff14] rounded-full z-20 shadow-[0_0_8px_#39ff14] animate-pulse" />
                     )}
                   </button>
                 );
@@ -281,8 +345,9 @@ export default function InventoryPage() {
           </div>
 
           {/* Right: Inspector Panel */}
-          <div className="w-full lg:w-[400px] shrink-0 bg-gradient-to-b from-[#1C1B1C] to-[#131314] border-t border-[#FF7A00] flex flex-col">
-            <div className="p-8 flex flex-col flex-1">
+          <div className="w-full lg:w-[400px] shrink-0 bg-gradient-to-b from-[#1C1B1C] to-[#131314] border-t border-[#FF7A00] flex flex-col overflow-hidden">
+            {/* The detail updates reload with animation key-ed by selectedTool.id */}
+            <div key={selectedTool.id} className="p-8 flex flex-col flex-1 animate-slide-left">
               {/* Label */}
               <p className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-9 uppercase">
                 SELECTED ITEM
@@ -292,7 +357,7 @@ export default function InventoryPage() {
               <div className="flex items-center gap-6 mb-6">
                 {/* Icon thumbnail */}
                 <div className="w-[80px] h-[80px] bg-[#353436] flex items-center justify-center shrink-0 overflow-hidden relative">
-                  <div className="text-[#00DBE9]">{selectedTool.icon}</div>
+                  <div className="text-[#00DBE9] transition-transform duration-300 hover:scale-110">{selectedTool.icon}</div>
                 </div>
                 {/* Name + pricing badge */}
                 <div>
@@ -324,7 +389,7 @@ export default function InventoryPage() {
                     {[1, 2, 3, 4, 5].map((i) => (
                       <div
                         key={i}
-                        className="w-[11.67px] h-[11.08px]"
+                        className="w-[11.67px] h-[11.08px] transition-all duration-300"
                         style={{
                           background:
                             i <= selectedTool.rating ? "#FFB68B" : "#353436",
@@ -360,13 +425,16 @@ export default function InventoryPage() {
                   href={selectedTool.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full h-[58px] bg-[#FF7A00] flex items-center justify-center gap-2 font-sora font-bold text-[16px] leading-[26px] tracking-[-0.4px] uppercase text-[#522300] hover:brightness-110 transition-all duration-200 no-underline"
+                  className="w-full h-[58px] bg-[#FF7A00] flex items-center justify-center gap-2 font-sora font-bold text-[16px] leading-[26px] tracking-[-0.4px] uppercase text-[#522300] hover:brightness-110 transition-all duration-200 no-underline relative overflow-hidden group/btn"
                 >
-                  OPEN TOOL <ExternalLink className="w-4 h-4" />
+                  <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-[300%] transition-transform duration-500 ease-in-out" />
+                  <span className="relative z-10 flex items-center gap-2">
+                    OPEN TOOL <ExternalLink className="w-4 h-4" />
+                  </span>
                 </a>
                 <button
                   onClick={toggleEquip}
-                  className={`w-full h-[62px] border-2 flex items-center justify-center font-sora font-bold text-[16px] leading-[26px] tracking-[-0.4px] uppercase transition-all duration-200 cursor-pointer ${isEquipped
+                  className={`w-full h-[62px] border-2 flex items-center justify-center font-sora font-bold text-[16px] leading-[26px] tracking-[-0.4px] uppercase transition-all duration-200 cursor-pointer hover:scale-[1.01] ${isEquipped
                     ? "border-[#39ff14] text-[#39ff14] bg-[#39ff14]/5"
                     : "border-[#FF7A00] text-[#FF7A00] bg-transparent hover:bg-[#FF7A00]/5"
                     }`}
@@ -379,9 +447,15 @@ export default function InventoryPage() {
         </div>
 
         {/* ── Section 5.3: Path Selection ──────────────────────────────────── */}
-        <div>
+        <div ref={pathRef}>
           {/* Centered heading */}
-          <div className="text-center mb-16">
+          <div
+            className="text-center mb-16 transition-all duration-700"
+            style={{
+              opacity: pathVisible ? 1 : 0,
+              transform: pathVisible ? "translateY(0)" : "translateY(24px)",
+            }}
+          >
             <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#FFB68B] mb-7">
               CHOOSE YOUR PATH
             </p>
@@ -426,19 +500,24 @@ export default function InventoryPage() {
                 badgeColor: "#353436",
                 badgeTextColor: "#FFB4AB",
               },
-            ].map((path) => (
+            ].map((path, idx) => (
               <div
                 key={path.title}
-                className="bg-gradient-to-b from-[#1C1B1C] to-[#131314] border-t border-[#FF7A00] p-8 relative flex flex-col"
+                className="bg-gradient-to-b from-[#1C1B1C] to-[#131314] border-t border-[#FF7A00] p-8 relative flex flex-col transition-all duration-700 hover:shadow-[0_16px_32px_rgba(255,122,0,0.1)] group/path"
+                style={{
+                  opacity: pathVisible ? 1 : 0,
+                  transform: pathVisible ? "translateY(0)" : "translateY(32px)",
+                  transitionDelay: `${idx * 150}ms`,
+                }}
               >
                 {/* Icon box */}
-                <div className="w-16 h-16 bg-[#2A2A2B] flex items-center justify-center mb-8 shrink-0">
+                <div className="w-16 h-16 bg-[#2A2A2B] flex items-center justify-center mb-8 shrink-0 transition-transform duration-300 group-hover/path:scale-110">
                   {path.icon}
                 </div>
 
                 {/* Title + desc */}
                 <div className="mb-8 flex-1">
-                  <h3 className="font-sora font-normal text-[24px] leading-[32px] text-[#E5E2E3] m-0 mb-2">
+                  <h3 className="font-sora font-normal text-[24px] leading-[32px] text-[#E5E2E3] m-0 mb-2 transition-colors duration-200 group-hover/path:text-[#FFB68B]">
                     {path.title}
                   </h3>
                   <p className="font-sora font-normal text-[14px] leading-[20px] text-[#E0C0AF] m-0 max-w-[260px]">
@@ -449,16 +528,16 @@ export default function InventoryPage() {
                 {/* Progress row */}
                 <div className="mb-6">
                   <div className="flex justify-between items-center font-mono text-[10px] leading-[16px] mb-[8px]">
-                    <span className="text-[#00DBE9]">{path.skills}</span>
+                    <span className="text-[#00DBE9] group-hover/path:translate-x-1 transition-transform duration-200">{path.skills}</span>
                     <span className="text-[#E0C0AF]">{path.complete}</span>
                   </div>
                   {/* Progress bar */}
-                  <div className="w-full h-1 bg-[#353436] relative">
+                  <div className="w-full h-1 bg-[#353436] relative overflow-hidden">
                     {path.pct > 0 && (
                       <div
-                        className="absolute top-0 left-0 h-full"
+                        className="absolute top-0 left-0 h-full transition-all duration-1000"
                         style={{
-                          width: `${path.pct}%`,
+                          width: pathVisible ? `${path.pct}%` : "0%",
                           background:
                             "linear-gradient(91.88deg, #B91C1C 0%, #FF7A00 50%, #FFE170 100%)",
                         }}
@@ -469,7 +548,7 @@ export default function InventoryPage() {
 
                 {/* Badge */}
                 <div
-                  className="inline-flex px-3 h-6 items-center font-mono text-[10px] leading-[16px] self-start"
+                  className="inline-flex px-3 h-6 items-center font-mono text-[10px] leading-[16px] self-start transition-colors duration-200 group-hover/path:bg-[#FF7A00]/10"
                   style={{
                     background: path.badgeColor,
                     color: path.badgeTextColor,
@@ -483,7 +562,14 @@ export default function InventoryPage() {
         </div>
 
         {/* ── Section 5.4: Weekly Challenge Banner ─────────────────────────── */}
-        <div className="relative overflow-hidden border-2 border-[#FF7A00] bg-[#0D0D0D]">
+        <div
+          ref={challengeRef}
+          className="relative overflow-hidden border-2 border-[#FF7A00] bg-[#0D0D0D] transition-all duration-700 shadow-[0_0_15px_rgba(255,122,0,0.1)] hover:shadow-[0_0_30px_rgba(255,122,0,0.2)]"
+          style={{
+            opacity: challengeVisible ? 1 : 0,
+            transform: challengeVisible ? "translateY(0)" : "translateY(32px)",
+          }}
+        >
           {/* Right decorative gradient */}
           <div
             className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none opacity-10"
@@ -493,12 +579,18 @@ export default function InventoryPage() {
             }}
           />
 
+          {/* Animated scanline sweep on challenge banner */}
+          <div
+            className="absolute left-0 right-0 h-[2px] bg-white/10 blur-[1px] pointer-events-none"
+            style={{ animation: "scanline-sweep 6s linear infinite" }}
+          />
+
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between px-[50px] py-[50px] gap-8">
             {/* Left: challenge info */}
             <div className="max-w-[649px]">
               {/* Label */}
               <div className="flex items-center gap-4 mb-9">
-                <div className="w-3 h-3 bg-[#FF7A00] shrink-0" />
+                <div className="w-3 h-3 bg-[#FF7A00] shrink-0 animate-pulse" />
                 <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#FFB68B]">
                   THIS WEEK
                 </span>
@@ -522,8 +614,9 @@ export default function InventoryPage() {
 
             {/* Right: CTA */}
             <div className="flex flex-col items-center lg:items-end gap-5 shrink-0">
-              <button className="w-full lg:w-[251px] h-[68px] bg-[#FF7A00] font-sora font-black text-[20px] leading-[28px] uppercase text-[#522300] hover:brightness-110 transition-all duration-200 shadow-[0_0_20px_rgba(255,122,0,0.2)] border-none cursor-pointer">
-                SUBMIT ENTRY
+              <button className="w-full lg:w-[251px] h-[68px] bg-[#FF7A00] font-sora font-black text-[20px] leading-[28px] uppercase text-[#522300] hover:brightness-110 transition-all duration-200 shadow-[0_0_20px_rgba(255,122,0,0.2)] border-none cursor-pointer relative overflow-hidden group/sub-btn">
+                <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/sub-btn:translate-x-[300%] transition-transform duration-500 ease-in-out" />
+                <span className="relative z-10">SUBMIT ENTRY</span>
               </button>
               <span className="font-mono font-normal text-[14px] leading-[20px] text-[#E0C0AF]">
                 34 submissions so far

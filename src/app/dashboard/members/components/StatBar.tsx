@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export function StatBar({ label, value }: { label: string; value: number }) {
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setWidth(value);
+    }, 100);
+    return () => clearTimeout(t);
+  }, [value]);
+
   return (
     <div className="mb-[16px] h-[22px] relative">
       <div className="flex justify-between h-[15px] items-center mb-[4px]">
@@ -15,7 +24,10 @@ export function StatBar({ label, value }: { label: string; value: number }) {
       <div className="relative h-[3px] bg-white/10">
         {/* Fill */}
         <div
-          style={{ width: `${value}%` }}
+          style={{
+            width: `${width}%`,
+            transition: "width 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
           className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-[#FF7A00] to-[#FDD400] shadow-[0px_0px_10px_rgba(255,122,0,0.6)]"
         />
       </div>
