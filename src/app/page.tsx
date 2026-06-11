@@ -169,6 +169,20 @@ export default function Home() {
  
       {/* ── HERO ── */}
       <section className="text-center pt-[15dvh] pb-[10dvh] relative overflow-hidden px-4">
+        {/* Background Loop Video */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          <video
+            src="/intro.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover opacity-15"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#131314] via-transparent to-[#131314]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#131314]/80 via-transparent to-[#131314]" />
+        </div>
+ 
         {/* Ambient glow */}
         <div className="absolute top-[-80px] left-1/2 -translate-x-1/2 w-[700px] max-w-full h-[400px] rounded-full bg-[#FF7A00]/5 blur-[120px] pointer-events-none" />
  
