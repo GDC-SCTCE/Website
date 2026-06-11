@@ -26,20 +26,23 @@ export function LeaderCard({
         
         {/* Left: Photo container */}
         <div className="w-full lg:w-1/2 h-auto lg:h-full relative flex items-center justify-center bg-[#131314]">
-          {/* Horizontal Divider */}
-          <div className="absolute w-full h-[2px] left-0 top-0 lg:top-auto bg-gradient-to-r from-[#FF7A00] to-transparent z-10" />
-          
-          <div className="w-full aspect-square relative overflow-hidden transition-transform duration-700 group-hover/card:scale-105">
-            {member.avatarSeed && (member.avatarSeed.startsWith('http') || member.avatarSeed.includes('.')) ? (
-               <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover" />
-            ) : (
-              <Avatar name={member.name} size={300} />
-            )}
+          <div className="w-full aspect-square relative">
+            {/* Horizontal Divider */}
+            <div className="absolute w-full h-[2px] left-0 top-0 bg-gradient-to-r from-[#FF7A00] to-transparent z-20 pointer-events-none" />
+
+            <div className="w-full h-full relative overflow-hidden transition-transform duration-700 group-hover/card:scale-105">
+              {member.avatarSeed && (member.avatarSeed.startsWith('http') || member.avatarSeed.includes('.')) ? (
+                 <img src={member.avatarSeed} alt={member.name} className="w-full h-full object-cover transition-transform duration-700" />
+              ) : (
+                <Avatar name={member.name} size={300} />
+              )}
+            </div>
           </div>
         </div>
 
         {/* Right: Info container */}
-        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#1C1B1C] to-black p-6 lg:p-10 flex flex-col lg:h-full justify-center">
+        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#1C1B1C] to-black p-6 lg:p-10 flex flex-col lg:h-full justify-center relative">
+
           {/* Party Leader Badge */}
           <div className="flex items-center gap-[8px] mb-[8px]">
             <span className="w-[9.33px] h-[12.25px] bg-[#FDD400] inline-block" />
