@@ -17,6 +17,16 @@
   --animate-scanline: scanline 6s linear infinite;
   --animate-pulse-glow: pulse-glow 2s ease-in-out infinite alternate;
   --animate-matrix: matrix 20s linear infinite;
+
+  /* Arcade Wall animations */
+  --animate-fade-up: fade-up 0.6s ease forwards;
+  --animate-fade-in: fade-in 0.5s ease forwards;
+  --animate-slide-left: slide-left 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-right: slide-right 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-glitch: glitch 4s steps(1) infinite;
+  --animate-shimmer: shimmer 3s ease-in-out infinite;
+  --animate-dot-pulse: dot-pulse 1.5s ease-in-out infinite;
+  --animate-scanline-sweep: scanline-sweep 4s linear infinite;
 }
 
 @keyframes scanline {
@@ -37,6 +47,52 @@
     text-shadow: 0 0 8px rgba(255, 107, 0, 0.8), 0 0 20px rgba(255, 107, 0, 0.4);
     box-shadow: 0 0 12px rgba(255, 107, 0, 0.5), inset 0 0 6px rgba(255, 107, 0, 0.3);
   }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes glitch {
+  0%,  94% { clip-path: none; transform: none; }
+  95%       { clip-path: polygon(0 10%, 100% 10%, 100% 30%, 0 30%); transform: translateX(-4px); color: #00DBE9; }
+  96%       { clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); transform: translateX(4px);  color: #FF7A00; }
+  97%       { clip-path: polygon(0 20%, 100% 20%, 100% 45%, 0 45%); transform: translateX(-2px); color: #E5E2E3; }
+  98%,100%  { clip-path: none; transform: none; color: #E5E2E3; }
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  50%  { transform: translateX(100%) skewX(-15deg); }
+  100% { transform: translateX(100%) skewX(-15deg); }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1);   opacity: 1; box-shadow: 0 0 0   0 rgba(255, 182, 139, 0.4); }
+  50%       { transform: scale(1.4); opacity: 1; box-shadow: 0 0 0 6px rgba(255, 182, 139, 0);   }
+}
+
+@keyframes scanline-sweep {
+  0%   { top: -4px;    opacity: 0; }
+  5%   { opacity: 0.4; }
+  95%  { opacity: 0.4; }
+  100% { top: 100%;    opacity: 0; }
 }
 
 :root {
