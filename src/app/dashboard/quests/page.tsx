@@ -44,8 +44,9 @@ export default function QuestBoard() {
 
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
-      {/* ── PAGE HEADER ── */}
-      <div className="px-6 md:px-16 pt-24 md:pt-32 pb-0">
+      <div className="max-w-[1440px] mx-auto w-full">
+        {/* ── PAGE HEADER ── */}
+        <div className="px-6 md:px-8 xl:px-16 pt-24 md:pt-32 pb-0">
         {/* "All quests" label */}
         <p
           className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFB68B] transition-all duration-700"
@@ -109,7 +110,7 @@ export default function QuestBoard() {
       </div>
 
       {/* ── ACTIVE QUEST CARDS ── */}
-      <div className="px-6 md:px-16 mt-10 flex flex-col md:flex-row gap-[44px]">
+      <div className="px-6 md:px-8 xl:px-16 mt-10 flex flex-col md:flex-row gap-[44px]">
         <div className="flex-1 flex">
           <QuestCard
             user={user}
@@ -228,6 +229,7 @@ export default function QuestBoard() {
           {/* Bottom border of last row */}
           <div className="border-b border-[#584235]" />
         </div>
+      </div>
       </div>
     </div>
   );
