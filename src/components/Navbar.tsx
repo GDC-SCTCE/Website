@@ -135,7 +135,7 @@ export default function Navbar({
           : {}
       }
     >
-      <div className="w-full max-w-[1440px] mx-auto h-[79px] flex items-center justify-between px-6 md:px-[64px]">
+      <div className="w-full h-[79px] flex items-center justify-between px-6 md:px-[64px]">
         {/* Logo */}
         <Link href={logoHref} className="flex items-center gap-[12px] no-underline shrink-0">
           <div className="w-[39px] h-[40px] relative">
