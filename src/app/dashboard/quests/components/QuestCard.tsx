@@ -43,6 +43,7 @@ export function QuestCard({
           src={imageSrc}
           alt={imageAlt}
           fill
+          sizes="(max-width: 768px) 100vw, 600px"
           className="object-cover"
         />
         {/* Badge */}

@@ -119,6 +119,7 @@ function GameColumn({
           src={game.image}
           alt={game.title}
           fill
+          sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
 
@@ -419,6 +420,7 @@ export default function ArcadeWallPage() {
               src={FEATURED.image}
               alt={FEATURED.title}
               fill
+              sizes="(max-width: 1024px) 100vw, 720px"
               className="object-cover transition-transform duration-[8s] hover:scale-105"
             />
 

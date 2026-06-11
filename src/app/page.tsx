@@ -137,7 +137,7 @@ export default function Home() {
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-[12px]">
                 <div className="w-[39px] h-[40px] relative">
-                  <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" />
+                  <Image src="/gdclogo.png" alt="GDC Logo" fill sizes="40px" className="object-contain" />
                 </div>
                 <span className="font-sora font-extrabold text-[20px] md:text-[24px] tracking-[-1.2px] text-[#FFB68B]">
                   GAME DEV CLUB
@@ -275,6 +275,7 @@ export default function Home() {
                   src={f.img}
                   alt={f.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, 340px"
                   className="object-cover transition-transform duration-700 ease-out group-hover/feature:scale-105"
                 />
               </div>
@@ -408,6 +409,7 @@ export default function Home() {
             src="/community_grind.png"
             alt="Game dev community working together"
             fill
+            sizes="(max-width: 768px) 100vw, 680px"
             className="object-cover transition-transform duration-[8s] ease-out group-hover/community:scale-105"
           />
           {/* Left-fade gradient overlay */}
@@ -480,6 +482,7 @@ export default function Home() {
                   src="/game_jam_poster.png"
                   alt="Spring Game Jam 2025 poster"
                   fill
+                  sizes="(max-width: 768px) 100vw, 520px"
                   className="object-cover transition-transform duration-[8s] ease-out group-hover/jam-poster:scale-102"
                 />
               </div>

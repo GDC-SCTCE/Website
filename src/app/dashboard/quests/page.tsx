@@ -198,6 +198,7 @@ export default function QuestBoard() {
                       src={quest.image}
                       alt={quest.title}
                       fill
+                      sizes="96px"
                       className="object-cover mix-blend-saturation group-hover:mix-blend-normal transition-all duration-300"
                     />
                   </div>
