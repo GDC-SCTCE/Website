@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { useGameForge } from "@/context/GameForgeContext";
+import Footer from "@/components/Footer";
 
 export default function OnboardingSuccess() {
   const { user, loading } = useGameForge();
@@ -244,43 +245,7 @@ export default function OnboardingSuccess() {
       </main>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-[#131314] border-t-2 border-[#353436] py-8 md:h-[142px] flex items-center box-border relative z-10">
-        <div className="max-w-[1440px] w-full mx-auto px-6 md:px-16 flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Left: Logo + Tagline */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <div className="flex items-center gap-[12px] mb-[8px]">
-              <div className="w-[32px] h-[32px] relative shrink-0">
-                <Image
-                  src="/gdclogo.png"
-                  alt="GDC Logo"
-                  fill
-                  className="object-contain"
-                  sizes="32px"
-                />
-              </div>
-              <span className="font-sora font-bold text-[16px] leading-[24px] text-[#FFB68B]">
-                GAME DEV CLUB
-              </span>
-            </div>
-            <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] m-0">
-              © 2024 GAME DEV COLLECTIVE. BUILT FOR PERFORMANCE.
-            </p>
-          </div>
-
-          {/* Right: Footer nav links */}
-          <div className="flex gap-[32px]">
-            {["Support", "GitHub", "Discord", "Terms"].map((l) => (
-              <a
-                key={l}
-                href="#"
-                className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B]"
-              >
-                {l}
-              </a>
-            ))}
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

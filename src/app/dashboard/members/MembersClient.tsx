@@ -126,7 +126,7 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
         </div>
 
         {/* ── MEMBER CARDS GRID ── */}
-        <div className="px-6 md:px-8 xl:px-16 pb-[80px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[40px_20px] lg:gap-[80px_20px] justify-between">
+        <div className="px-6 md:px-8 xl:px-16 pb-[80px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[40px_20px] lg:gap-[80px_20px] justify-items-center sm:justify-items-start justify-between">
           {filteredMembers.map((member, idx) => (
             <MemberCard key={member.id} member={member} delay={idx * 60} visible={gridVisible} />
           ))}

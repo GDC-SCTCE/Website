@@ -4,10 +4,27 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { NAV_LINKS } from "@/constants/navigation";
+import { NAV_LINKS, ADMIN_NAV_LINKS } from "@/constants/navigation";
 import { useGameForge } from "@/context/GameForgeContext";
 
-export default function Navbar() {
+export interface NavLink {
+  label: string;
+  href: string;
+}
+
+export interface NavbarProps {
+  links?: readonly NavLink[];
+  logoText?: string;
+  logoHref?: string;
+  isAdmin?: boolean;
+}
+
+export default function Navbar({
+  links = NAV_LINKS,
+  logoText,
+  logoHref = "/",
+  isAdmin = false,
+}: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname() || "";
   const router = useRouter();
@@ -25,9 +42,11 @@ export default function Navbar() {
 
   // Determine what type of navbar to render based on pathname
   const isHome = pathname === "/";
-  const isAdmin = pathname.startsWith("/admin");
   const isOnboarding = pathname === "/onboarding";
   const isSuccess = pathname === "/onboarding/success";
+
+  // Use override logo text or default to "GAME DEV CLUB"
+  const finalLogoText = logoText || (isAdmin ? "ADMIN OVERRIDE" : "GAME DEV CLUB");
 
   // For home page smooth scroll
   const handleNavLink = (href: string) => {
@@ -118,19 +137,18 @@ export default function Navbar() {
     >
       <div className="w-full max-w-[1440px] mx-auto h-[79px] flex items-center justify-between px-4 md:px-6 lg:px-2">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-[12px] no-underline shrink-0">
+        <Link href={logoHref} className="flex items-center gap-[12px] no-underline shrink-0">
           <div className="w-[39px] h-[40px] relative">
             <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" sizes="39px" />
           </div>
           <span className={`font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] ${isAdmin ? "text-[#FF7A00]" : "text-[#FFB68B]"} hidden min-[420px]:inline-block`}>
-            {isAdmin ? "ADMIN OVERRIDE" : "GAME DEV CLUB"}
+            {finalLogoText}
           </span>
         </Link>
 
         {/* Desktop Nav */}
-        {!isAdmin && (
-          <nav className="hidden md:flex items-center gap-[40px]">
-            {NAV_LINKS.map((l) => {
+        <nav className="hidden xl:flex items-center gap-[40px]">
+          {links.map((l) => {
               const isActive = pathname === l.href;
               if (isHome) {
                 return (
@@ -156,39 +174,36 @@ export default function Navbar() {
                 </Link>
               );
             })}
-          </nav>
-        )}
+        </nav>
 
         {/* Right side: CTA + mobile toggle */}
         <div className="flex items-center gap-[16px] shrink-0">
           {ctaNode}
-          {!isAdmin && (
-            <button
-              className="md:hidden text-[#E0C0AF] bg-transparent border-none cursor-pointer p-1"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
-            >
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
-                <rect y="3" width="22" height="2" rx="1" />
-                <rect y="10" width="22" height="2" rx="1" />
-                <rect y="17" width="22" height="2" rx="1" />
-              </svg>
-            </button>
-          )}
+          <button
+            className="xl:hidden text-[#E0C0AF] bg-transparent border-none cursor-pointer p-1"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor">
+              <rect y="3" width="22" height="2" rx="1" />
+              <rect y="10" width="22" height="2" rx="1" />
+              <rect y="17" width="22" height="2" rx="1" />
+            </svg>
+          </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {!isAdmin && mobileOpen && (
-        <div className="absolute top-[79px] left-0 right-0 bg-[#131314] border-t border-[#584235]/40 py-[16px] z-60 px-4 md:px-8 md:hidden flex flex-col gap-[16px]">
-          {NAV_LINKS.map((l) => {
+      {/* Mobile Nav Overlay */}
+      {mobileOpen && (
+        <div className="absolute top-[79px] left-0 w-full bg-[#131314] border-b border-[#584235]/30 xl:hidden flex flex-col items-center py-8 gap-6 shadow-2xl">
+          {links.map((l) => {
             const isActive = pathname === l.href;
             if (isHome) {
               return (
                 <button
                   key={l.label}
                   onClick={() => handleNavLink(l.href)}
-                  className="block w-full text-left font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] bg-transparent border-none cursor-pointer hover:text-[#FFB68B] transition-colors duration-200"
+                  className="block font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] bg-transparent border-none cursor-pointer hover:text-[#FFB68B] transition-colors duration-200"
                 >
                   {l.label}
                 </button>

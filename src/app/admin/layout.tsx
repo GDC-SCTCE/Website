@@ -6,6 +6,8 @@ import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { ADMIN_NAV_LINKS } from "@/constants/navigation";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -33,11 +35,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-[#131314] flex flex-col font-sans text-zinc-100">
-      <Navbar />
+      <Navbar 
+        links={ADMIN_NAV_LINKS} 
+        logoText="ADMIN OVERRIDE"
+        logoHref="/admin"
+        isAdmin={true} 
+      />
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto p-4 md:p-16">
         {children}
       </main>
+
+      <Footer />
     </div>
   );
 }

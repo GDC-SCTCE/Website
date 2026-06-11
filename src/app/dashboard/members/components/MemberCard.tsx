@@ -17,7 +17,6 @@ export function MemberCard({
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(32px)",
         transitionDelay: `${delay}ms`,
-        width: "auto",
       }}
     >
       <div className="w-full max-w-[270px] h-[376px] bg-[#1C1B1C] border border-transparent transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(0,0,0,0.6)] hover:border-[#FF7A00] relative shrink-0 box-border mx-auto group/member">

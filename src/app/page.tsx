@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { useGameForge } from "@/context/GameForgeContext";
 
@@ -107,7 +108,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-[#131314] text-[#E5E2E3] min-h-screen overflow-x-hidden">
+    <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
 
       {/* ── CINEMATIC WELCOME SPLASH ── */}
       {showSplash && (
@@ -167,7 +168,8 @@ export default function Home() {
       <Navbar />
 
       {/* ── HERO ── */}
-      <section className="text-center pt-[15dvh] pb-[10dvh] relative overflow-hidden px-4">
+      <main className="overflow-x-hidden">
+        <section className="text-center pt-[15dvh] pb-[10dvh] relative overflow-hidden px-4">
         {/* Background Loop Video */}
         <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
           <video
@@ -233,7 +235,7 @@ export default function Home() {
       {/* ── THREE WAYS ── */}
       <section
         ref={featuresRef}
-        className="max-w-[1200px] mx-auto px-[24px] pb-[96px] md:border-l md:border-r md:border-[#584235]/20"
+        className="max-w-[1280px] mx-auto px-4 md:px-[80px] pb-[96px] md:border-l md:border-r md:border-[#584235]/30"
         id="sprint"
       >
         {/* Header */}
@@ -256,7 +258,7 @@ export default function Home() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] justify-center max-w-[1020px] mx-auto">
+        <div className="flex flex-col md:flex-row justify-between gap-[40px] md:gap-[50px] w-full mx-auto">
           {features.map((f, idx) => (
             <div
               key={f.title}
@@ -299,13 +301,13 @@ export default function Home() {
       {/* ── STATS ── */}
       <section
         ref={statsRef}
-        className="max-w-[1280px] mx-auto px-4 md:px-[80px] pb-[96px] pt-[48px]"
+        className="max-w-[1280px] mx-auto px-4 md:px-0 pb-[96px] pt-[48px] overflow-hidden"
         id="meets"
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-[64px] items-center">
           {/* Left */}
           <div
-            className="px-0 md:px-[64px] text-center lg:text-left flex flex-col items-center lg:items-start transition-all duration-700 ease-out"
+            className="px-6 md:pl-[80px] md:pr-[64px] text-center lg:text-left flex flex-col items-center lg:items-start transition-all duration-700 ease-out"
             style={{
               opacity: statsVisible ? 1 : 0,
               transform: statsVisible ? "translateX(0)" : "translateX(-40px)",
@@ -359,7 +361,7 @@ export default function Home() {
       {/* ── COMMUNITY / ABOUT ── */}
       <section
         ref={communityRef}
-        className="max-w-[1280px] mx-auto border-t border-b border-[#584235]/50 px-4 md:px-[80px] min-h-[580px] flex flex-col md:flex-row items-stretch overflow-hidden"
+        className="max-w-[1280px] mx-auto border-t border-b border-[#584235]/30 px-4 md:px-0 min-h-[580px] flex flex-col md:flex-row items-stretch overflow-hidden"
         id="community"
       >
         {/* Left vertical label */}
@@ -371,7 +373,7 @@ export default function Home() {
 
         {/* Left content */}
         <div
-          className="flex-1 p-6 md:p-[80px] flex flex-col justify-center text-center md:text-left items-center md:items-start transition-all duration-700 ease-out"
+          className="flex-1 p-6 md:py-[80px] md:pr-[80px] md:pl-[80px] flex flex-col justify-center text-center md:text-left items-center md:items-start transition-all duration-700 ease-out"
           style={{
             opacity: communityVisible ? 1 : 0,
             transform: communityVisible ? "translateX(0)" : "translateX(-40px)",
@@ -417,12 +419,12 @@ export default function Home() {
       <section
         ref={jamRef}
         id="jam"
-        className="bg-[#1C1B1C] border-b border-[#584235]/30 py-[96px] px-4 overflow-hidden"
+        className="bg-[#1C1B1C] border-b border-[#584235]/30 py-[96px] px-0 overflow-hidden"
       >
-        <div className="max-w-[1280px] mx-auto px-4 md:px-[64px] grid grid-cols-1 lg:grid-cols-2 gap-[64px] items-center">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-0 grid grid-cols-1 lg:grid-cols-2 gap-[64px] items-center">
           {/* Left */}
           <div
-            className="max-w-[633.59px] text-center lg:text-left flex flex-col items-center lg:items-start mx-auto lg:mx-0 transition-all duration-700 ease-out"
+            className="px-6 md:pl-[80px] max-w-[633.59px] text-center lg:text-left flex flex-col items-center lg:items-start mx-auto lg:mx-0 transition-all duration-700 ease-out"
             style={{
               opacity: jamVisible ? 1 : 0,
               transform: jamVisible ? "translateX(0)" : "translateX(-40px)",
@@ -465,7 +467,7 @@ export default function Home() {
 
           {/* Right: Poster */}
           <div
-            className="flex flex-col items-center lg:items-start mx-auto w-[518.39px] max-w-full transition-all duration-700 ease-out"
+            className="flex flex-col items-center lg:items-end mx-auto lg:mx-0 lg:ml-auto w-[518.39px] max-w-full transition-all duration-700 ease-out"
             style={{
               opacity: jamVisible ? 1 : 0,
               transform: jamVisible ? "translateX(0)" : "translateX(40px)",
@@ -503,33 +505,10 @@ export default function Home() {
         </div>
       </section >
 
-      {/* ── FOOTER ── */}
-      <footer className="bg-[#131314] border-t border-[#584235] py-[49px] px-4 md:px-[64px]">
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Left: logo + copyright */}
-          <div className="flex flex-col md:flex-row items-center gap-[24px] text-center md:text-left">
-            <div className="w-[32px] h-[32px] relative opacity-80 shrink-0">
-              <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" />
-            </div>
-            <span className="font-mono font-normal text-[12px] leading-[16px] text-[#A78B7C]">
-              © 2025 Game Dev Collective // GDSC SCT. All rights reserved.
-            </span>
-          </div>
+      </main>
 
-          {/* Right: footer links */}
-          <div className="flex gap-[32px] flex-wrap justify-center">
-            {["Privacy Policy", "Term of Service", "Cookies"].map((l) => (
-              <a
-                key={l}
-                href="#"
-                className="font-mono font-normal text-[12px] leading-[16px] text-[#A78B7C] no-underline hover:text-[#E0C0AF] transition-colors duration-200"
-              >
-                {l}
-              </a>
-            ))}
-          </div>
-        </div>
-      </footer>
+      {/* ── FOOTER ── */}
+      <Footer />
     </div>
   );
 }
