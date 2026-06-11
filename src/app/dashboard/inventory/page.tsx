@@ -6,7 +6,7 @@ import {
   Hexagon,
   Triangle,
   Layers,
-  figma,
+  PaletteIcon,
   Palette,
   Music,
   GitBranch,
@@ -92,7 +92,7 @@ const TOOLS: Tool[] = [
     description:
       "Collaborative design and prototyping tool. Perfect for HUD design and game UI mockups.",
     url: "https://figma.com",
-    icon: <figma strokeWidth={1.25} className="w-16 h-16" />,
+    icon: <PaletteIcon strokeWidth={1.25} className="w-16 h-16" />,
   },
   {
     id: "aseprite",
