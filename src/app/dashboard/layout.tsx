@@ -3,7 +3,6 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import { useGameForge } from "@/context/GameForgeContext";
-import Footer from "@/components/Footer";
 
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -29,9 +28,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="flex-1">
         {children}
       </main>
-
-      {/* ── FOOTER ── */}
-      <Footer />
     </div>
   );
 }

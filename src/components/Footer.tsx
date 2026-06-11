@@ -6,7 +6,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#131314] border-t-2 border-[#353436] w-full mt-auto">
-      <div className="max-w-[1440px] mx-auto w-full px-4 md:px-6 lg:px-2 py-[32px] md:h-[144px] flex flex-col md:flex-row items-center justify-between gap-8 md:gap-0 box-border">
+      <div className="max-w-[1440px] mx-auto w-full px-6 md:px-[64px] py-[32px] md:h-[144px] flex flex-col md:flex-row items-center justify-between gap-8 md:gap-0 box-border">
         
         {/* Mobile: Title & Copyright -> Desktop: Title & Copyright */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left gap-2 md:gap-[8px]">

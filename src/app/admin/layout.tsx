@@ -6,7 +6,6 @@ import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { ADMIN_NAV_LINKS } from "@/constants/navigation";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -45,8 +44,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className="flex-1 w-full max-w-[1440px] mx-auto p-4 md:p-16">
         {children}
       </main>
-
-      <Footer />
     </div>
   );
 }

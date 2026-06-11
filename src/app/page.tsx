@@ -5,7 +5,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { useGameForge } from "@/context/GameForgeContext";
 
@@ -510,8 +509,6 @@ export default function Home() {
 
       </main>
 
-      {/* ── FOOTER ── */}
-      <Footer />
     </div>
   );
 }

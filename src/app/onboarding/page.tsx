@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { useGameForge } from "@/context/GameForgeContext";
 
 import { XPLevel } from "./types";
@@ -263,9 +262,6 @@ export default function OnboardingPage() {
           </p>
         </div>
       </main>
-
-      {/* ── FOOTER ── */}
-      <Footer />
     </div>
   );
 }

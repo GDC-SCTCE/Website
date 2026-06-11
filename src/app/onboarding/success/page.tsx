@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { useGameForge } from "@/context/GameForgeContext";
-import Footer from "@/components/Footer";
 
 export default function OnboardingSuccess() {
   const { user, loading } = useGameForge();
@@ -243,9 +242,6 @@ export default function OnboardingSuccess() {
           </svg>
         </div>
       </main>
-
-      {/* ── FOOTER ── */}
-      <Footer />
     </div>
   );
 }
