@@ -77,6 +77,8 @@ export default function Home() {
   const countdown = useCountdown(JAM_TARGET_MS);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+  const [splashEnding, setSplashEnding] = useState(false);
   const pad = (n: number) => String(n).padStart(2, "0");
 
   // Section inView observers
@@ -87,6 +89,10 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
+    const played = sessionStorage.getItem("gdc_intro_played");
+    if (!played) {
+      setShowSplash(true);
+    }
   }, []);
 
   // Navigate directly to the route (accessible for both guest and authenticated users)
@@ -94,9 +100,71 @@ export default function Home() {
     router.push(href);
   };
 
+  const handleDismissSplash = () => {
+    setSplashEnding(true);
+    sessionStorage.setItem("gdc_intro_played", "true");
+    setTimeout(() => {
+      setShowSplash(false);
+    }, 1000);
+  };
+
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen overflow-x-hidden">
- 
+
+      {/* ── CINEMATIC WELCOME SPLASH ── */}
+      {showSplash && (
+        <div
+          className={`fixed inset-0 z-[100] bg-[#131314] flex flex-col items-center justify-center transition-all duration-100 ease-in-out ${splashEnding ? "opacity-0 pointer-events-none scale-110 blur-md" : "opacity-100"
+            }`}
+        >
+          {/* Background Video */}
+          <div className="absolute inset-0 w-full h-full overflow-hidden">
+            <video
+              src="/intro.mp4"
+              autoPlay
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+              onEnded={handleDismissSplash}
+            />
+            {/* Cinematic overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#131314] via-transparent to-[#131314]/70" />
+            <div className="absolute inset-0 bg-[#131314]/30" />
+          </div>
+
+          {/* Content overlay on splash */}
+          <div className="relative z-10 w-full max-w-[1440px] h-full flex flex-col justify-between p-8 md:p-16 pointer-events-none">
+            {/* Top row */}
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-[12px]">
+                <div className="w-[39px] h-[40px] relative">
+                  <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" />
+                </div>
+                <span className="font-sora font-extrabold text-[20px] md:text-[24px] tracking-[-1.2px] text-[#FFB68B]">
+                  GAME DEV CLUB
+                </span>
+              </div>
+              <span className="font-mono text-[11px] tracking-[1.1px] text-[#A78B7C] uppercase">
+                // System Initialize
+              </span>
+            </div>
+
+            {/* Middle logo / title */}
+            <div className="text-center flex flex-col items-center gap-4">
+              <span className="font-mono text-[#FF7A00] tracking-[4px] uppercase text-[12px] animate-pulse">
+                Entering Collective Sandbox
+              </span>
+              <h2 className="font-sora font-bold text-4xl md:text-6xl text-white tracking-tight">
+                THE FORGE AWAITS
+              </h2>
+            </div>
+
+            {/* Bottom Row - Spacer for layout balance */}
+            <div className="w-full h-12" />
+          </div>
+        </div>
+      )}
+
       {/* ── NAVBAR ── */}
       <header
         className="sticky top-0 z-50 bg-[#131314] border-b border-[#584235]/30 transition-all duration-700 ease-out"
@@ -115,7 +183,7 @@ export default function Home() {
               GAME DEV CLUB
             </span>
           </Link>
- 
+
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-10">
             {navLinks.map((l) => (
@@ -129,7 +197,7 @@ export default function Home() {
               </button>
             ))}
           </nav>
- 
+
           {/* CTA + Mobile toggle */}
           <div className="flex items-center gap-[16px]">
             <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
@@ -150,7 +218,7 @@ export default function Home() {
             </button>
           </div>
         </div>
- 
+
         {/* Mobile Menu */}
         {mobileOpen && (
           <div className="bg-[#131314] border-t border-[#584235]/30 py-[16px] px-4 md:px-16 md:hidden">
@@ -166,7 +234,7 @@ export default function Home() {
           </div>
         )}
       </header>
- 
+
       {/* ── HERO ── */}
       <section className="text-center pt-[15dvh] pb-[10dvh] relative overflow-hidden px-4">
         {/* Background Loop Video */}
@@ -182,10 +250,10 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#131314] via-transparent to-[#131314]" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#131314]/80 via-transparent to-[#131314]" />
         </div>
- 
+
         {/* Ambient glow */}
         <div className="absolute top-[-80px] left-1/2 -translate-x-1/2 w-[700px] max-w-full h-[400px] rounded-full bg-[#FF7A00]/5 blur-[120px] pointer-events-none" />
- 
+
         <h1
           className="font-sora font-normal text-[clamp(48px,6.67vw,96px)] leading-none text-[#E5E2E3] mx-auto mb-[32px] max-w-[640px] transition-all duration-700 ease-out"
           style={{
@@ -196,7 +264,7 @@ export default function Home() {
         >
           Welcome to <span className="text-neon-orange">Game Dev Collective.</span>
         </h1>
- 
+
         <p
           className="font-sora font-normal text-[18px] leading-[28px] text-[#E0C0AF] max-w-[600px] mx-auto mb-[48px] transition-all duration-700 ease-out"
           style={{
@@ -207,7 +275,7 @@ export default function Home() {
         >
           Step into a world where code becomes art and creativity fuels the arcade. Build games, earn XP, and rise through the ranks.
         </p>
- 
+
         <div
           className="flex flex-col sm:flex-row gap-[24px] justify-center items-center transition-all duration-700 ease-out"
           style={{
@@ -222,7 +290,7 @@ export default function Home() {
               <span className="relative z-10">{!loading && user ? "ENTER THE CLUB →" : "JOIN US →"}</span>
             </button>
           </Link>
- 
+
           <a href="#jam" className="w-full sm:w-auto">
             <button className="bg-transparent border border-[#FF7A00] w-full sm:w-[248.48px] h-[52px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] cursor-pointer hover:bg-[#FF7A00]/10 hover:shadow-md hover:shadow-[#FF7A00]/10 transition-all duration-300">
               View Quest →
@@ -230,7 +298,7 @@ export default function Home() {
           </a>
         </div>
       </section >
- 
+
       {/* ── THREE WAYS ── */}
       <section
         ref={featuresRef}
@@ -255,7 +323,7 @@ export default function Home() {
             Give every discipline a forge for growth, collaboration, and high-community activity.
           </p>
         </div>
- 
+
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] justify-center max-w-[1020px] mx-auto">
           {features.map((f, idx) => (
@@ -296,7 +364,7 @@ export default function Home() {
           ))}
         </div>
       </section >
- 
+
       {/* ── STATS ── */}
       <section
         ref={statsRef}
@@ -327,7 +395,7 @@ export default function Home() {
               </button>
             </Link>
           </div>
- 
+
           {/* Right: 2×2 Stats grid */}
           <div
             className="border-t lg:border-t-0 lg:border-l border-[#584235]/30 grid grid-cols-2 transition-all duration-700 ease-out"
@@ -340,9 +408,8 @@ export default function Home() {
             {stats.map((s, i) => (
               <div
                 key={s.label}
-                className={`p-6 md:p-[48px] transition-all duration-300 hover:bg-[#201F20]/40 group/stat ${
-                  i % 2 === 0 ? "border-r border-[#584235]/30" : ""
-                } ${i < 2 ? "border-b border-[#584235]/30" : ""}`}
+                className={`p-6 md:p-[48px] transition-all duration-300 hover:bg-[#201F20]/40 group/stat ${i % 2 === 0 ? "border-r border-[#584235]/30" : ""
+                  } ${i < 2 ? "border-b border-[#584235]/30" : ""}`}
               >
                 <p
                   className={`font-sora font-normal text-[48px] leading-[48px] mb-[8px] transition-all duration-300 group-hover/stat:scale-105 ${s.textColor}`}
@@ -357,7 +424,7 @@ export default function Home() {
           </div>
         </div>
       </section >
- 
+
       {/* ── COMMUNITY / ABOUT ── */}
       <section
         ref={communityRef}
@@ -370,7 +437,7 @@ export default function Home() {
             GDSC SCT — GAME DEV CLUB
           </span>
         </div>
- 
+
         {/* Left content */}
         <div
           className="flex-1 p-6 md:p-[80px] flex flex-col justify-center text-center md:text-left items-center md:items-start transition-all duration-700 ease-out"
@@ -394,7 +461,7 @@ export default function Home() {
             </button>
           </Link>
         </div>
- 
+
         {/* Right image */}
         <div
           className="w-full md:w-[677.59px] h-[300px] md:h-auto relative shrink-0 overflow-hidden transition-all duration-700 ease-out group/community"
@@ -414,7 +481,7 @@ export default function Home() {
           <div className="absolute inset-0 md:left-0 md:w-[128px] md:h-full bg-gradient-to-b md:bg-gradient-to-r from-[#131314] to-transparent pointer-events-none" />
         </div>
       </section >
- 
+
       {/* ── SPRING JAM ── */}
       <section
         ref={jamRef}
@@ -436,7 +503,7 @@ export default function Home() {
             <h2 className="font-sora font-normal text-[clamp(36px,4.17vw,60px)] leading-[48px] md:leading-[60px] text-[#E5E2E3] mb-[40px]">
               Spring Game Jam 2025.
             </h2>
- 
+
             {/* Date + Countdown row */}
             <div className="flex gap-[48px] mb-[48px] justify-center lg:justify-start">
               <div>
@@ -456,7 +523,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
- 
+
             <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
               <button className="bg-[#FF7A00] w-[213.61px] h-[60px] font-mono font-semibold text-[14px] leading-[20px] tracking-[1.4px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-300 relative overflow-hidden group/btn-jam shadow-lg hover:shadow-[#FF7A00]/20">
                 <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn-jam:translate-x-[300%] transition-transform duration-700 ease-in-out" />
@@ -464,7 +531,7 @@ export default function Home() {
               </button>
             </Link>
           </div>
- 
+
           {/* Right: Poster */}
           <div
             className="flex flex-col items-center lg:items-start mx-auto w-[518.39px] max-w-full transition-all duration-700 ease-out"
@@ -484,7 +551,7 @@ export default function Home() {
                 />
               </div>
             </div>
- 
+
             {/* Below poster: labels + progress */}
             <div className="mt-[16px] flex justify-between items-center w-[518.39px] max-w-full px-2">
               <span className="font-mono font-normal text-[11px] leading-[16px] tracking-[1.1px] text-[#E0C0AF]">
@@ -504,7 +571,7 @@ export default function Home() {
           </div>
         </div>
       </section >
- 
+
       {/* ── FOOTER ── */}
       <footer className="bg-[#131314] border-t border-[#584235] py-[49px] px-4 md:px-[64px]">
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
@@ -517,7 +584,7 @@ export default function Home() {
               © 2025 Game Dev Collective // GDSC SCT. All rights reserved.
             </span>
           </div>
- 
+
           {/* Right: footer links */}
           <div className="flex gap-[32px] flex-wrap justify-center">
             {["Privacy Policy", "Term of Service", "Cookies"].map((l) => (
