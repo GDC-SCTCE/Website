@@ -1,3 +1,5 @@
+export type Department = "ALL" | "DESIGN" | "TECH" | "MEDIA" | "COMMUNITY" | "EVENT" | "MARKETING" | "E-SPORTS";
+
 export interface UserStats {
   strength: number;
   agility: number;
@@ -19,12 +21,18 @@ export interface User {
 export interface Quest {
   id: string;
   title: string;
-  description: string;
-  category: "Code" | "Design" | "Sound" | "General";
-  difficulty: "Beginner" | "Intermediate" | "Legendary";
-  xpReward: number;
-  badgeAwarded?: string;
-  objective: string;
+  category: string;
+  status: string;
+  dateText: string;
+  location?: string | null;
+  image?: string | null;
+  capacity: number;
+  seatsTaken: number;
+  targetDate?: string | Date | null;
+  attendees?: number | null;
+  rating?: number | null;
+  recapUrl?: string | null;
+  createdAt: string | Date;
 }
 
 export interface GameHighScore {

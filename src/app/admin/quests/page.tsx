@@ -25,14 +25,14 @@ export default async function AdminQuests() {
               <div className="flex justify-between items-start">
                 <h3 className="font-sora font-bold text-[18px] text-[#FFB68B]">{quest.title}</h3>
                 <span className="font-mono text-[10px] bg-[#584235] text-[#FFB68B] px-2 py-1 rounded-sm">
-                  {quest.category} // {quest.difficulty}
+                  {quest.category} // {quest.status}
                 </span>
               </div>
-              <p className="font-sans text-[14px] text-zinc-300">{quest.description}</p>
+              <p className="font-sans text-[14px] text-zinc-300">{quest.dateText} | {quest.location}</p>
               <div className="mt-4 pt-4 border-t border-[#584235]/40 flex gap-4">
-                <span className="font-mono text-[12px] text-[#A78B7C]">XP: <span className="text-[#FF7A00]">{quest.xpReward}</span></span>
-                {quest.badgeAwarded && (
-                  <span className="font-mono text-[12px] text-[#A78B7C]">BADGE: <span className="text-[#FF7A00]">{quest.badgeAwarded}</span></span>
+                <span className="font-mono text-[12px] text-[#A78B7C]">SEATS: <span className="text-[#FF7A00]">{quest.seatsTaken}/{quest.capacity}</span></span>
+                {quest.status === "COMPLETED" && (
+                  <span className="font-mono text-[12px] text-[#A78B7C]">RATING: <span className="text-[#FF7A00]">{quest.rating || 0}/5.0</span></span>
                 )}
               </div>
               {/* Note: Delete button could be added here later */}

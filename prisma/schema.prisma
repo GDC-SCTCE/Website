@@ -7,15 +7,25 @@ datasource db {
 }
 
 model Quest {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   title        String
-  description  String
-  category     String
-  difficulty   String
-  xpReward     Int      @default(0)
-  badgeAwarded String?
-  objective    String?
-  createdAt    DateTime @default(now())
+  category     String    
+  status       String    
+  
+  dateText     String    
+  location     String?   
+  image        String?   
+  
+  capacity     Int       @default(30)
+  seatsTaken   Int       @default(0)
+  
+  targetDate   DateTime? 
+
+  attendees    Int?      
+  rating       Float?    
+  recapUrl     String?  
+
+  createdAt    DateTime  @default(now())
 }
 
 model Game {

@@ -10,24 +10,7 @@ import { useGameForge } from "@/context/GameForgeContext";
 
 import { useCountdown } from "@/hooks/useCountdown";
 
-// ─── Intersection Observer Hook ──────────────────────────────────────────────
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setInView(true);
-      },
-      { threshold }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-}
+import { useInView } from "@/hooks/useInView";
 
 // Stable timestamp constant — avoids new Date() creating a new reference on every render
 const JAM_TARGET_MS = new Date("2026-07-20T09:00:00").getTime();

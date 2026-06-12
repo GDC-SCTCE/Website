@@ -14,12 +14,12 @@ export default function QuestForm() {
     const formData = new FormData(e.currentTarget);
     const data = {
       title: formData.get("title") as string,
-      description: formData.get("description") as string,
       category: formData.get("category") as string,
-      difficulty: formData.get("difficulty") as string,
-      xpReward: parseInt(formData.get("xpReward") as string) || 0,
-      badgeAwarded: formData.get("badgeAwarded") as string,
-      objective: formData.get("objective") as string,
+      status: formData.get("status") as string,
+      dateText: formData.get("dateText") as string,
+      location: formData.get("location") as string || null,
+      capacity: parseInt(formData.get("capacity") as string) || 0,
+      seatsTaken: parseInt(formData.get("seatsTaken") as string) || 0,
     };
 
     await createQuest(data);
@@ -33,33 +33,39 @@ export default function QuestForm() {
         <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">TITLE</label>
         <input name="title" type="text" required className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
       </div>
-      <div>
-        <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">DESCRIPTION</label>
-        <textarea name="description" required rows={3} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
-      </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">CATEGORY</label>
           <input name="category" type="text" required className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
         </div>
         <div>
-          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">DIFFICULTY</label>
-          <input name="difficulty" type="text" required className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">STATUS</label>
+          <select name="status" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]">
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="UPCOMING">UPCOMING</option>
+            <option value="COMPLETED">COMPLETED</option>
+          </select>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">XP REWARD</label>
-          <input name="xpReward" type="number" required defaultValue="100" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">DATE TEXT</label>
+          <input name="dateText" type="text" required placeholder="May 14-16" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
         </div>
         <div>
-          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">BADGE AWARDED (OPTIONAL)</label>
-          <input name="badgeAwarded" type="text" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">LOCATION</label>
+          <input name="location" type="text" placeholder="Virtual" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
         </div>
       </div>
-      <div>
-        <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">OBJECTIVE</label>
-        <input name="objective" type="text" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">CAPACITY</label>
+          <input name="capacity" type="number" required defaultValue="50" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+        </div>
+        <div>
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">SEATS TAKEN</label>
+          <input name="seatsTaken" type="number" defaultValue="0" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+        </div>
       </div>
 
       <button type="submit" disabled={loading} className="mt-4 bg-[#FF7A00] text-[#5C2800] font-mono font-bold text-[12px] tracking-[1.2px] p-3 hover:brightness-110 disabled:opacity-50 transition-all">

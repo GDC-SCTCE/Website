@@ -98,21 +98,14 @@ export const GameForgeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (!quest) return;
 
     const updatedCompleted = [...user.completedQuests, questId];
-    const newXp = user.xp + quest.xpReward;
+    const newXp = user.xp + 100; // Fixed 100 XP per event attended
     const newLevel = Math.floor(newXp / XP_PER_LEVEL) + 1;
     
-    // Unlocks badge/items as inventory
-    const updatedInventory = [...user.inventory];
-    if (quest.badgeAwarded && !updatedInventory.includes(quest.badgeAwarded)) {
-      updatedInventory.push(quest.badgeAwarded);
-    }
-
     const updatedUser: User = {
       ...user,
       completedQuests: updatedCompleted,
       xp: newXp,
       level: newLevel,
-      inventory: updatedInventory,
     };
 
     saveUser(updatedUser);

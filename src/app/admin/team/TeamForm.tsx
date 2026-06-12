@@ -5,7 +5,7 @@ import { updateTeamMember } from "@/actions/adminActions";
 import { uploadImage } from "@/utils/supabase/storage";
 import { createClient } from "@/utils/supabase/client";
 import Avatar from "@/components/Avatar";
-import { filters } from "@/app/dashboard/members/types";
+import { filters } from "@/constants/members";
 
 export default function TeamForm({ member }: { member: any }) {
   const formRef = useRef<HTMLFormElement>(null);

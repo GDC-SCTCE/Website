@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Avatar from "@/components/Avatar";
 
-import { Department, filters } from "./types";
+import { Department } from "@/types";
+import { filters } from "@/constants/members";
 import { LeaderCard } from "./components/LeaderCard";
 import { MemberCard } from "./components/MemberCard";
 
