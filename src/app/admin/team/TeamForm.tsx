@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { updateTeamMember } from "@/actions/adminActions";
+import { uploadImage } from "@/utils/supabase/storage";
 import { createClient } from "@/utils/supabase/client";
 import Avatar from "@/components/Avatar";
 import { filters } from "@/app/dashboard/members/types";
@@ -11,9 +12,14 @@ export default function TeamForm({ member }: { member: any }) {
   const [loading, setLoading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [department, setDepartment] = useState(member.department || "ALL");
-  const [stats, setStats] = useState<{label: string, value: number}[]>(
-    member.stats || []
-  );
+  const [stats, setStats] = useState<{label: string, value: number | ""}[]>(() => {
+    const s = member.stats || [];
+    return [
+      { label: s[0]?.label || "STAT 1", value: s[0]?.value ?? 50 },
+      { label: s[1]?.label || "STAT 2", value: s[1]?.value ?? 50 },
+      { label: s[2]?.label || "STAT 3", value: s[2]?.value ?? 50 }
+    ];
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,92 +35,85 @@ export default function TeamForm({ member }: { member: any }) {
     // Handle Avatar Image Upload
     const imageFile = formData.get("imageFile") as File;
     if (imageFile && imageFile.size > 0) {
-      const fileExt = imageFile.name.split('.').pop();
-      const sanitizedName = member.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      const fileName = `${sanitizedName}_${Date.now()}.${fileExt}`;
-      
-      // Delete old avatar if it exists in our bucket
-      if (member.avatar) {
-        const oldFileName = member.avatar.split('/').pop();
-        if (oldFileName) {
-          await supabase.storage.from("team").remove([oldFileName]);
-        }
-      }
-
-      const { data: uploadData, error: uploadErr } = await supabase.storage
-        .from("team")
-        .upload(fileName, imageFile);
-
-      if (uploadErr) {
-        setUploadError(`Avatar upload failed: ${uploadErr.message}`);
+      try {
+        finalAvatarUrl = await uploadImage(imageFile, "team", member.name, member.avatar);
+      } catch (err: any) {
+        setUploadError(`Avatar upload failed: ${err.message}`);
         setLoading(false);
         return;
       }
-
-      const { data: publicUrlData } = supabase.storage
-        .from("team")
-        .getPublicUrl(fileName);
-        
-      finalAvatarUrl = publicUrlData.publicUrl;
     }
 
     // Handle Game Preview Image Upload
     if (department === "ALL") {
       const gpImageFile = formData.get("gpImageFile") as File;
       if (gpImageFile && gpImageFile.size > 0) {
-        const fileExt = gpImageFile.name.split('.').pop();
-        const sanitizedName = member.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        const fileName = `${sanitizedName}_gp_${Date.now()}.${fileExt}`;
-        
-        // Delete old preview if it exists in our bucket
-        if (member.gamePreview?.image) {
-          const oldFileName = member.gamePreview.image.split('/').pop();
-          if (oldFileName) {
-            await supabase.storage.from("team").remove([oldFileName]);
-          }
-        }
-
-        const { error: uploadErr } = await supabase.storage
-          .from("team")
-          .upload(fileName, gpImageFile);
-
-        if (uploadErr) {
-          setUploadError(`Game Preview image upload failed: ${uploadErr.message}`);
+        try {
+          finalGpImageUrl = await uploadImage(gpImageFile, "team/game", `${member.name}_gp`, member.gamePreview?.image);
+        } catch (err: any) {
+          setUploadError(`Game Preview upload failed: ${err.message}`);
           setLoading(false);
           return;
         }
-
-        const { data: publicUrlData } = supabase.storage
-          .from("team")
-          .getPublicUrl(fileName);
-          
-        finalGpImageUrl = publicUrlData.publicUrl;
       }
     }
 
-    const data = {
-      name: formData.get("name") as string,
-      role: formData.get("role") as string,
-      department: department,
-      avatar: finalAvatarUrl || null,
-      stats: department === "ALL" ? stats : null,
-      gamePreview: department === "ALL" ? {
-        title: formData.get("gpTitle") as string,
-        image: finalGpImageUrl
-      } : null,
-    };
+    const newName = formData.get("name") as string;
+    const newRole = formData.get("role") as string;
 
-    await updateTeamMember(member.id, data);
+    const changes: any = {};
+    
+    if (newName !== member.name) changes.name = newName;
+    if (newRole !== member.role) changes.role = newRole;
+    if (department !== (member.department || "ALL")) changes.department = department;
+    
+    // finalAvatarUrl is initialized to member.avatar. It only changes if an upload succeeds.
+    if (finalAvatarUrl !== (member.avatar || "")) {
+      changes.avatar = finalAvatarUrl || null;
+    }
+
+    if (department === "ALL") {
+      // Compare stats
+      const finalStats = stats.map(s => ({
+        label: s.label,
+        value: s.value === "" ? 0 : s.value
+      }));
+
+      if (JSON.stringify(finalStats) !== JSON.stringify(member.stats || [])) {
+        changes.stats = finalStats;
+      }
+      
+      // Compare game preview
+      const newGpTitle = formData.get("gpTitle") as string;
+      const oldGpTitle = member.gamePreview?.title || "";
+      const oldGpImage = member.gamePreview?.image || "";
+      
+      if (newGpTitle !== oldGpTitle || finalGpImageUrl !== oldGpImage) {
+        changes.gamePreview = {
+          title: newGpTitle,
+          image: finalGpImageUrl
+        };
+      }
+    } else {
+      // If department changed FROM "ALL" to something else, clear these
+      if (member.stats !== null) changes.stats = null;
+      if (member.gamePreview !== null) changes.gamePreview = null;
+    }
+
+    // Only hit the database if something actually changed!
+    if (Object.keys(changes).length > 0) {
+      await updateTeamMember(member.id, changes);
+      
+      // Clear file inputs visually
+      const avatarInput = formRef.current?.querySelector('input[name="imageFile"]') as HTMLInputElement;
+      if (avatarInput) avatarInput.value = "";
+      
+      const gpInput = formRef.current?.querySelector('input[name="gpImageFile"]') as HTMLInputElement;
+      if (gpInput) gpInput.value = "";
+    }
     setLoading(false);
   };
 
-  const handleAddStat = () => {
-    setStats([...stats, { label: "NEW_STAT", value: 50 }]);
-  };
-
-  const handleRemoveStat = (index: number) => {
-    setStats(stats.filter((_, i) => i !== index));
-  };
 
   const handleStatChange = (index: number, field: "label" | "value", val: string | number) => {
     const newStats = [...stats];
@@ -168,16 +167,11 @@ export default function TeamForm({ member }: { member: any }) {
 
       {department === "ALL" && (
         <div className="mt-4 border-t border-[#584235] pt-4">
-          <h3 className="font-mono text-[#FF7A00] font-bold text-[14px] mb-4">CAMPUS LEAD SETTINGS</h3>
+          <h3 className="font-mono text-[#FF7A00] font-bold text-[14px] mb-4">PROFILE SETTINGS</h3>
           
           {/* Stats Config */}
           <div className="mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <label className="block font-mono text-[10px] text-[#FFB68B] tracking-[1.2px]">STAT BARS</label>
-              <button type="button" onClick={handleAddStat} className="text-[#FF7A00] hover:text-white font-mono text-[10px]">
-                + ADD STAT
-              </button>
-            </div>
+            <label className="block font-mono text-[10px] text-[#FFB68B] tracking-[1.2px] mb-2">STAT BARS</label>
             {stats.map((stat, i) => (
               <div key={i} className="flex gap-2 mb-2 items-center">
                 <input 
@@ -185,19 +179,19 @@ export default function TeamForm({ member }: { member: any }) {
                   value={stat.label} 
                   onChange={(e) => handleStatChange(i, "label", e.target.value)}
                   placeholder="LABEL (e.g. TECH)"
-                  className="w-1/2 bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" 
+                  className="flex-1 bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" 
                 />
                 <input 
                   type="number" 
                   value={stat.value} 
-                  onChange={(e) => handleStatChange(i, "value", parseInt(e.target.value) || 0)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    handleStatChange(i, "value", val === "" ? "" : parseInt(val, 10));
+                  }}
                   placeholder="VALUE (0-100)"
                   min="0" max="100"
-                  className="w-1/4 bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" 
+                  className="w-1/3 bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" 
                 />
-                <button type="button" onClick={() => handleRemoveStat(i)} className="text-red-500 hover:text-white font-mono text-[10px] w-1/4 text-right">
-                  REMOVE
-                </button>
               </div>
             ))}
           </div>
@@ -211,7 +205,7 @@ export default function TeamForm({ member }: { member: any }) {
                 <input name="gpTitle" type="text" defaultValue={member.gamePreview?.title || ""} placeholder="e.g. NEON DRIFT" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
               </div>
               <div>
-                <label className="block font-mono text-[10px] text-[#E0C0AF] mb-1">IMAGE OVERRIDE (Upload image, else shows generic box)</label>
+                <label className="block font-mono text-[10px] text-[#E0C0AF] mb-1">IMAGE OVERRIDE</label>
                 {member.gamePreview?.image && (
                   <div className="mb-2 w-[120px] h-[72px] border border-[#584235]">
                     <img src={member.gamePreview.image} alt="Preview" className="w-full h-full object-cover" />
