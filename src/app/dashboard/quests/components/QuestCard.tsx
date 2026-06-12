@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useCountdown } from "@/hooks/useCountdown";
 import { Bell } from "lucide-react";
 import { Quest } from "@/types";
+import GDCPlaceholder from "@/components/GDCPlaceholder";
 
 export interface QuestCardProps {
   quest: Quest;
@@ -40,23 +41,21 @@ export function QuestCard({
           />
         ) : (
           <div className="w-full h-full bg-[#1C1B1C] flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#2A2A2B] to-[#131314] opacity-30" />
-            <div className="relative font-sora font-extrabold text-[48px] text-[#353436] tracking-tighter select-none">
-              GDC
-            </div>
+            <GDCPlaceholder />
           </div>
         )}
         {/* Badge */}
         {isUpcoming ? (
-          <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 bg-[#131314]/80 border border-[#A78B7C] backdrop-blur-[2px]">
-            <span className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
+          <div className="absolute top-[16px] left-[16px] flex items-center gap-1.5 px-[13px] h-[25px] bg-[#131314]/80 border border-[#A78B7C] backdrop-blur-[2px] box-border">
+            <span className="text-[10px] leading-[15px]">🔒</span>
+            <span className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF] flex items-center">
               Soon
             </span>
           </div>
         ) : (
-          <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 bg-[#131314]/80 border border-[#FFB68B] backdrop-blur-[2px]">
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-[#FF7A00]" />
-            <span className="font-mono font-normal text-[10px] leading-[15px] text-[#FFB68B]">
+          <div className="absolute top-[16px] left-[16px] flex items-center gap-1.5 px-[13px] h-[25px] bg-[#131314]/80 border border-[#FFB68B] backdrop-blur-[2px] box-border">
+            <span className="text-[10px] leading-[15px]">⚡</span>
+            <span className="font-mono font-normal text-[10px] leading-[15px] text-[#FFB68B] flex items-center">
               Active
             </span>
           </div>

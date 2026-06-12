@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { Quest } from "@/types";
 import { useInView } from "@/hooks/useInView";
+import GDCPlaceholder from "@/components/GDCPlaceholder";
 
 interface ConqueredQuestsProps {
   completedQuests: Quest[];
@@ -78,12 +79,7 @@ export function ConqueredQuests({ completedQuests }: ConqueredQuestsProps) {
                       className="object-cover transition-all duration-300"
                     />
                   ) : (
-                    <>
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#2A2A2B] to-[#131314] opacity-30" />
-                      <div className="relative font-sora font-extrabold text-[24px] text-[#353436] tracking-tighter select-none">
-                        GDC
-                      </div>
-                    </>
+                    <GDCPlaceholder textClassName="text-[24px]" />
                   )}
                 </div>
 
