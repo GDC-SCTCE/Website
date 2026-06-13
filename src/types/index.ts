@@ -35,6 +35,7 @@ export interface Quest {
   recapUrl?: string | null;
   createdAt: string | Date;
   registrations?: { status: string }[];
+  ratings?: { rating: number }[];
 }
 
 export interface GameHighScore {

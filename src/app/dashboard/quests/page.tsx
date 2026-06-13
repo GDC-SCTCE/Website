@@ -36,7 +36,17 @@ export default function QuestBoard() {
 
   const activeQuests = filteredQuests.filter((q) => q.status === "ACTIVE");
   const upcomingQuests = filteredQuests.filter((q) => q.status === "UPCOMING");
-  const completedQuests = filteredQuests.filter((q) => q.status === "COMPLETED");
+  const completedQuests = filteredQuests.filter((q) => {
+    if (q.status !== "COMPLETED") return false;
+    
+    // If logged in, only show quests they successfully registered for
+    if (user) {
+      return q.registrations && q.registrations.some((r: any) => r.status === "REGISTERED");
+    }
+    
+    // If guest, show all past quests as a portfolio
+    return true;
+  });
 
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">

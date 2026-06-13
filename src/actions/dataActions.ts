@@ -11,10 +11,42 @@ export async function fetchDashboardData() {
       registrations: user
         ? { where: { userId: user.id } }
         : false,
+      ratings: user
+        ? { where: { userId: user.id } }
+        : false,
     },
   });
 
   return { quests };
+}
+
+export async function submitQuestRating(questId: string, rating: number) {
+  const user = await verifyUser();
+  if (!user) throw new Error("Unauthorized");
+
+  // Verify registration
+  const registration = await prisma.registration.findFirst({
+    where: { userId: user.id, questId: questId, status: "REGISTERED" },
+  });
+
+  if (!registration) {
+    throw new Error("You must be a registered attendee to rate this quest.");
+  }
+
+  // Upsert rating
+  await prisma.questRating.upsert({
+    where: {
+      userId_questId: { userId: user.id, questId },
+    },
+    update: { rating },
+    create: {
+      userId: user.id,
+      questId,
+      rating,
+    },
+  });
+
+  return { success: true };
 }
 
 export async function fetchInitialData() {

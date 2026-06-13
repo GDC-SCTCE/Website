@@ -3,6 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 import * as dotenv from 'dotenv'
 
+dotenv.config({ path: '.env.local' })
 dotenv.config()
 
 const connectionString = `${process.env.DIRECT_URL || process.env.DATABASE_URL}`
@@ -22,8 +23,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 12,
       "targetDate": new Date(Date.now() + 12 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -36,8 +36,7 @@ const data = {
       "capacity": 30,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -50,8 +49,7 @@ const data = {
       "capacity": 25,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -64,8 +62,7 @@ const data = {
       "capacity": 100,
       "seatsTaken": 100,
       "targetDate": new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      "attendees": 67,
-      "rating": 5.0,
+
       "recapUrl": "#",
     },
     {
@@ -78,8 +75,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -92,8 +88,7 @@ const data = {
       "capacity": 30,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -106,8 +101,7 @@ const data = {
       "capacity": 30,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -120,8 +114,7 @@ const data = {
       "capacity": 30,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -134,8 +127,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -148,8 +140,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -162,8 +153,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -176,8 +166,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -190,8 +179,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
   ],
@@ -202,6 +190,7 @@ const data = {
       "genre": "Arcade / Racing",
       "developer": "Abhirag R Nair & Johan Gejo",
       "rating": 4.8,
+
       "coverUrl": "/images/covers/neon-drift.jpg",
       "releaseYear": "2025",
       "features": [],
@@ -213,6 +202,7 @@ const data = {
       "genre": "Puzzle / Horror",
       "developer": "Aleena Thomas & Nidhim Nair",
       "rating": 4.5,
+
       "coverUrl": "/images/covers/hollow-maze.jpg",
       "releaseYear": "2025",
       "features": [],
@@ -224,6 +214,7 @@ const data = {
       "genre": "Shooter / Retro",
       "developer": "Gagandeep M",
       "rating": 4.6,
+
       "coverUrl": "/images/covers/grid-runner.jpg",
       "releaseYear": "2025",
       "features": [],
@@ -235,6 +226,7 @@ const data = {
       "genre": "Simulation / Narrative",
       "developer": "GDSC Game Dev Team",
       "rating": 4.9,
+
       "coverUrl": "/images/covers/coda.jpg",
       "releaseYear": "2024",
       "features": [],

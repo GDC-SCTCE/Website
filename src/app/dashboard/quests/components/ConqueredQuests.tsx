@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 import { Quest } from "@/types";
 import { useInView } from "@/hooks/useInView";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
+import { QuestRatingStars } from "./QuestRatingStars";
 
 interface ConqueredQuestsProps {
   completedQuests: Quest[];
@@ -94,16 +95,29 @@ export function ConqueredQuests({ completedQuests }: ConqueredQuestsProps) {
                 </div>
               </div>
 
-              {/* Right: View Report link */}
-              <a
-                href={quest.recapUrl || "#"}
-                className="flex items-center gap-2 hover:opacity-100 transition-all duration-200 self-start sm:self-auto group/report"
-              >
-                <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFF3D2] group-hover:text-[#FFB68B] transition-colors duration-200">
-                  View Report
-                </span>
-                <ExternalLink className="w-[10.67px] h-[10.67px] text-[#FFF3D2] group-hover:text-[#FFB68B] group-hover:translate-x-1 transition-transform duration-200" />
-              </a>
+              {/* Right: View Report link & Ratings */}
+              <div className="flex flex-col sm:items-end gap-3 self-start sm:self-auto">
+                {/* View Report Link */}
+                <a
+                  href={quest.recapUrl || "#"}
+                  className="flex items-center gap-2 hover:opacity-100 transition-all duration-200 group/report"
+                >
+                  <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFF3D2] group-hover:text-[#FFB68B] transition-colors duration-200">
+                    View Report
+                  </span>
+                  <ExternalLink className="w-[10.67px] h-[10.67px] text-[#FFF3D2] group-hover:text-[#FFB68B] group-hover:translate-x-1 transition-transform duration-200" />
+                </a>
+
+                {/* Star Rating (Only for approved registrations) */}
+                {quest.registrations && quest.registrations.some(r => r.status === "REGISTERED") && (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <QuestRatingStars 
+                      questId={quest.id} 
+                      initialRating={quest.ratings && quest.ratings.length > 0 ? quest.ratings[0].rating : undefined} 
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           ))
         ) : (
