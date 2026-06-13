@@ -2,12 +2,11 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/utils/supabase/server";
+import { verifyAdmin } from "./authActions";
 
 async function verifyAuth() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
+  const isAdmin = await verifyAdmin();
+  if (!isAdmin) throw new Error("Unauthorized");
 }
 
 // QUESTS
@@ -71,4 +70,30 @@ export async function deleteTeamMember(id: string) {
   await verifyAuth();
   await prisma.teamMember.delete({ where: { id } });
   revalidatePath("/admin/team");
+}
+
+// REGISTRATIONS
+export async function approveRegistration(userId: string, questId: string) {
+  await verifyAuth();
+  await prisma.registration.update({
+    where: { userId_questId: { userId, questId } },
+    data: { status: "REGISTERED" }
+  });
+  
+  // Increment seats taken
+  await prisma.quest.update({
+    where: { id: questId },
+    data: { seatsTaken: { increment: 1 } }
+  });
+  
+  revalidatePath("/admin/registrations");
+  revalidatePath("/dashboard/quests");
+}
+
+export async function rejectRegistration(userId: string, questId: string) {
+  await verifyAuth();
+  await prisma.registration.delete({
+    where: { userId_questId: { userId, questId } }
+  });
+  revalidatePath("/admin/registrations");
 }

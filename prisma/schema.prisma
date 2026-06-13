@@ -20,10 +20,15 @@ model Quest {
   seatsTaken   Int       @default(0)
   
   targetDate   DateTime? 
-
-  attendees    Int?      
-  rating       Float?    
+  endDate      DateTime? 
+  
+  price        Float     @default(0)
+  upiLink      String?
+  
   recapUrl     String?  
+
+  registrations Registration[]
+  ratings       QuestRating[]
 
   createdAt    DateTime  @default(now())
 }
@@ -74,4 +79,45 @@ model Leaderboard {
   gameTitle String
   date      String
   createdAt DateTime @default(now())
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  phone        String
+  fullName     String
+  rollNo       String
+  academicYear String
+  tools        String[]
+  xpLevel      String
+  
+  registrations Registration[]
+  ratings       QuestRating[]
+  
+  createdAt    DateTime  @default(now())
+}
+
+model Registration {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questId   String
+  quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+  status    String   // "PENDING", "REGISTERED"
+  upiRef    String?
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, questId])
+}
+
+model QuestRating {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questId   String
+  quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+  rating    Int
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, questId])
 }

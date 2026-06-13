@@ -5,17 +5,30 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { useGameForge } from "@/context/GameForgeContext";
+import { useAuth } from "@/context/AuthContext";
+import { verifyUser } from "@/actions/authActions";
 
 export default function OnboardingSuccess() {
-  const { user, loading } = useGameForge();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, loading } = useAuth();
+  const [actualName, setActualName] = useState<string>("Player");
 
   useEffect(() => {
-    // If no user and done loading, redirect to onboarding
-    if (!loading && !user) {
-      router.push("/onboarding");
+    if (!loading) {
+      if (!user) {
+        router.push("/onboarding");
+      } else {
+        verifyUser().then((dbUser) => {
+          if (dbUser && dbUser.fullName) {
+            // Get the first name by splitting the full name
+            const firstName = dbUser.fullName.split(' ')[0];
+            setActualName(firstName);
+          } else {
+            setActualName(user.email?.split('@')[0] || 'Player');
+          }
+        });
+      }
     }
   }, [user, loading, router]);
 
@@ -97,7 +110,7 @@ export default function OnboardingSuccess() {
           {/* Main heading */}
           <h1 className="font-sora font-extrabold text-[clamp(40px,7vw,80px)] leading-none tracking-[-3.2px] text-[#E5E2E3] text-center m-0">
             Welcome to the party,{" "}
-            <span className="text-[#FF7A00]">{user.nickname}.</span>
+            <span className="text-[#FF7A00]">{actualName}.</span>
           </h1>
         </div>
 
@@ -172,7 +185,7 @@ export default function OnboardingSuccess() {
             <p className="font-sora font-normal text-[14px] leading-[20px] text-[#E0C0AF] m-0">
               Exclusive legacy content unlocked for{" "}
               <span className="text-[#FFB68B] font-semibold">
-                {user.nickname}
+                {actualName}
               </span>
               .
             </p>

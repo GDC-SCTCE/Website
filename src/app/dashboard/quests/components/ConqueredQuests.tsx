@@ -89,7 +89,7 @@ export function ConqueredQuests({ completedQuests }: ConqueredQuestsProps) {
                     {quest.title}
                   </p>
                   <p className="mt-1 font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
-                    {quest.attendees || 0} Attendees · {quest.rating || 0}/5.0 Rating
+                    {quest.seatsTaken || 0} Attendees
                   </p>
                 </div>
               </div>

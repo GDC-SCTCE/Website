@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Sora, Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { GameForgeProvider } from "@/context/GameForgeContext";
 import Footer from "@/components/Footer";
+import { AuthProvider } from "@/context/AuthContext";
 
 const sora = Sora({
   variable: "--font-sora",
@@ -40,10 +40,10 @@ export default function RootLayout({
       className={`${sora.variable} ${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable} h-full dark antialiased`}
     >
       <body className="min-h-full bg-black text-zinc-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
-        <GameForgeProvider>
+        <AuthProvider>
           {children}
           <Footer />
-        </GameForgeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { useGameForge } from "@/context/GameForgeContext";
+import { useAuth } from "@/context/AuthContext";
 
 import { useCountdown } from "@/hooks/useCountdown";
 
@@ -53,7 +53,7 @@ const stats = [
 // PAGE
 // ─────────────────────────────────────────────
 export default function Home() {
-  const { user, loading } = useGameForge();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const countdown = useCountdown(JAM_TARGET_MS);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -70,6 +70,7 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
+    
     const played = sessionStorage.getItem("gdc_intro_played");
     if (!played) {
       setShowSplash(true);

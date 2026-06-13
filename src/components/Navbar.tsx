@@ -5,7 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { NAV_LINKS, ADMIN_NAV_LINKS } from "@/constants/navigation";
-import { useGameForge } from "@/context/GameForgeContext";
+import { createClient } from "@/utils/supabase/client";
+import { useAuth } from "@/context/AuthContext";
 
 export interface NavLink {
   label: string;
@@ -28,15 +29,16 @@ export default function Navbar({
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname() || "";
   const router = useRouter();
-  const { user, logout, loading } = useGameForge();
+  const { user, loading } = useAuth();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
     router.push("/");
   };
 
@@ -62,57 +64,35 @@ export default function Navbar({
 
   // Determine CTA Node
   let ctaNode;
-  if (isAdmin) {
+  if (!loading && user) {
     ctaNode = (
-      <button
-        onClick={() => router.push("/")}
-        className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200"
-      >
-        Sign Out
-      </button>
-    );
-  } else if (isSuccess) {
-    ctaNode = (
-      <Link href="/dashboard/quests">
-        <button className="bg-[#FF7A00] px-4 h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200 flex items-center justify-center">
-          DASHBOARD
-        </button>
-      </Link>
-    );
-  } else if (isOnboarding) {
-    ctaNode = (
-      <button
-        className="bg-[#FF7A00]/50 w-[98.41px] h-[28px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#5C2800]/60 border-none cursor-not-allowed flex items-center justify-center"
-        disabled
-      >
-        Join Us
-      </button>
-    );
-  } else if (isHome) {
-    ctaNode = (
-      <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
-        <button className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-300 relative overflow-hidden group/btn-nav flex items-center justify-center">
-          <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover/btn-nav:translate-x-[300%] transition-transform duration-500 ease-in-out" />
-          <span className="relative z-10">{!loading && user ? "Terminal" : "Join Us"}</span>
-        </button>
-      </Link>
-    );
-  } else {
-    // Standard Dashboard CTA
-    ctaNode = user ? (
       <button
         onClick={handleLogout}
         className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200 flex items-center justify-center"
       >
         Sign Out
       </button>
-    ) : (
-      <Link href="/onboarding">
-        <button className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-200 flex items-center justify-center">
+    );
+  } else {
+    if (isOnboarding) {
+      ctaNode = (
+        <button
+          className="bg-[#FF7A00]/50 w-[98.41px] h-[28px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#5C2800]/60 border-none cursor-not-allowed flex items-center justify-center"
+          disabled
+        >
           Join Us
         </button>
-      </Link>
-    );
+      );
+    } else {
+      ctaNode = (
+        <Link href="/onboarding">
+          <button className="bg-[#FF7A00] w-[98.41px] h-[28px] font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-300 relative overflow-hidden group/btn-nav flex items-center justify-center">
+            <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover/btn-nav:translate-x-[300%] transition-transform duration-500 ease-in-out" />
+            <span className="relative z-10">Join Us</span>
+          </button>
+        </Link>
+      );
+    }
   }
 
   return (

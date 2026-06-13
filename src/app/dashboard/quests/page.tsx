@@ -1,8 +1,8 @@
-
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { useGameForge } from "@/context/GameForgeContext";
+import { useAuth } from "@/context/AuthContext";
+import { fetchDashboardData } from "@/actions/dataActions";
 import { Search, ExternalLink } from "lucide-react";
 
 import { filters } from "@/constants/quests";
@@ -15,14 +15,18 @@ import { ConqueredQuests } from "./components/ConqueredQuests";
 // PAGE
 // ──────────────────────────────────────────────────────────────────────────────
 export default function QuestBoard() {
-  const { user, quests } = useGameForge();
+  const { user, loading } = useAuth();
+  const [quests, setQuests] = useState<any[]>([]);
   const [activeFilter, setActiveFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    fetchDashboardData().then((data) => {
+      setQuests(data.quests);
+    });
+  }, [user]);
 
   const filteredQuests = quests.filter((q) => {
     const matchesSearch = q.title.toLowerCase().includes(search.toLowerCase());

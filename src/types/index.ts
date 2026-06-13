@@ -29,10 +29,12 @@ export interface Quest {
   capacity: number;
   seatsTaken: number;
   targetDate?: string | Date | null;
-  attendees?: number | null;
-  rating?: number | null;
+  endDate?: string | Date | null;
+  price?: number;
+  upiLink?: string | null;
   recapUrl?: string | null;
   createdAt: string | Date;
+  registrations?: { status: string }[];
 }
 
 export interface GameHighScore {

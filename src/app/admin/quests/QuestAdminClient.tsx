@@ -149,9 +149,6 @@ export default function QuestAdminClient({ quests }: { quests: any[] }) {
                 <p className="font-sans text-[14px] text-zinc-300">{quest.dateText} | {quest.location}</p>
                 <div className="mt-2 flex gap-4">
                   <span className="font-mono text-[12px] text-[#A78B7C]">SEATS: <span className="text-[#FF7A00]">{quest.seatsTaken}/{quest.capacity}</span></span>
-                  {quest.status === "COMPLETED" && (
-                    <span className="font-mono text-[12px] text-[#A78B7C]">RATING: <span className="text-[#FF7A00]">{quest.rating || 0}/5.0</span></span>
-                  )}
                 </div>
               </div>
             </div>
