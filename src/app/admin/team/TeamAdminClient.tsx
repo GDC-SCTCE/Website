@@ -3,10 +3,13 @@
 import React, { useState } from "react";
 import TeamForm from "./TeamForm";
 import Avatar from "@/components/Avatar";
+import DepartmentFilter from "@/components/DepartmentFilter";
+import { Department } from "@/types";
 
 export default function TeamAdminClient({ members }: { members: any[] }) {
   // Select the first member initially, which should be Campus Lead due to createdAt asc sorting
   const [selectedMember, setSelectedMember] = useState(members[0] || null);
+  const [activeFilter, setActiveFilter] = useState<Department>("ALL");
 
   React.useEffect(() => {
     if (selectedMember) {
@@ -17,11 +20,16 @@ export default function TeamAdminClient({ members }: { members: any[] }) {
     }
   }, [members]);
 
+  const filteredMembers = activeFilter === "ALL" ? members : members.filter(m => m.department === activeFilter);
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Cards List (Left side, col-span-2) */}
-      <div className="lg:col-span-2 flex flex-col gap-4">
-        {members.map((member, index) => (
+    <div className="flex flex-col gap-6">
+      <DepartmentFilter activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Cards List (Left side, col-span-2) */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
+          {filteredMembers.map((member, index) => (
           <div 
             key={member.id} 
             onClick={() => setSelectedMember(member)}
@@ -49,9 +57,9 @@ export default function TeamAdminClient({ members }: { members: any[] }) {
             </div>
           </div>
         ))}
-        {members.length === 0 && (
+        {filteredMembers.length === 0 && (
           <div className="text-center font-mono text-[12px] text-[#A78B7C] p-8 border border-dashed border-[#584235]">
-            NO TEAM MEMBERS FOUND IN DATABASE.
+            NO TEAM MEMBERS FOUND IN THIS DEPARTMENT.
           </div>
         )}
       </div>
@@ -65,6 +73,7 @@ export default function TeamAdminClient({ members }: { members: any[] }) {
           <p className="text-white font-mono text-[12px]">NO MEMBERS FOUND.</p>
         )}
       </div>
+    </div>
     </div>
   );
 }

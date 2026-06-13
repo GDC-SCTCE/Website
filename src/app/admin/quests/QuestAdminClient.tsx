@@ -3,14 +3,37 @@
 import React, { useState } from "react";
 import QuestForm from "./QuestForm";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
-import { Search } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 import { filters as questFilters } from "@/constants/quests";
+import { deleteQuest, deleteAllQuests } from "@/actions/adminActions";
 
 export default function QuestAdminClient({ quests }: { quests: any[] }) {
   const [activeFilter, setActiveFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [selectedQuest, setSelectedQuest] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteAll = async () => {
+    if (window.confirm("WARNING: Are you sure you want to delete ALL quests? This cannot be undone!")) {
+      setIsDeleting(true);
+      await deleteAllQuests();
+      setSelectedQuest(null);
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (window.confirm("Are you sure you want to delete this quest?")) {
+      setIsDeleting(true);
+      await deleteQuest(id);
+      if (selectedQuest?.id === id) {
+        setSelectedQuest(null);
+      }
+      setIsDeleting(false);
+    }
+  };
 
   // keep selected up to date if items change
   React.useEffect(() => {
@@ -72,6 +95,13 @@ export default function QuestAdminClient({ quests }: { quests: any[] }) {
               ))}
             </select>
           </div>
+          <button 
+            onClick={handleDeleteAll}
+            disabled={isDeleting || quests.length === 0}
+            className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 px-3 h-[36px] font-mono text-[10px] tracking-[1.2px] transition-colors disabled:opacity-50 ml-auto"
+          >
+            <Trash2 className="w-[14px] h-[14px]" /> DELETE ALL
+          </button>
         </div>
       </div>
       
@@ -106,6 +136,14 @@ export default function QuestAdminClient({ quests }: { quests: any[] }) {
                     }`}>
                       {quest.status}
                     </span>
+                    <button
+                      onClick={(e) => handleDelete(e, quest.id)}
+                      disabled={isDeleting}
+                      className="text-[#A78B7C] hover:text-red-500 p-1 transition-colors disabled:opacity-50 ml-1"
+                      title="Delete Quest"
+                    >
+                      <Trash2 className="w-[14px] h-[14px]" />
+                    </button>
                   </div>
                 </div>
                 <p className="font-sans text-[14px] text-zinc-300">{quest.dateText} | {quest.location}</p>

@@ -14,6 +14,10 @@ export async function uploadImage(
   fileNamePrefix: string,
   oldImageUrl?: string | null
 ): Promise<string> {
+  if (!file.type.startsWith('image/')) {
+    throw new Error("Only image files are allowed.");
+  }
+
   const supabase = createClient();
 
   const [bucket, ...folders] = bucketAndPath.split('/');

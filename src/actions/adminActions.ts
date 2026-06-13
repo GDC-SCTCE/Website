@@ -29,6 +29,12 @@ export async function deleteQuest(id: string) {
   revalidatePath("/admin/quests");
 }
 
+export async function deleteAllQuests() {
+  await verifyAuth();
+  await prisma.quest.deleteMany({});
+  revalidatePath("/admin/quests");
+}
+
 // GAMES
 export async function createGame(data: any) {
   await verifyAuth();
