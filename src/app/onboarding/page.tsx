@@ -47,19 +47,55 @@ export default function OnboardingPage() {
 
   const handleJoinOrLogin = async () => {
     setAuthError("");
-    if (!isLoginMode && (!fullName.trim() || !email.trim() || !phone.trim() || !rollNo.trim())) {
-      setAuthError("Please fill all required fields.");
-      return;
-    }
-    if (isLoginMode && !email.trim()) {
+    const trimmedEmail = email.trim();
+
+    // 1. Email check (required for both login and signup)
+    if (!trimmedEmail) {
       setAuthError("Please enter your email.");
       return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setAuthError("Please enter a valid email address.");
+      return;
+    }
+
+    // 2. Extra validations for signup mode only
+    if (!isLoginMode) {
+      const trimmedFullName = fullName.trim();
+      const trimmedPhone = phone.trim();
+      const trimmedRollNo = rollNo.trim();
+
+      if (!trimmedFullName || !trimmedPhone || !trimmedRollNo) {
+        setAuthError("Please fill all required fields.");
+        return;
+      }
+
+      // Roll Number Validation (Format: SCT22CS001, case-insensitive check but auto-capitalized)
+      const rollNoRegex = /^SCT\d{2}[A-Z]{2}\d{3}$/i;
+      if (!rollNoRegex.test(trimmedRollNo)) {
+        setAuthError("Roll number must follow the format: SCT[Year][Branch][RollNo] (e.g., SCT22CS001).");
+        return;
+      }
+
+      // Phone Number Validation (10-digit number with optional country code/spacers)
+      const phoneRegex = /^(\+?\d{1,4}[- ]?)?\d{10}$/;
+      if (!phoneRegex.test(trimmedPhone)) {
+        setAuthError("Please enter a valid 10-digit phone number (e.g., +91 9876543210 or 9876543210).");
+        return;
+      }
+
+      // Development Tools Validation
+      if (selectedTools.length === 0) {
+        setAuthError("Please select at least one development tool.");
+        return;
+      }
     }
 
     setSubmitting(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
+      email: trimmedEmail,
     });
 
     if (error) {
@@ -149,7 +185,7 @@ export default function OnboardingPage() {
             {/* Email input only */}
             <div className="mb-[36px] w-full">
               <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                EMAIL ADDRESS
+                EMAIL ADDRESS <span className="text-[#FF7A00] ml-[2px]">*</span>
               </label>
               <div className="border-b border-[#D0D0D0] pb-[13px]">
                 <input
@@ -178,7 +214,7 @@ export default function OnboardingPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mb-[36px] w-full">
                 <div>
                   <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                    FULL NAME
+                    FULL NAME <span className="text-[#FF7A00] ml-[2px]">*</span>
                   </label>
                   <div className="border-b border-[#D0D0D0] pb-[13px]">
                     <input
@@ -193,7 +229,7 @@ export default function OnboardingPage() {
                 
                 <div>
                   <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                    EMAIL ADDRESS
+                    EMAIL ADDRESS <span className="text-[#FF7A00] ml-[2px]">*</span>
                   </label>
                   <div className="border-b border-[#D0D0D0] pb-[13px]">
                     <input
@@ -211,22 +247,22 @@ export default function OnboardingPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mb-[36px] w-full">
                 <div>
                   <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                    ROLL NO.
+                    ROLL NO. <span className="text-[#FF7A00] ml-[2px]">*</span>
                   </label>
                   <div className="border-b border-[#D0D0D0] pb-[13px]">
                     <input
                       type="text"
                       value={rollNo}
-                      onChange={(e) => setRollNo(e.target.value)}
+                      onChange={(e) => setRollNo(e.target.value.toUpperCase())}
                       placeholder="SCT22CS001"
-                      className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
+                      className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B] uppercase"
                     />
                   </div>
                 </div>
                 
                 <div>
                   <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                    PHONE NUMBER
+                    PHONE NUMBER <span className="text-[#FF7A00] ml-[2px]">*</span>
                   </label>
                   <div className="border-b border-[#D0D0D0] pb-[13px]">
                     <input
