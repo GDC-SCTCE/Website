@@ -34,7 +34,6 @@ export default function RegistrationAdminClient({ registrations }: { registratio
 
   const filtered = registrations.filter((r) => {
     const matchesSearch = r.user.fullName.toLowerCase().includes(search.toLowerCase()) || 
-                          r.quest.title.toLowerCase().includes(search.toLowerCase()) ||
                           (r.upiRef && r.upiRef.toLowerCase().includes(search.toLowerCase()));
     const matchesStatus = statusFilter === "ALL" || r.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -78,7 +77,6 @@ export default function RegistrationAdminClient({ registrations }: { registratio
           <thead>
             <tr className="border-b border-[#584235] bg-[#131314]">
               <th className="p-4 font-mono text-[10px] text-[#A78B7C] tracking-[1.2px]">USER</th>
-              <th className="p-4 font-mono text-[10px] text-[#A78B7C] tracking-[1.2px]">QUEST</th>
               <th className="p-4 font-mono text-[10px] text-[#A78B7C] tracking-[1.2px]">PRICE / UPI REF</th>
               <th className="p-4 font-mono text-[10px] text-[#A78B7C] tracking-[1.2px]">STATUS</th>
               <th className="p-4 font-mono text-[10px] text-[#A78B7C] tracking-[1.2px] text-right">ACTIONS</th>
@@ -90,10 +88,6 @@ export default function RegistrationAdminClient({ registrations }: { registratio
                 <td className="p-4">
                   <p className="font-sora font-bold text-[14px] text-[#FFB68B]">{r.user.fullName}</p>
                   <p className="font-mono text-[10px] text-[#A78B7C] mt-1">{r.user.email} • {r.user.phone || 'No phone'}</p>
-                </td>
-                <td className="p-4">
-                  <p className="font-sora font-normal text-[14px] text-[#E5E2E3]">{r.quest.title}</p>
-                  <p className="font-mono text-[10px] text-[#A78B7C] mt-1">{r.quest.dateText}</p>
                 </td>
                 <td className="p-4">
                   <p className="font-mono text-[12px] text-[#FF7A00]">₹{r.quest.price || 0}</p>
@@ -134,7 +128,7 @@ export default function RegistrationAdminClient({ registrations }: { registratio
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-8 text-center font-mono text-[12px] text-[#A78B7C]">
+                <td colSpan={4} className="p-8 text-center font-mono text-[12px] text-[#A78B7C]">
                   NO REGISTRATIONS FOUND.
                 </td>
               </tr>

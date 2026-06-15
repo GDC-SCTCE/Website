@@ -9,7 +9,6 @@ export const NAV_LINKS = [
 export const ADMIN_NAV_LINKS = [
   { label: "Overview", href: "/admin" },
   { label: "Quests", href: "/admin/quests" },
-  { label: "Registrations", href: "/admin/registrations" },
   { label: "Games", href: "/admin/games" },
   { label: "Team Members", href: "/admin/team" },
 ] as const;

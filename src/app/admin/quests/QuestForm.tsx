@@ -12,14 +12,6 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
   const [uploadError, setUploadError] = useState("");
   const [status, setStatus] = useState(quest?.status || "UPCOMING");
 
-  useEffect(() => {
-    if (quest) {
-      setStatus(quest.status || "UPCOMING");
-    } else {
-      setStatus("UPCOMING");
-    }
-  }, [quest]);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -69,16 +61,9 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
       await createQuest(finalData);
       formRef.current?.reset();
     }
-    
     if (onComplete) onComplete();
     setLoading(false);
   };
-
-  useEffect(() => {
-    if (formRef.current) {
-      formRef.current.reset();
-    }
-  }, [quest]);
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
