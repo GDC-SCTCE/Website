@@ -105,7 +105,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] relative overflow-x-hidden">
+    <div className="min-h-dvh bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] relative overflow-x-hidden">
       {/* ── Ambient blobs ── */}
       <div className="absolute w-[512px] h-[746px] left-[-136px] top-[79px] bg-[#FFB68B]/3 blur-[60px] rotate-12 pointer-events-none" />
       <div className="absolute w-[640px] h-[622px] left-[870px] top-[242px] bg-[#00DBE9]/3 blur-[75px] -rotate-12 pointer-events-none" />
@@ -116,14 +116,14 @@ export default function OnboardingPage() {
       {/* ── MAIN ── */}
       <main className="max-w-[1440px] mx-auto px-4 md:px-[64px] pb-[80px]">
         {/* ── PROGRESS HEADER ── */}
-        <div className="text-center pt-[96px] mb-[56px]">
+        <div className="text-center pt-[48px] md:pt-[96px] mb-[32px] md:mb-[56px]">
           {/* Phase label */}
           <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#00DBE9] mb-[28px]">
             {isLoginMode ? "PHASE 01 / RECONNECT" : "PHASE 02 / CHARACTER DATA"}
           </p>
 
           {/* Heading */}
-          <h1 className="font-sora font-bold text-[48px] leading-[53px] tracking-[-2.4px] uppercase text-[#FFB68B] mb-[24px]">
+          <h1 className="font-sora font-bold text-[32px] md:text-[48px] leading-[38px] md:leading-[53px] tracking-[-2.4px] uppercase text-[#FFB68B] mb-[24px]">
             {isLoginMode ? "Enter Terminal" : "Initialize Protocol"}
           </h1>
 
@@ -134,20 +134,48 @@ export default function OnboardingPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-[64px] items-start max-w-[1280px] mx-auto">
-          {/* ───── LEFT: BASE STATS ───── */}
-          <div>
-            <div className="flex items-center gap-[16px] mb-[48px]">
-              <span className="font-sora font-bold text-[48px] leading-none tracking-[-0.96px] text-[#353436]">
+        {isLoginMode ? (
+          <div className="max-w-[420px] mx-auto w-full">
+            {/* Credentials Header */}
+            <div className="flex items-center gap-[16px] mb-[24px] md:mb-[48px] justify-center">
+              <span className="font-sora font-bold text-[36px] md:text-[48px] leading-none tracking-[-0.96px] text-[#353436]">
                 03
               </span>
-              <span className="font-sora font-bold text-[32px] leading-none uppercase text-[#E5E2E3]">
-                {isLoginMode ? "CREDENTIALS" : "BASE STATS"}
+              <span className="font-sora font-bold text-[24px] md:text-[32px] leading-none uppercase text-[#E5E2E3]">
+                CREDENTIALS
               </span>
             </div>
 
-            <div className={`grid grid-cols-1 ${!isLoginMode ? 'md:grid-cols-2' : ''} gap-[24px] mb-[36px] w-full`}>
-              {!isLoginMode && (
+            {/* Email input only */}
+            <div className="mb-[36px] w-full">
+              <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
+                EMAIL ADDRESS
+              </label>
+              <div className="border-b border-[#D0D0D0] pb-[13px]">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="jaxen@gmail.com"
+                  className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-[64px] items-start max-w-[1280px] mx-auto">
+            {/* ───── LEFT: BASE STATS ───── */}
+            <div>
+              <div className="flex items-center gap-[16px] mb-[24px] md:mb-[48px]">
+                <span className="font-sora font-bold text-[36px] md:text-[48px] leading-none tracking-[-0.96px] text-[#353436]">
+                  03
+                </span>
+                <span className="font-sora font-bold text-[24px] md:text-[32px] leading-none uppercase text-[#E5E2E3]">
+                  BASE STATS
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mb-[36px] w-full">
                 <div>
                   <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
                     FULL NAME
@@ -162,149 +190,144 @@ export default function OnboardingPage() {
                     />
                   </div>
                 </div>
-              )}
-              
-              <div>
-                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                  EMAIL ADDRESS
-                </label>
-                <div className="border-b border-[#D0D0D0] pb-[13px]">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="jaxen@gmail.com"
-                    className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {!isLoginMode && (
-              <>
-
-                {/* Roll No + Phone Number */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mb-[36px] w-full">
-                  <div>
-                    <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                      ROLL NO.
-                    </label>
-                    <div className="border-b border-[#D0D0D0] pb-[13px]">
-                      <input
-                        type="text"
-                        value={rollNo}
-                        onChange={(e) => setRollNo(e.target.value)}
-                        placeholder="SCT22CS001"
-                        className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                      PHONE NUMBER
-                    </label>
-                    <div className="border-b border-[#D0D0D0] pb-[13px]">
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+91 9876543210"
-                        className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Academic Year */}
-                <div className="w-full mb-[36px]">
+                
+                <div>
                   <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                    ACADEMIC YEAR
+                    EMAIL ADDRESS
                   </label>
-                  <div className="flex flex-wrap gap-[8px]">
-                    {YEAR_OPTIONS.map((y) => {
-                      const isActive = year === y;
-                      return (
-                        <button
-                          key={y}
-                          onClick={() => setYear(y)}
-                          className={`flex items-center justify-center w-[83.33px] h-[48px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer uppercase transition-all duration-150 border ${isActive ? "bg-[#FF7A00] text-[#522300] border-[#FF7A00]" : "bg-transparent text-[#E5E2E3] border-[#353436] hover:border-[#FFB68B]/50"}`}
-                        >
-                          {y}
-                        </button>
-                      );
-                    })}
+                  <div className="border-b border-[#D0D0D0] pb-[13px]">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="jaxen@gmail.com"
+                      className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
+                    />
                   </div>
                 </div>
-              </>
-            )}
-          </div>
+              </div>
 
-          {/* ───── RIGHT: LOADOUT ───── */}
-          <div className={isLoginMode ? "opacity-30 pointer-events-none grayscale" : ""}>
-            {/* Section title */}
-            <div className="flex items-center gap-[16px] mb-[48px]">
-              <span className="font-sora font-bold text-[48px] leading-none tracking-[-0.96px] text-[#353436]">
-                04
-              </span>
-              <span className="font-sora font-bold text-[32px] leading-none uppercase text-[#E5E2E3]">
-                LOADOUT
-              </span>
-            </div>
+              {/* Roll No + Phone Number */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mb-[36px] w-full">
+                <div>
+                  <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
+                    ROLL NO.
+                  </label>
+                  <div className="border-b border-[#D0D0D0] pb-[13px]">
+                    <input
+                      type="text"
+                      value={rollNo}
+                      onChange={(e) => setRollNo(e.target.value)}
+                      placeholder="SCT22CS001"
+                      className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
+                    PHONE NUMBER
+                  </label>
+                  <div className="border-b border-[#D0D0D0] pb-[13px]">
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+91 9876543210"
+                      className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
+                    />
+                  </div>
+                </div>
+              </div>
 
-            {/* Development Tools */}
-            <div className="mb-[56px]">
-              <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[28px]">
-                DEVELOPMENT TOOLS
-              </p>
-              <div className="flex gap-[8px] flex-wrap">
-                {DEV_TOOLS.map((tool) => {
-                  const isSelected = selectedTools.includes(tool);
-                  return (
-                    <button
-                      key={tool}
-                      onClick={() => toggleTool(tool)}
-                      className={`h-[33px] px-[16px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer transition-all duration-150 ${isSelected ? "bg-[#FFB68B] text-[#522300] border-none shadow-[0_4px_20px_-5px_rgba(255,182,139,0.6)]" : "bg-transparent text-[#E0C0AF] border border-[#353436] hover:border-[#FFB68B]"}`}
-                    >
-                      {tool}
-                    </button>
-                  );
-                })}
+              {/* Academic Year */}
+              <div className="w-full mb-[36px]">
+                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
+                  ACADEMIC YEAR
+                </label>
+                <div className="flex flex-wrap gap-[8px]">
+                  {YEAR_OPTIONS.map((y) => {
+                    const isActive = year === y;
+                    return (
+                      <button
+                        key={y}
+                        onClick={() => setYear(y)}
+                        className={`flex items-center justify-center w-[83.33px] h-[48px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer uppercase transition-all duration-150 border ${isActive ? "bg-[#FF7A00] text-[#522300] border-[#FF7A00]" : "bg-transparent text-[#E5E2E3] border-[#353436] hover:border-[#FFB68B]/50"}`}
+                      >
+                        {y}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
-            {/* XP Classification */}
+            {/* ───── RIGHT: LOADOUT ───── */}
             <div>
-              <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[28px]">
-                XP CLASSIFICATION
-              </p>
-              <div className="flex flex-col gap-[12px]">
-                {XP_LEVELS.map((lvl) => {
-                  const isSelected = xpLevel === lvl.id;
-                  return (
-                    <button
-                      key={lvl.id}
-                      onClick={() => setXpLevel(lvl.id)}
-                      className={`w-full h-[69px] bg-[#1C1B1C] pl-[49px] pr-[17px] py-[17px] text-left cursor-pointer relative box-border transition-colors duration-150 border ${isSelected ? "border-[#FFB68B]" : "border-[#353436] hover:border-[#FFB68B]/50"}`}
-                    >
-                      {/* Radio circle */}
-                      <span className={`absolute left-[17px] top-[26.5px] w-[16px] h-[16px] border-2 border-[#353436] rounded-full inline-block box-border ${isSelected ? "bg-[#FFB68B]" : "bg-transparent"}`} />
-                      <p className="font-mono font-normal text-[12px] leading-[18px] text-[#FFB68B] m-0 mb-[2px]">
-                        {lvl.label}
-                      </p>
-                      <p className="font-sora font-normal text-[11px] leading-[16px] text-[#E0C0AF] m-0 truncate">
-                        {lvl.desc}
-                      </p>
-                    </button>
-                  );
-                })}
+              {/* Section title */}
+              <div className="flex items-center gap-[16px] mb-[24px] md:mb-[48px]">
+                <span className="font-sora font-bold text-[36px] md:text-[48px] leading-none tracking-[-0.96px] text-[#353436]">
+                  04
+                </span>
+                <span className="font-sora font-bold text-[24px] md:text-[32px] leading-none uppercase text-[#E5E2E3]">
+                  LOADOUT
+                </span>
+              </div>
+
+              {/* Development Tools */}
+              <div className="mb-[56px]">
+                <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[28px]">
+                  DEVELOPMENT TOOLS
+                </p>
+                <div className="flex gap-[8px] flex-wrap">
+                  {DEV_TOOLS.map((tool) => {
+                    const isSelected = selectedTools.includes(tool);
+                    return (
+                      <button
+                        key={tool}
+                        onClick={() => toggleTool(tool)}
+                        className={`h-[33px] px-[16px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer transition-all duration-150 ${isSelected ? "bg-[#FFB68B] text-[#522300] border-none shadow-[0_4px_20px_-5px_rgba(255,182,139,0.6)]" : "bg-transparent text-[#E0C0AF] border border-[#353436] hover:border-[#FFB68B]"}`}
+                      >
+                        {tool}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* XP Classification */}
+              <div>
+                <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[28px]">
+                  XP CLASSIFICATION
+                </p>
+                <div className="flex flex-col gap-[12px]">
+                  {XP_LEVELS.map((lvl) => {
+                    const isSelected = xpLevel === lvl.id;
+                    return (
+                      <button
+                        key={lvl.id}
+                        onClick={() => setXpLevel(lvl.id)}
+                        className={`w-full h-[69px] bg-[#1C1B1C] pl-[49px] pr-[17px] py-[17px] text-left cursor-pointer relative box-border transition-colors duration-150 border ${isSelected ? "border-[#FFB68B]" : "border-[#353436] hover:border-[#FFB68B]/50"}`}
+                      >
+                        {/* Radio circle */}
+                        <span className={`absolute left-[17px] top-[26.5px] w-[16px] h-[16px] border-2 border-[#353436] rounded-full inline-block box-border ${isSelected ? "bg-[#FFB68B]" : "bg-transparent"}`} />
+                        <p className="font-mono font-normal text-[12px] leading-[18px] text-[#FFB68B] m-0 mb-[2px]">
+                          {lvl.label}
+                        </p>
+                        <p className="font-sora font-normal text-[11px] leading-[16px] text-[#E0C0AF] m-0 truncate">
+                          {lvl.desc}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* ── CTA BUTTON ── */}
-        <div className="text-center mt-[96px] flex flex-col items-center">
+        <div className={`text-center ${isLoginMode ? "mt-[48px]" : "mt-[96px]"} flex flex-col items-center`}>
           {authError && <p className="text-red-500 font-mono text-[12px] mb-4">{authError}</p>}
           <div className="inline-block relative w-full max-w-[420px]">
             <div className="absolute inset-0 bg-[#FF7A00] blur-[15px] opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
