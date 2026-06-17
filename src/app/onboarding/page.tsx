@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/utils/supabase/client";
 import { syncUserToDatabase } from "@/actions/authActions";
+import { checkUserExists } from "@/actions/userActions";
 
 import { XPLevel } from "./types";
 import { DEV_TOOLS, YEAR_OPTIONS, XP_LEVELS } from "./constants";
@@ -45,7 +46,8 @@ export default function OnboardingPage() {
     );
   };
 
-  const handleJoinOrLogin = async () => {
+  const handleJoinOrLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setAuthError("");
     const trimmedEmail = email.trim();
 
@@ -93,6 +95,16 @@ export default function OnboardingPage() {
     }
 
     setSubmitting(true);
+    
+    if (isLoginMode) {
+      const exists = await checkUserExists(trimmedEmail);
+      if (!exists) {
+        setAuthError("No account found with this email. Please sign up instead.");
+        setSubmitting(false);
+        return;
+      }
+    }
+
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email: trimmedEmail,
@@ -107,7 +119,8 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleVerifyOtp = async () => {
+  const handleVerifyOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setSubmitting(true);
     setAuthError("");
     const supabase = createClient();
@@ -151,6 +164,7 @@ export default function OnboardingPage() {
 
       {/* ── MAIN ── */}
       <main className="max-w-[1440px] mx-auto px-4 md:px-[64px] pb-[80px]">
+        <form onSubmit={handleJoinOrLogin}>
         {/* ── PROGRESS HEADER ── */}
         <div className="text-center pt-[48px] md:pt-[96px] mb-[32px] md:mb-[56px]">
           {/* Phase label */}
@@ -286,6 +300,7 @@ export default function OnboardingPage() {
                     const isActive = year === y;
                     return (
                       <button
+                        type="button"
                         key={y}
                         onClick={() => setYear(y)}
                         className={`flex items-center justify-center w-[83.33px] h-[48px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer uppercase transition-all duration-150 border ${isActive ? "bg-[#FF7A00] text-[#522300] border-[#FF7A00]" : "bg-transparent text-[#E5E2E3] border-[#353436] hover:border-[#FFB68B]/50"}`}
@@ -320,6 +335,7 @@ export default function OnboardingPage() {
                     const isSelected = selectedTools.includes(tool);
                     return (
                       <button
+                        type="button"
                         key={tool}
                         onClick={() => toggleTool(tool)}
                         className={`h-[33px] px-[16px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer transition-all duration-150 ${isSelected ? "bg-[#FFB68B] text-[#522300] border-none shadow-[0_4px_20px_-5px_rgba(255,182,139,0.6)]" : "bg-transparent text-[#E0C0AF] border border-[#353436] hover:border-[#FFB68B]"}`}
@@ -341,6 +357,7 @@ export default function OnboardingPage() {
                     const isSelected = xpLevel === lvl.id;
                     return (
                       <button
+                        type="button"
                         key={lvl.id}
                         onClick={() => setXpLevel(lvl.id)}
                         className={`w-full h-[69px] bg-[#1C1B1C] pl-[49px] pr-[17px] py-[17px] text-left cursor-pointer relative box-border transition-colors duration-150 border ${isSelected ? "border-[#FFB68B]" : "border-[#353436] hover:border-[#FFB68B]/50"}`}
@@ -368,7 +385,7 @@ export default function OnboardingPage() {
           <div className="inline-block relative w-full max-w-[420px]">
             <div className="absolute inset-0 bg-[#FF7A00] blur-[15px] opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
             <button
-              onClick={handleJoinOrLogin}
+              type="submit"
               disabled={submitting}
               className={`relative flex items-center justify-center w-full h-[60px] border border-[#FF7A00] font-mono font-bold text-[14px] tracking-[2px] uppercase transition-all duration-300 ${submitting ? "bg-[#1C1B1C] text-[#A78B7C] opacity-60 cursor-not-allowed border-[#584235]" : "bg-[#FF7A00] text-[#131314] cursor-pointer hover:bg-[#131314] hover:text-[#FF7A00] hover:shadow-[0_0_20px_rgba(255,122,0,0.3)]"}`}
             >
@@ -377,18 +394,20 @@ export default function OnboardingPage() {
           </div>
           
           <button 
+            type="button"
             onClick={() => { setIsLoginMode(!isLoginMode); setAuthError(""); }}
             className="font-mono text-[12px] text-[#E0C0AF] underline hover:text-[#FFB68B] transition-colors bg-transparent border-none cursor-pointer mt-[24px]"
           >
             {isLoginMode ? "Need an account? Sign Up" : "Already have an account? Log In"}
           </button>
         </div>
+        </form>
       </main>
 
       {/* OTP MODAL */}
       {showOtpModal && (
         <div className="fixed inset-0 z-[200] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#1C1B1C] border border-[#584235] p-8 max-w-[400px] w-full text-center relative shadow-2xl">
+          <form onSubmit={handleVerifyOtp} className="bg-[#1C1B1C] border border-[#584235] p-8 max-w-[400px] w-full text-center relative shadow-2xl">
             <h2 className="font-sora font-bold text-[24px] text-[#FFB68B] mb-2 uppercase tracking-tight">Security Checkpoint</h2>
             <p className="font-mono text-[12px] text-[#E0C0AF] mb-6">
               Enter the access code sent to {email}
@@ -402,19 +421,20 @@ export default function OnboardingPage() {
             />
             {authError && <p className="text-red-500 mb-4 text-[12px]">{authError}</p>}
             <button
-              onClick={handleVerifyOtp}
+              type="submit"
               disabled={submitting || otp.length !== 8}
               className="w-full h-[48px] bg-[#FF7A00] text-[#522300] font-mono font-bold tracking-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? "VERIFYING..." : "VERIFY CODE"}
             </button>
             <button
+              type="button"
               onClick={() => setShowOtpModal(false)}
               className="mt-4 text-[12px] text-[#E0C0AF] underline bg-transparent border-none cursor-pointer hover:text-[#FFB68B]"
             >
               Cancel
             </button>
-          </div>
+          </form>
         </div>
       )}
     </div>

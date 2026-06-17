@@ -2,8 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { updateTeamMember } from "@/actions/adminActions";
-import { uploadImage } from "@/utils/supabase/storage";
-import { createClient } from "@/utils/supabase/client";
+import { handleImageUpload } from "@/utils/uploadHelper";
 import Avatar from "@/components/Avatar";
 import { filters } from "@/constants/members";
 
@@ -30,31 +29,39 @@ export default function TeamForm({ member }: { member: any }) {
     let finalAvatarUrl = member.avatar || "";
     let finalGpImageUrl = member.gamePreview?.image || "";
 
-    const supabase = createClient();
-
     // Handle Avatar Image Upload
     const imageFile = formData.get("imageFile") as File;
     if (imageFile && imageFile.size > 0) {
-      try {
-        finalAvatarUrl = await uploadImage(imageFile, "team", member.name, member.avatar);
-      } catch (err: any) {
-        setUploadError(`Avatar upload failed: ${err.message}`);
+      const newUrl = await handleImageUpload(
+        imageFile,
+        "team",
+        member.name,
+        member.avatar || null,
+        setUploadError
+      );
+      if (!newUrl) {
         setLoading(false);
         return;
       }
+      finalAvatarUrl = newUrl;
     }
 
     // Handle Game Preview Image Upload
     if (department === "ALL") {
       const gpImageFile = formData.get("gpImageFile") as File;
       if (gpImageFile && gpImageFile.size > 0) {
-        try {
-          finalGpImageUrl = await uploadImage(gpImageFile, "team/game", `${member.name}_gp`, member.gamePreview?.image);
-        } catch (err: any) {
-          setUploadError(`Game Preview upload failed: ${err.message}`);
+        const newGpUrl = await handleImageUpload(
+          gpImageFile,
+          "team/game",
+          `${member.name}_gp`,
+          member.gamePreview?.image || null,
+          setUploadError
+        );
+        if (!newGpUrl) {
           setLoading(false);
           return;
         }
+        finalGpImageUrl = newGpUrl;
       }
     }
 

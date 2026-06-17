@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { createGame } from "@/actions/adminActions";
-import { createClient } from "@/utils/supabase/client";
+import { handleImageUpload } from "@/utils/uploadHelper";
 
 export default function GameForm() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -20,25 +20,18 @@ export default function GameForm() {
     // Handle Image Upload
     const imageFile = formData.get("imageFile") as File;
     if (imageFile && imageFile.size > 0) {
-      const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-      
-      const supabase = createClient();
-      const { data: uploadData, error: uploadErr } = await supabase.storage
-        .from("games")
-        .upload(fileName, imageFile);
-
-      if (uploadErr) {
-        setUploadError(`Upload failed: ${uploadErr.message}`);
+      const newUrl = await handleImageUpload(
+        imageFile,
+        "games",
+        Math.random().toString(36).substring(7),
+        null,
+        setUploadError
+      );
+      if (!newUrl) {
         setLoading(false);
         return;
       }
-
-      const { data: publicUrlData } = supabase.storage
-        .from("games")
-        .getPublicUrl(fileName);
-        
-      finalCoverUrl = publicUrlData.publicUrl;
+      finalCoverUrl = newUrl;
     }
 
     const data = {

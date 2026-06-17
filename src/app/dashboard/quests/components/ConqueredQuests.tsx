@@ -8,9 +8,10 @@ import { QuestRatingStars } from "./QuestRatingStars";
 
 interface ConqueredQuestsProps {
   completedQuests: Quest[];
+  isLoading?: boolean;
 }
 
-export function ConqueredQuests({ completedQuests }: ConqueredQuestsProps) {
+export function ConqueredQuests({ completedQuests, isLoading = false }: ConqueredQuestsProps) {
   const [completedPage, setCompletedPage] = useState(0);
   const COMPLETED_PER_PAGE = 5;
 

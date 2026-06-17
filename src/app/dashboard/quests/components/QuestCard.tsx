@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCountdown } from "@/hooks/useCountdown";
 import { Bell } from "lucide-react";
 import { Quest } from "@/types";
@@ -11,6 +12,7 @@ import { registerForQuest } from "@/actions/userActions";
 export interface QuestCardProps {
   quest: Quest;
   user: any; // Using any for simplicity as per original
+  isAdmin?: boolean;
   delay?: number;
   visible?: boolean;
 }
@@ -18,9 +20,11 @@ export interface QuestCardProps {
 export function QuestCard({
   quest,
   user,
+  isAdmin = false,
   delay = 0,
   visible = true,
 }: QuestCardProps) {
+  const router = useRouter();
   const isUpcoming = quest.status === "UPCOMING";
   const imageAlt = quest.title;
   const targetMs = quest.targetDate ? new Date(quest.targetDate).getTime() : Date.now();
@@ -40,14 +44,18 @@ export function QuestCard({
     if (quest.registrations && quest.registrations.length > 0) {
       const regStatus = quest.registrations[0].status;
       if (regStatus === "PENDING") {
-        setSuccessMsg("Registration pending admin approval.");
+        setSuccessMsg("PENDING APPROVAL");
       } else {
-        setSuccessMsg("Successfully registered!");
+        setSuccessMsg("REGISTERED ✓");
       }
     }
   }, [quest.registrations]);
 
   const handleRegister = async () => {
+    if (!user) {
+      router.push("/onboarding");
+      return;
+    }
     setRegError("");
     setSuccessMsg("");
     if (quest.price && quest.price > 0) {
@@ -63,7 +71,7 @@ export function QuestCard({
       setRegError("");
       const res = await registerForQuest(quest.id, upiRef);
       if (res.success) {
-        setSuccessMsg(res.status === "PENDING" ? "Registration pending admin approval." : "Successfully registered!");
+        setSuccessMsg(res.status === "PENDING" ? "PENDING APPROVAL" : "REGISTERED ✓");
         setShowPaymentModal(false);
       }
     } catch (err: any) {
@@ -156,9 +164,12 @@ export function QuestCard({
           </div>
         )}
 
-        {user && (
+        {!isAdmin && (
           isUpcoming ? (
-            <button className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] border-2 border-[#FFB68B] bg-transparent flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/5 cursor-pointer">
+            <button 
+              onClick={() => { if (!user) router.push("/onboarding"); }}
+              className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] border-2 border-[#FFB68B] bg-transparent flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/5 cursor-pointer"
+            >
               <Bell className="w-4 h-5 text-[#FFB68B]" />
               <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFB68B]">
                 Notify Me
@@ -167,14 +178,13 @@ export function QuestCard({
           ) : (
             <div className="mt-4 md:mt-6 mb-4 md:mb-6 flex flex-col gap-2">
               {regError && <p className="text-red-500 text-[12px] font-mono">{regError}</p>}
-              {successMsg && <p className="text-green-500 text-[12px] font-mono">{successMsg}</p>}
               <button 
                 onClick={handleRegister}
                 disabled={registering || !!successMsg}
                 className="w-full h-[48px] bg-[#FF7A00] flex items-center justify-center gap-2 transition-opacity hover:opacity-90 cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800]">
-                  {registering ? "Processing..." : (quest.price && quest.price > 0 ? `Pay ₹${quest.price} & Register` : "Accept Quest →")}
+                  {registering ? "PROCESSING..." : successMsg ? successMsg : (quest.price && quest.price > 0 ? `Pay ₹${quest.price} & Register` : "Accept Quest →")}
                 </span>
               </button>
             </div>

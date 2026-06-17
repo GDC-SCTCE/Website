@@ -2,8 +2,8 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { createQuest, updateQuest } from "@/actions/adminActions";
+import { handleImageUpload } from "@/utils/uploadHelper";
 import { filters } from "@/constants/quests";
-import { uploadImage } from "@/utils/supabase/storage";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 
 export default function QuestForm({ quest, onComplete }: { quest?: any, onComplete?: () => void }) {
@@ -44,13 +44,18 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
     let finalImageUrl = quest?.image || "";
     const imageFile = formData.get("imageFile") as File;
     if (imageFile && imageFile.size > 0) {
-      try {
-        finalImageUrl = await uploadImage(imageFile, "quests", data.title.replace(/\s+/g, '_'), finalImageUrl);
-      } catch (err: any) {
-        setUploadError(`Image upload failed: ${err.message}`);
+      const newUrl = await handleImageUpload(
+        imageFile,
+        "quests",
+        data.title.replace(/\s+/g, '_'),
+        finalImageUrl,
+        setUploadError
+      );
+      if (!newUrl) {
         setLoading(false);
         return;
       }
+      finalImageUrl = newUrl;
     }
 
     const finalData = { ...data, image: finalImageUrl };

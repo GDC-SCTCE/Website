@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { verifyAdmin } from "./authActions";
+import { createClient } from "@/utils/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase";
 
 async function verifyAuth() {
   const isAdmin = await verifyAdmin();
@@ -54,21 +56,10 @@ export async function deleteGame(id: string) {
 }
 
 // TEAM MEMBERS
-export async function createTeamMember(data: any) {
-  await verifyAuth();
-  await prisma.teamMember.create({ data });
-  revalidatePath("/admin/team");
-}
 
 export async function updateTeamMember(id: string, data: any) {
   await verifyAuth();
   await prisma.teamMember.update({ where: { id }, data });
-  revalidatePath("/admin/team");
-}
-
-export async function deleteTeamMember(id: string) {
-  await verifyAuth();
-  await prisma.teamMember.delete({ where: { id } });
   revalidatePath("/admin/team");
 }
 
@@ -96,4 +87,47 @@ export async function rejectRegistration(userId: string, questId: string) {
     where: { userId_questId: { userId, questId } }
   });
   revalidatePath("/admin/registrations");
+}
+
+export async function uploadAdminImage(formData: FormData) {
+  await verifyAuth();
+
+  const file = formData.get("file") as File;
+  const bucketAndPath = formData.get("bucketAndPath") as string;
+  const fileNamePrefix = formData.get("fileNamePrefix") as string;
+  const oldImageUrl = formData.get("oldImageUrl") as string | null;
+
+  if (!file || !file.type.startsWith('image/')) {
+    throw new Error("Only image files are allowed.");
+  }
+
+  const supabase = supabaseAdmin;
+
+  const [bucket, ...folders] = bucketAndPath.split('/');
+  const folderPath = folders.length > 0 ? folders.join('/') + '/' : '';
+
+  if (oldImageUrl && oldImageUrl.includes(`/public/${bucket}/`)) {
+    const oldFilePath = oldImageUrl.split(`/public/${bucket}/`)[1];
+    if (oldFilePath) {
+      await supabase.storage.from(bucket).remove([decodeURIComponent(oldFilePath)]);
+    }
+  }
+
+  const fileExt = file.name.split('.').pop() || 'png';
+  const sanitizedPrefix = fileNamePrefix.toLowerCase().replace(/[^a-z0-9]/g, '_');
+  const fileName = `${folderPath}${sanitizedPrefix}_${Date.now()}.${fileExt}`;
+
+  const { error: uploadErr } = await supabase.storage
+    .from(bucket)
+    .upload(fileName, file);
+
+  if (uploadErr) {
+    throw new Error(uploadErr.message);
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from(bucket)
+    .getPublicUrl(fileName);
+
+  return publicUrlData.publicUrl;
 }

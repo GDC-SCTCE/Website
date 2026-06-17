@@ -4,6 +4,14 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { verifyUser } from "./authActions";
 
+export async function checkUserExists(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true }
+  });
+  return !!user;
+}
+
 export async function registerForQuest(questId: string, upiRef?: string) {
   const user = await verifyUser();
   if (!user) throw new Error("Unauthorized");
