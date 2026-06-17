@@ -54,6 +54,21 @@ export async function deleteGame(id: string) {
   revalidatePath("/admin/games");
 }
 
+export async function setEditorsChoiceGame(id: string) {
+  await verifyAuth();
+  // Set all to false first
+  await prisma.game.updateMany({
+    data: { isEditorsChoice: false },
+  });
+  // Set the specific one to true
+  await prisma.game.update({
+    where: { id },
+    data: { isEditorsChoice: true },
+  });
+  revalidatePath("/admin/games");
+  revalidatePath("/dashboard/arcade");
+}
+
 // TEAM MEMBERS
 
 export async function updateTeamMember(id: string, data: any) {

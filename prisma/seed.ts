@@ -189,48 +189,48 @@ const data = {
       "description": "Slide through synthwave grids avoiding firewalls and scanning lasers in this neon arcade runner.",
       "genre": "Arcade / Racing",
       "developer": "Abhirag R Nair & Johan Gejo",
-      "rating": 4.8,
-
+      "engine": "Unity",
+      "dimension": "3D",
+      "duration": "1h",
       "coverUrl": "/images/covers/neon-drift.jpg",
-      "releaseYear": "2025",
-      "features": [],
-      "playable": true,
+      "year": "2025",
+      "isEditorsChoice": true,
     },
     {
       "title": "Hollow Maze",
       "description": "A dark rogue-lite puzzle explorer where your flashlight is your only defense against creeping glitches.",
       "genre": "Puzzle / Horror",
       "developer": "Aleena Thomas & Nidhim Nair",
-      "rating": 4.5,
-
+      "engine": "Godot",
+      "dimension": "2D",
+      "duration": "2h",
       "coverUrl": "/images/covers/hollow-maze.jpg",
-      "releaseYear": "2025",
-      "features": [],
-      "playable": true,
+      "year": "2025",
+      "isEditorsChoice": false,
     },
     {
       "title": "Grid Runner",
       "description": "Deconstruct obstacles by shooting packets of debug data at compiling compiler errors.",
       "genre": "Shooter / Retro",
       "developer": "Gagandeep M",
-      "rating": 4.6,
-
+      "engine": "Custom",
+      "dimension": "2D",
+      "duration": "30m",
       "coverUrl": "/images/covers/grid-runner.jpg",
-      "releaseYear": "2025",
-      "features": [],
-      "playable": true,
+      "year": "2025",
+      "isEditorsChoice": false,
     },
     {
       "title": "Coda: The Last Protocol",
       "description": "A visual novel / terminal simulator where your choices compile the fate of an isolated AI server room.",
       "genre": "Simulation / Narrative",
       "developer": "GDSC Game Dev Team",
-      "rating": 4.9,
-
+      "engine": "Web",
+      "dimension": "2D",
+      "duration": "4h",
       "coverUrl": "/images/covers/coda.jpg",
-      "releaseYear": "2024",
-      "features": [],
-      "playable": false,
+      "year": "2024",
+      "isEditorsChoice": false,
     }
   ],
   "gameHighScores": [],
@@ -467,7 +467,6 @@ const data = {
 
 async function main() {
   console.log("Cleaning database...");
-  await prisma.gameHighScore.deleteMany();
   await prisma.game.deleteMany();
   await prisma.quest.deleteMany();
   await prisma.teamMember.deleteMany();
@@ -481,11 +480,6 @@ async function main() {
   console.log("Seeding Games...");
   for (const item of data.games) {
     await prisma.game.create({ data: item });
-  }
-
-  console.log("Seeding GameHighScores...");
-  for (const item of data.gameHighScores) {
-    await prisma.gameHighScore.create({ data: item });
   }
 
   console.log("Seeding TeamMembers...");

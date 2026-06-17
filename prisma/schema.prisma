@@ -34,30 +34,20 @@ model Quest {
 }
 
 model Game {
-  id          String        @id @default(uuid())
-  title       String
-  description String
-  genre       String
-  developer   String
-  rating      Float?
-  coverUrl    String?
-  releaseYear String?
-  features    String[]
-  playable    Boolean       @default(false)
-  highScores  GameHighScore[]
-  createdAt   DateTime      @default(now())
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  engine          String   @default("Custom") // e.g., "Unity", "Godot", "Web", "Custom"
+  genre           String   // e.g., "Racing", "Puzzle", "Thriller"
+  dimension       String?  // e.g., "2D", "3D"
+  duration        String?  // e.g., "2h"
+  year            String?  // e.g., "2024", "2025"
+  coverUrl        String?  // Image URL
+  playUrl         String?  // Link to the game site
+  developer       String
+  isEditorsChoice Boolean  @default(false)
+  createdAt       DateTime @default(now())
 }
-
-model GameHighScore {
-  id        String   @id @default(uuid())
-  gameId    String
-  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  player    String
-  score     Float
-  date      String
-  createdAt DateTime @default(now())
-}
-
 
 
 model TeamMember {

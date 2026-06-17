@@ -39,7 +39,9 @@ export default function GameForm() {
       description: formData.get("description") as string,
       genre: formData.get("genre") as string,
       engine: formData.get("engine") as string,
-      status: formData.get("status") as string,
+      dimension: (formData.get("dimension") as string) || null,
+      duration: (formData.get("duration") as string) || null,
+      year: (formData.get("year") as string) || null,
       developer: formData.get("developer") as string || "GDSC SCTCE",
       coverUrl: finalCoverUrl || null,
       playUrl: (formData.get("playUrl") as string) || null,
@@ -70,15 +72,23 @@ export default function GameForm() {
           <input name="engine" type="text" required className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">STATUS (Released, In Dev)</label>
-          <input name="status" type="text" required className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">DIMENSION (2D, 3D, etc)</label>
+          <input name="dimension" type="text" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
         </div>
         <div>
-          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">DEVELOPER</label>
-          <input name="developer" type="text" defaultValue="GDSC SCTCE" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">DURATION (e.g. 2h)</label>
+          <input name="duration" type="text" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
         </div>
+        <div>
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">YEAR (e.g. 2024)</label>
+          <input name="year" type="text" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+        </div>
+      </div>
+      <div>
+        <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">DEVELOPER</label>
+        <input name="developer" type="text" defaultValue="GDSC SCTCE" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
       </div>
       <div>
         <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">COVER IMAGE (Optional)</label>

@@ -118,7 +118,7 @@ export default function Navbar({
       <div className="w-full h-[79px] flex items-center justify-between px-6 md:px-[64px]">
         {/* Logo */}
         <Link href={logoHref} className="flex items-center gap-[12px] no-underline shrink-0">
-          <div className="w-[39px] h-[40px] relative">
+          <div className="w-[39px] h-[40px] relative" style={{ position: "relative" }}>
             <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" sizes="39px" />
           </div>
           <span className={`font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] ${isAdmin ? "text-[#FF7A00]" : "text-[#FFB68B]"} hidden min-[420px]:inline-block`}>

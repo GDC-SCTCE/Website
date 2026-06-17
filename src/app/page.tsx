@@ -119,7 +119,7 @@ export default function Home() {
             {/* Top row */}
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-[12px]">
-                <div className="w-[39px] h-[40px] relative">
+                <div className="w-[39px] h-[40px] relative" style={{ position: "relative" }}>
                   <Image src="/gdclogo.png" alt="GDC Logo" fill sizes="40px" className="object-contain" />
                 </div>
                 <span className="font-sora font-extrabold text-[20px] md:text-[24px] tracking-[-1.2px] text-[#FFB68B]">
