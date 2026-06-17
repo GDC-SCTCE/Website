@@ -133,7 +133,7 @@ export default function TeamForm({ member }: { member: any }) {
     <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
       {/* Avatar Preview */}
       <div className="flex justify-center mb-2">
-        <div className="w-[120px] h-[120px] shrink-0 border border-[#584235] overflow-hidden mix-blend-luminosity relative group">
+        <div className="w-[120px] h-[120px] shrink-0 border border-[#584235] overflow-hidden relative group">
           {member.avatar ? (
             <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
           ) : (

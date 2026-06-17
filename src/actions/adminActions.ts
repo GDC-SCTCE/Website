@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { verifyAdmin } from "./authActions";
-import { createClient } from "@/utils/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
 async function verifyAuth() {
