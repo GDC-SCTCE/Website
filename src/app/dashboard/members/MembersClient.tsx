@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Avatar from "@/components/Avatar";
 
 import { Department } from "@/types";
-import { filters } from "@/constants/members";
 import { LeaderCard } from "./components/LeaderCard";
 import { MemberCard } from "./components/MemberCard";
 import DepartmentFilter from "@/components/DepartmentFilter";
@@ -42,6 +41,17 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
     setSelectedMember(member);
   };
 
+  // Helper to calculate the morph transform from the clicked card to the modal's center stage
+  const getMorphTransform = (modalElement: HTMLElement) => {
+    if (!clickedRect) return "none";
+    const finalRect = modalElement.getBoundingClientRect();
+    const scaleX = clickedRect.width / finalRect.width;
+    const scaleY = clickedRect.height / finalRect.height;
+    const translateX = (clickedRect.left + clickedRect.width / 2) - (finalRect.left + finalRect.width / 2);
+    const translateY = (clickedRect.top + clickedRect.height / 2) - (finalRect.top + finalRect.height / 2);
+    return `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+  };
+
   // Close animation with fluid morph reverse FLIP transition
   const handleClose = () => {
     if (!modalRef.current || !clickedRect || !overlayRef.current) {
@@ -51,15 +61,9 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
     const modalElement = modalRef.current;
     const overlayElement = overlayRef.current;
 
-    const finalRect = modalElement.getBoundingClientRect();
-    const scaleX = clickedRect.width / finalRect.width;
-    const scaleY = clickedRect.height / finalRect.height;
-    const translateX = (clickedRect.left + clickedRect.width / 2) - (finalRect.left + finalRect.width / 2);
-    const translateY = (clickedRect.top + clickedRect.height / 2) - (finalRect.top + finalRect.height / 2);
-
     // Animate card back to original position
     modalElement.style.transition = "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
-    modalElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+    modalElement.style.transform = getMorphTransform(modalElement);
     modalElement.style.opacity = "0";
 
     // Animate overlay blur and opacity out
@@ -80,18 +84,9 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
     const modalElement = modalRef.current;
     const overlayElement = overlayRef.current;
 
-    // 1. Get the final centered position
-    const finalRect = modalElement.getBoundingClientRect();
-
-    // 2. Calculate scaling and translate delta values
-    const scaleX = clickedRect.width / finalRect.width;
-    const scaleY = clickedRect.height / finalRect.height;
-    const translateX = (clickedRect.left + clickedRect.width / 2) - (finalRect.left + finalRect.width / 2);
-    const translateY = (clickedRect.top + clickedRect.height / 2) - (finalRect.top + finalRect.height / 2);
-
-    // 3. Set starting position (shrink to original card size/position)
+    // 1. Set starting position (shrink to original card size/position)
     modalElement.style.transition = "none";
-    modalElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+    modalElement.style.transform = getMorphTransform(modalElement);
     modalElement.style.transformOrigin = "center center";
     modalElement.style.opacity = "0.5";
 
@@ -304,7 +299,7 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
                 </p>
 
                 {/* Stats */}
-                {selectedMember.stats && Array.isArray(selectedMember.stats) && selectedMember.stats.length > 0 ? (
+                {selectedMember.stats && Array.isArray(selectedMember.stats) && selectedMember.stats.length > 0 && (
                   <div className="mb-[24px]">
                     <p className="font-mono font-bold text-[10px] tracking-[1px] text-[#584235] uppercase mb-[12px]">
                       CHARACTER ATTRIBUTES
@@ -313,18 +308,6 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
                       {selectedMember.stats.map((s: any) => (
                         <StatBar key={s.label} label={s.label} value={s.value} />
                       ))}
-                    </div>
-                  </div>
-                ) : (
-                  // Default stats for other gang members to look highly premium and complete
-                  <div className="mb-[24px]">
-                    <p className="font-mono font-bold text-[10px] tracking-[1px] text-[#584235] uppercase mb-[12px]">
-                      CHARACTER ATTRIBUTES
-                    </p>
-                    <div className="w-full max-w-[320px]">
-                      <StatBar label="CREATIVITY" value={85} />
-                      <StatBar label="DETERMINATION" value={90} />
-                      <StatBar label="COLLABORATION" value={95} />
                     </div>
                   </div>
                 )}

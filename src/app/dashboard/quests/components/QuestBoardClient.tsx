@@ -31,13 +31,13 @@ export function QuestBoardClient({ initialQuests, isAdmin, user }: QuestBoardCli
   const completedQuests = filteredQuests.filter((q) => {
     if (q.status !== "COMPLETED") return false;
     
-    // If logged in, only show quests they successfully registered for
-    if (user) {
-      return q.registrations && q.registrations.some((r: any) => r.status === "REGISTERED");
+    // If admin or guest, show all past quests as a portfolio
+    if (isAdmin || !user) {
+      return true;
     }
     
-    // If guest, show all past quests as a portfolio
-    return true;
+    // If normal logged in user, only show quests they successfully registered for
+    return q.registrations && q.registrations.some((r: any) => r.status === "REGISTERED");
   });
 
   return (
