@@ -71,6 +71,12 @@ model Leaderboard {
   createdAt DateTime @default(now())
 }
 
+enum XPLevel {
+  Newbie
+  Apprentice
+  Veteran
+}
+
 model User {
   id           String    @id @default(uuid())
   email        String    @unique
@@ -79,7 +85,7 @@ model User {
   rollNo       String
   academicYear String
   tools        String[]
-  xpLevel      String
+  xpLevel      XPLevel @default(Newbie)
   
   registrations Registration[]
   ratings       QuestRating[]

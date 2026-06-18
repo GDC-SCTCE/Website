@@ -25,12 +25,12 @@ export function QuestFilterBar({ activeFilter, setActiveFilter, search, setSearc
       <div className="flex flex-wrap items-center gap-4 sm:gap-10">
         {filters.map((f) => (
           <button
-            key={f}
-            onClick={() => setActiveFilter(f)}
-            className={`cursor-pointer transition-colors duration-200 font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] bg-transparent border-none p-0 ${activeFilter === f ? "text-[#FFB68B]" : "text-[#E0C0AF] hover:text-[#FFB68B]"
+            key={f.id}
+            onClick={() => setActiveFilter(f.id)}
+            className={`cursor-pointer transition-colors duration-200 font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] bg-transparent border-none p-0 ${activeFilter === f.id ? "text-[#FFB68B]" : "text-[#E0C0AF] hover:text-[#FFB68B]"
               }`}
           >
-            {f}
+            {f.label}
           </button>
         ))}
       </div>

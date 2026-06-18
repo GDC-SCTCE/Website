@@ -80,7 +80,7 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
               className="bg-[#131314] border border-[#584235] h-[36px] px-2 text-[#FFB68B] font-mono text-[12px] outline-none focus:border-[#FF7A00] min-w-[140px]"
             >
               {questFilters.map(f => (
-                <option key={f} value={f}>{f.toUpperCase()}</option>
+                <option key={f.id} value={f.id}>{f.label.toUpperCase()}</option>
               ))}
             </select>
           </div>

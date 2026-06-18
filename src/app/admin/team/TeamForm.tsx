@@ -165,8 +165,8 @@ export default function TeamForm({ member }: { member: any }) {
             className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]"
           >
             {filters.map((f) => (
-              <option key={f} value={f}>
-                {f === "ALL" ? "ALL (Campus Lead)" : f}
+              <option key={f.id} value={f.id}>
+                {f.id === "ALL" ? "ALL (Campus Lead)" : f.label}
               </option>
             ))}
           </select>

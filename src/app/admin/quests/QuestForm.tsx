@@ -92,9 +92,9 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">CATEGORY</label>
-          <select name="category" required defaultValue={quest?.category || filters[1]} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]">
-            {filters.filter(f => f !== "All").map((f) => (
-              <option key={f} value={f}>{f}</option>
+          <select name="category" required defaultValue={quest?.category || filters[1].id} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]">
+            {filters.filter(f => f.id !== "All").map((f) => (
+              <option key={f.id} value={f.id}>{f.label}</option>
             ))}
           </select>
         </div>
