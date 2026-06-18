@@ -54,7 +54,7 @@ const data = {
     },
     {
       "title": "Game Jam #3 - April 2025",
-      "category": "Game Jams",
+      "category": "Game_Jams",
       "status": "COMPLETED",
       "dateText": "April 2025",
       "location": "Virtual",
@@ -359,7 +359,7 @@ const data = {
     "name": "Manas Joby Joseph",
     "role": "E-Sports Lead",
     "avatar": "",
-    "department": "E-SPORTS",
+    "department": "E_SPORTS",
     "stats": null,
     "gamePreview": null
   },
@@ -367,7 +367,7 @@ const data = {
     "name": "Sanjay K S",
     "role": "E-Sports Co Lead",
     "avatar": "",
-    "department": "E-SPORTS",
+    "department": "E_SPORTS",
     "stats": null,
     "gamePreview": null
   },
@@ -474,12 +474,12 @@ async function main() {
 
   console.log("Seeding Quests...");
   for (const item of data.quests) {
-    await prisma.quest.create({ data: item });
+    await prisma.quest.create({ data: item as any });
   }
 
   console.log("Seeding Games...");
   for (const item of data.games) {
-    await prisma.game.create({ data: item });
+    await prisma.game.create({ data: item as any });
   }
 
   console.log("Seeding TeamMembers...");
@@ -489,7 +489,7 @@ async function main() {
 
   console.log("Seeding Leaderboards...");
   for (const item of data.leaderboards) {
-    await prisma.leaderboard.create({ data: item });
+    await prisma.leaderboard.create({ data: item as any });
   }
 
   console.log("Seeding complete!");

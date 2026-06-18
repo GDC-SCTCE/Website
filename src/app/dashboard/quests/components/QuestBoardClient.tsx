@@ -4,7 +4,7 @@ import { QuestCard } from "./QuestCard";
 import { QuestFilterBar } from "./QuestFilterBar";
 import { ConqueredQuests } from "./ConqueredQuests";
 
-import { QuestCategory, Quest } from "@/types";
+import { Quest, QuestFilterCategory } from "@/types";
 
 interface QuestBoardClientProps {
   initialQuests: Quest[];
@@ -14,7 +14,7 @@ interface QuestBoardClientProps {
 
 export function QuestBoardClient({ initialQuests, isAdmin, user }: QuestBoardClientProps) {
   const [quests] = useState<Quest[]>(initialQuests);
-  const [activeFilter, setActiveFilter] = useState<QuestCategory>("All");
+  const [activeFilter, setActiveFilter] = useState<QuestFilterCategory>("All");
   const [search, setSearch] = useState("");
   const [mounted, setMounted] = useState(false);
 
@@ -72,7 +72,7 @@ export function QuestBoardClient({ initialQuests, isAdmin, user }: QuestBoardCli
 
           <QuestFilterBar
             activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
+            setActiveFilter={setActiveFilter as any}
             search={search}
             setSearch={setSearch}
             mounted={mounted}

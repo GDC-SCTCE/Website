@@ -8,5 +8,5 @@ export const filters: Department[] = [
   "COMMUNITY",
   "EVENT",
   "MARKETING",
-  "E-SPORTS"
+  "E_SPORTS"
 ];

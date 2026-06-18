@@ -10,6 +10,15 @@ async function verifyAuth() {
   if (!isAdmin) throw new Error("Unauthorized");
 }
 
+async function deleteImageIfPresent(imageUrl: string | null, bucket: string) {
+  if (imageUrl && imageUrl.includes(`/public/${bucket}/`)) {
+    const filePath = imageUrl.split(`/public/${bucket}/`)[1];
+    if (filePath) {
+      await supabaseAdmin.storage.from(bucket).remove([decodeURIComponent(filePath)]);
+    }
+  }
+}
+
 // QUESTS
 export async function createQuest(data: any) {
   await verifyAuth();
@@ -25,12 +34,18 @@ export async function updateQuest(id: string, data: any) {
 
 export async function deleteQuest(id: string) {
   await verifyAuth();
+  const quest = await prisma.quest.findUnique({ where: { id } });
+  if (quest?.image) await deleteImageIfPresent(quest.image, "quests");
   await prisma.quest.delete({ where: { id } });
   revalidatePath("/admin/quests");
 }
 
 export async function deleteAllQuests() {
   await verifyAuth();
+  const quests = await prisma.quest.findMany({ where: { image: { not: null } } });
+  for (const q of quests) {
+    if (q.image) await deleteImageIfPresent(q.image, "quests");
+  }
   await prisma.quest.deleteMany({});
   revalidatePath("/admin/quests");
 }
@@ -50,14 +65,27 @@ export async function updateGame(id: string, data: any) {
 
 export async function deleteGame(id: string) {
   await verifyAuth();
+  const game = await prisma.game.findUnique({ where: { id } });
+  if (game?.coverUrl) await deleteImageIfPresent(game.coverUrl, "games");
   await prisma.game.delete({ where: { id } });
+  revalidatePath("/admin/games");
+}
+
+export async function deleteAllGames() {
+  await verifyAuth();
+  const games = await prisma.game.findMany({ where: { coverUrl: { not: null } } });
+  for (const g of games) {
+    if (g.coverUrl) await deleteImageIfPresent(g.coverUrl, "games");
+  }
+  await prisma.game.deleteMany({});
   revalidatePath("/admin/games");
 }
 
 export async function setEditorsChoiceGame(id: string) {
   await verifyAuth();
-  // Set all to false first
+  // Set the current editor's pick(s) to false first
   await prisma.game.updateMany({
+    where: { isEditorsChoice: true },
     data: { isEditorsChoice: false },
   });
   // Set the specific one to true

@@ -1,3 +1,3 @@
-import { QuestCategory } from "@/types";
+import { QuestFilterCategory } from "@/types";
 
-export const filters: QuestCategory[] = ["All", "Workshops", "Game Jams", "Talks"];
+export const filters: QuestFilterCategory[] = ["All", "Workshops", "Game_Jams", "Talks"];

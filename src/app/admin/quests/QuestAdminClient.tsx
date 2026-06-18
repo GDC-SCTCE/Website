@@ -7,10 +7,10 @@ import { Search, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { filters as questFilters } from "@/constants/quests";
 import { deleteQuest, deleteAllQuests } from "@/actions/adminActions";
-import { Quest, QuestCategory } from "@/types";
+import { Quest, QuestFilterCategory } from "@/types";
 
 export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
-  const [activeFilter, setActiveFilter] = useState<QuestCategory>("All");
+  const [activeFilter, setActiveFilter] = useState<QuestFilterCategory>("All");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
@@ -76,7 +76,7 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
             <span className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px]">CATEGORY:</span>
             <select
               value={activeFilter}
-              onChange={(e) => setActiveFilter(e.target.value as QuestCategory)}
+              onChange={(e) => setActiveFilter(e.target.value as QuestFilterCategory)}
               className="bg-[#131314] border border-[#584235] h-[36px] px-2 text-[#FFB68B] font-mono text-[12px] outline-none focus:border-[#FF7A00] min-w-[140px]"
             >
               {questFilters.map(f => (

@@ -9,8 +9,8 @@ datasource db {
 model Quest {
   id           String    @id @default(uuid())
   title        String
-  category     String    
-  status       String    
+  category     QuestCategory    
+  status       QuestStatus    
   
   dateText     String    
   location     String?   
@@ -55,7 +55,7 @@ model TeamMember {
   name        String
   role        String
   avatar      String?
-  department  String
+  department  Department
   stats       Json?
   gamePreview Json?
   createdAt   DateTime   @default(now())
@@ -93,7 +93,7 @@ model Registration {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   questId   String
   quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
-  status    String   // "PENDING", "REGISTERED"
+  status    RegistrationStatus   // "PENDING", "REGISTERED", "ATTENDED"
   upiRef    String?
   createdAt DateTime @default(now())
   
@@ -110,4 +110,33 @@ model QuestRating {
   createdAt DateTime @default(now())
   
   @@unique([userId, questId])
+}
+
+enum QuestCategory {
+  Workshops
+  Game_Jams @map("Game Jams")
+  Talks
+}
+
+enum QuestStatus {
+  UPCOMING
+  ACTIVE
+  COMPLETED
+}
+
+enum Department {
+  ALL
+  DESIGN
+  TECH
+  MEDIA
+  COMMUNITY
+  EVENT
+  MARKETING
+  E_SPORTS @map("E-SPORTS")
+}
+
+enum RegistrationStatus {
+  PENDING
+  REGISTERED
+  ATTENDED
 }

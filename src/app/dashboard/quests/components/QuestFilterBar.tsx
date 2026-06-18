@@ -1,17 +1,17 @@
 import React from "react";
 import { Search } from "lucide-react";
 import { filters } from "@/constants/quests";
-import { QuestCategory } from "@/types";
+import { QuestFilterCategory } from "@/types";
 
-interface QuestFilterBarProps {
-  activeFilter: QuestCategory;
-  setActiveFilter: (filter: QuestCategory) => void;
+interface FilterBarProps {
+  activeFilter: QuestFilterCategory;
+  setActiveFilter: (filter: QuestFilterCategory) => void;
   search: string;
-  setSearch: (search: string) => void;
+  setSearch: (s: string) => void;
   mounted: boolean;
 }
 
-export function QuestFilterBar({ activeFilter, setActiveFilter, search, setSearch, mounted }: QuestFilterBarProps) {
+export function QuestFilterBar({ activeFilter, setActiveFilter, search, setSearch, mounted }: FilterBarProps) {
   return (
     <div
       className="mt-10 flex flex-col md:flex-row md:items-center justify-between gap-6 py-6 md:py-[36px] border-t border-b border-[#584235] transition-all duration-500"
