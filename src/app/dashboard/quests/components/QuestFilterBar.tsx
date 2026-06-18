@@ -1,10 +1,11 @@
 import React from "react";
 import { Search } from "lucide-react";
 import { filters } from "@/constants/quests";
+import { QuestCategory } from "@/types";
 
 interface QuestFilterBarProps {
-  activeFilter: string;
-  setActiveFilter: (filter: string) => void;
+  activeFilter: QuestCategory;
+  setActiveFilter: (filter: QuestCategory) => void;
   search: string;
   setSearch: (search: string) => void;
   mounted: boolean;
