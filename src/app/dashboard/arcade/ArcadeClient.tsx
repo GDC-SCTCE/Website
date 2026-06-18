@@ -119,15 +119,16 @@ export function ArcadeClient({ games }: { games: Game[] }) {
       {/* ── Game Grid Section ─────────────────────────────────────────────── */}
       <div className="w-full mt-8">
         {filtered.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <div className="flex overflow-x-auto pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory">
             {filtered.map((game, idx) => (
-              <GameColumn
-                key={`${activeFilter}-${game.id}`}
-                game={game}
-                isLast={idx === filtered.length - 1}
-                delay={idx * 100}
-                visible={gridVisible}
-              />
+              <div key={`${activeFilter}-${game.id}`} className="w-[85vw] sm:w-[50%] lg:w-[33.333%] shrink-0 snap-start flex">
+                <GameColumn
+                  game={game}
+                  isLast={idx === filtered.length - 1}
+                  delay={idx * 100}
+                  visible={gridVisible}
+                />
+              </div>
             ))}
           </div>
         ) : (

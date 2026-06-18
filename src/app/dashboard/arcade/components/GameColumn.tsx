@@ -19,7 +19,7 @@ export function GameColumn({
 }) {
   return (
     <div
-      className={`flex flex-col group cursor-pointer transition-all duration-700 ${
+      className={`w-full flex flex-col group cursor-pointer transition-all duration-700 ${
         !isLast ? "border-r border-[#584235]/30" : ""
       }`}
       style={{
@@ -80,24 +80,26 @@ export function GameColumn({
       </div>
 
       {/* Info strip */}
-      <div className="px-6 py-6 flex flex-col gap-3">
-        <div className="flex items-end justify-between gap-4">
-          {/* Title — slides up on load */}
-          <h3 className="font-sora font-bold text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.1] tracking-[-0.96px] uppercase text-[#E5E2E3] m-0 flex-1 group-hover:text-[#FFB68B] transition-colors duration-300">
-            {game.title}
-          </h3>
+      <div className="px-6 py-6 flex flex-col flex-1">
+        {/* Title — slides up on load */}
+        <h3 className="font-sora font-bold text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.1] tracking-[-0.96px] uppercase text-[#E5E2E3] m-0 mb-4 flex-1 group-hover:text-[#FFB68B] transition-colors duration-300">
+          {game.title}
+        </h3>
+        
+        {/* Footer info: engine/dimension on left, play on right */}
+        <div className="flex items-end justify-between gap-4 mt-auto">
+          <span className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
+            {game.engine} {game.dimension ? `· ${game.dimension}` : ""}
+          </span>
           {/* Play link */}
           <a
             href={game.playUrl || "#"}
             target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-1.5 shrink-0 font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFB68B] no-underline hover:gap-3 hover:text-white transition-all duration-200 self-end pb-1"
+            className="flex items-center gap-1.5 shrink-0 font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFB68B] no-underline hover:gap-3 hover:text-white transition-all duration-200"
           >
             Play <Play className="w-3 h-3 fill-current transition-transform duration-200 group-hover:translate-x-1" />
           </a>
         </div>
-        <span className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
-          {game.engine} {game.dimension ? `· ${game.dimension}` : ""}
-        </span>
       </div>
     </div>
   );
