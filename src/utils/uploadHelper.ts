@@ -1,4 +1,4 @@
-import { uploadAdminImage } from "@/actions/adminActions";
+import { uploadAdminImage } from "@/actions/admin/upload";
 
 /**
  * Helper to handle image uploads for admin forms.

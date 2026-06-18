@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import GameForm from "./GameForm";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 import { Search, Trash2 } from "lucide-react";
-import { deleteGame, deleteAllGames, setEditorsChoiceGame } from "@/actions/adminActions";
+import { deleteGame, deleteAllGames, setEditorsChoiceGame } from "@/actions/admin/games";
 import { Game } from "@prisma/client";
 
 export default function GameAdminClient({ games }: { games: Game[] }) {

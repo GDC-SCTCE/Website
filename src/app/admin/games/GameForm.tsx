@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { createGame, updateGame } from "@/actions/adminActions";
+import { createGame, updateGame } from "@/actions/admin/games";
 import { handleImageUpload } from "@/utils/uploadHelper";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 

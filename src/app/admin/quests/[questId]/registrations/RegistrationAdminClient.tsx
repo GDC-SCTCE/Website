@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Check, X, Search } from "lucide-react";
-import { approveRegistration, rejectRegistration } from "@/actions/adminActions";
+import { approveRegistration, rejectRegistration } from "@/actions/admin/registrations";
 
 export default function RegistrationAdminClient({ registrations }: { registrations: any[] }) {
   const [search, setSearch] = useState("");

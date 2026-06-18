@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { createQuest, updateQuest } from "@/actions/adminActions";
+import { createQuest, updateQuest } from "@/actions/admin/quests";
 import { handleImageUpload } from "@/utils/uploadHelper";
 import { filters } from "@/constants/quests";
 import GDCPlaceholder from "@/components/GDCPlaceholder";

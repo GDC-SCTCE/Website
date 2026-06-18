@@ -6,7 +6,7 @@ import GDCPlaceholder from "@/components/GDCPlaceholder";
 import { Search, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { filters as questFilters } from "@/constants/quests";
-import { deleteQuest, deleteAllQuests } from "@/actions/adminActions";
+import { deleteQuest, deleteAllQuests } from "@/actions/admin/quests";
 import { Quest, QuestFilterCategory } from "@/types";
 
 export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
