@@ -3,15 +3,17 @@
 import React, { useState } from "react";
 import QuestForm from "./QuestForm";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
-import { Search, Trash2 } from "lucide-react";
+import { Search, Trash2, Users } from "lucide-react";
+import Link from "next/link";
 import { filters as questFilters } from "@/constants/quests";
-import { deleteQuest, deleteAllQuests } from "@/actions/adminActions";
+import { deleteQuest, deleteAllQuests } from "@/actions/admin/quests";
+import { Quest, QuestFilterCategory } from "@/types";
 
-export default function QuestAdminClient({ quests }: { quests: any[] }) {
-  const [activeFilter, setActiveFilter] = useState("All");
+export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
+  const [activeFilter, setActiveFilter] = useState<QuestFilterCategory>("All");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
-  const [selectedQuest, setSelectedQuest] = useState<any | null>(null);
+  const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteAll = async () => {
@@ -74,11 +76,11 @@ export default function QuestAdminClient({ quests }: { quests: any[] }) {
             <span className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px]">CATEGORY:</span>
             <select
               value={activeFilter}
-              onChange={(e) => setActiveFilter(e.target.value)}
+              onChange={(e) => setActiveFilter(e.target.value as QuestFilterCategory)}
               className="bg-[#131314] border border-[#584235] h-[36px] px-2 text-[#FFB68B] font-mono text-[12px] outline-none focus:border-[#FF7A00] min-w-[140px]"
             >
               {questFilters.map(f => (
-                <option key={f} value={f}>{f.toUpperCase()}</option>
+                <option key={f.id} value={f.id}>{f.label.toUpperCase()}</option>
               ))}
             </select>
           </div>
@@ -147,11 +149,16 @@ export default function QuestAdminClient({ quests }: { quests: any[] }) {
                   </div>
                 </div>
                 <p className="font-sans text-[14px] text-zinc-300">{quest.dateText} | {quest.location}</p>
-                <div className="mt-2 flex gap-4">
+                <div className="mt-2 flex items-center justify-between gap-4">
                   <span className="font-mono text-[12px] text-[#A78B7C]">SEATS: <span className="text-[#FF7A00]">{quest.seatsTaken}/{quest.capacity}</span></span>
-                  {quest.status === "COMPLETED" && (
-                    <span className="font-mono text-[12px] text-[#A78B7C]">RATING: <span className="text-[#FF7A00]">{quest.rating || 0}/5.0</span></span>
-                  )}
+                  <Link
+                    href={`/admin/quests/${quest.id}/registrations`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 font-mono text-[10px] bg-[#584235]/50 hover:bg-[#FF7A00]/20 text-[#E0C0AF] hover:text-[#FF7A00] px-3 py-1.5 border border-[#584235] hover:border-[#FF7A00]/50 transition-colors"
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    VIEW REGISTRATIONS
+                  </Link>
                 </div>
               </div>
             </div>
@@ -177,7 +184,7 @@ export default function QuestAdminClient({ quests }: { quests: any[] }) {
               </button>
             )}
           </div>
-          <QuestForm quest={selectedQuest} onComplete={() => setSelectedQuest(null)} />
+          <QuestForm key={selectedQuest?.id || "new"} quest={selectedQuest} onComplete={() => setSelectedQuest(null)} />
         </div>
       </div>
     </div>

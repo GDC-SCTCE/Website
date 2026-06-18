@@ -1,16 +1,17 @@
 import React from "react";
 import { Search } from "lucide-react";
 import { filters } from "@/constants/quests";
+import { QuestFilterCategory } from "@/types";
 
-interface QuestFilterBarProps {
-  activeFilter: string;
-  setActiveFilter: (filter: string) => void;
+interface FilterBarProps {
+  activeFilter: QuestFilterCategory;
+  setActiveFilter: (filter: QuestFilterCategory) => void;
   search: string;
-  setSearch: (search: string) => void;
+  setSearch: (s: string) => void;
   mounted: boolean;
 }
 
-export function QuestFilterBar({ activeFilter, setActiveFilter, search, setSearch, mounted }: QuestFilterBarProps) {
+export function QuestFilterBar({ activeFilter, setActiveFilter, search, setSearch, mounted }: FilterBarProps) {
   return (
     <div
       className="mt-10 flex flex-col md:flex-row md:items-center justify-between gap-6 py-6 md:py-[36px] border-t border-b border-[#584235] transition-all duration-500"
@@ -24,12 +25,12 @@ export function QuestFilterBar({ activeFilter, setActiveFilter, search, setSearc
       <div className="flex flex-wrap items-center gap-4 sm:gap-10">
         {filters.map((f) => (
           <button
-            key={f}
-            onClick={() => setActiveFilter(f)}
-            className={`cursor-pointer transition-colors duration-200 font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] bg-transparent border-none p-0 ${activeFilter === f ? "text-[#FFB68B]" : "text-[#E0C0AF] hover:text-[#FFB68B]"
+            key={f.id}
+            onClick={() => setActiveFilter(f.id)}
+            className={`cursor-pointer transition-colors duration-200 font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] bg-transparent border-none p-0 ${activeFilter === f.id ? "text-[#FFB68B]" : "text-[#E0C0AF] hover:text-[#FFB68B]"
               }`}
           >
-            {f}
+            {f.label}
           </button>
         ))}
       </div>

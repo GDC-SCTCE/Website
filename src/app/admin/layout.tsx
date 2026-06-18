@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import Link from "next/link";
-import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import { ADMIN_NAV_LINKS } from "@/constants/navigation";
 

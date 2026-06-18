@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { updateTeamMember } from "@/actions/adminActions";
-import { uploadImage } from "@/utils/supabase/storage";
-import { createClient } from "@/utils/supabase/client";
+import { updateTeamMember } from "@/actions/admin/team";
+import { handleImageUpload } from "@/utils/uploadHelper";
 import Avatar from "@/components/Avatar";
 import { filters } from "@/constants/members";
 
@@ -15,9 +14,9 @@ export default function TeamForm({ member }: { member: any }) {
   const [stats, setStats] = useState<{label: string, value: number | ""}[]>(() => {
     const s = member.stats || [];
     return [
-      { label: s[0]?.label || "STAT 1", value: s[0]?.value ?? 50 },
-      { label: s[1]?.label || "STAT 2", value: s[1]?.value ?? 50 },
-      { label: s[2]?.label || "STAT 3", value: s[2]?.value ?? 50 }
+      { label: s[0]?.label || "", value: s[0]?.value ?? "" },
+      { label: s[1]?.label || "", value: s[1]?.value ?? "" },
+      { label: s[2]?.label || "", value: s[2]?.value ?? "" }
     ];
   });
 
@@ -30,31 +29,39 @@ export default function TeamForm({ member }: { member: any }) {
     let finalAvatarUrl = member.avatar || "";
     let finalGpImageUrl = member.gamePreview?.image || "";
 
-    const supabase = createClient();
-
     // Handle Avatar Image Upload
     const imageFile = formData.get("imageFile") as File;
     if (imageFile && imageFile.size > 0) {
-      try {
-        finalAvatarUrl = await uploadImage(imageFile, "team", member.name, member.avatar);
-      } catch (err: any) {
-        setUploadError(`Avatar upload failed: ${err.message}`);
+      const newUrl = await handleImageUpload(
+        imageFile,
+        "team",
+        member.name,
+        member.avatar || null,
+        setUploadError
+      );
+      if (!newUrl) {
         setLoading(false);
         return;
       }
+      finalAvatarUrl = newUrl;
     }
 
     // Handle Game Preview Image Upload
     if (department === "ALL") {
       const gpImageFile = formData.get("gpImageFile") as File;
       if (gpImageFile && gpImageFile.size > 0) {
-        try {
-          finalGpImageUrl = await uploadImage(gpImageFile, "team/game", `${member.name}_gp`, member.gamePreview?.image);
-        } catch (err: any) {
-          setUploadError(`Game Preview upload failed: ${err.message}`);
+        const newGpUrl = await handleImageUpload(
+          gpImageFile,
+          "team/game",
+          `${member.name}_gp`,
+          member.gamePreview?.image || null,
+          setUploadError
+        );
+        if (!newGpUrl) {
           setLoading(false);
           return;
         }
+        finalGpImageUrl = newGpUrl;
       }
     }
 
@@ -72,17 +79,19 @@ export default function TeamForm({ member }: { member: any }) {
       changes.avatar = finalAvatarUrl || null;
     }
 
-    if (department === "ALL") {
-      // Compare stats
-      const finalStats = stats.map(s => ({
+    // Compare stats
+    const finalStats = stats
+      .filter(s => s.label.trim() !== "")
+      .map(s => ({
         label: s.label,
         value: s.value === "" ? 0 : s.value
       }));
 
-      if (JSON.stringify(finalStats) !== JSON.stringify(member.stats || [])) {
-        changes.stats = finalStats;
-      }
-      
+    if (JSON.stringify(finalStats) !== JSON.stringify(member.stats || [])) {
+      changes.stats = finalStats.length > 0 ? finalStats : null;
+    }
+
+    if (department === "ALL") {
       // Compare game preview
       const newGpTitle = formData.get("gpTitle") as string;
       const oldGpTitle = member.gamePreview?.title || "";
@@ -95,8 +104,7 @@ export default function TeamForm({ member }: { member: any }) {
         };
       }
     } else {
-      // If department changed FROM "ALL" to something else, clear these
-      if (member.stats !== null) changes.stats = null;
+      // If department changed FROM "ALL" to something else, clear game preview
       if (member.gamePreview !== null) changes.gamePreview = null;
     }
 
@@ -125,7 +133,7 @@ export default function TeamForm({ member }: { member: any }) {
     <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
       {/* Avatar Preview */}
       <div className="flex justify-center mb-2">
-        <div className="w-[120px] h-[120px] shrink-0 border border-[#584235] overflow-hidden mix-blend-luminosity relative group">
+        <div className="w-[120px] h-[120px] shrink-0 border border-[#584235] overflow-hidden relative group">
           {member.avatar ? (
             <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
           ) : (
@@ -157,16 +165,15 @@ export default function TeamForm({ member }: { member: any }) {
             className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]"
           >
             {filters.map((f) => (
-              <option key={f} value={f}>
-                {f === "ALL" ? "ALL (Campus Lead)" : f}
+              <option key={f.id} value={f.id}>
+                {f.id === "ALL" ? "ALL (Campus Lead)" : f.label}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      {department === "ALL" && (
-        <div className="mt-4 border-t border-[#584235] pt-4">
+      <div className="mt-4 border-t border-[#584235] pt-4">
           <h3 className="font-mono text-[#FF7A00] font-bold text-[14px] mb-4">PROFILE SETTINGS</h3>
           
           {/* Stats Config */}
@@ -197,26 +204,27 @@ export default function TeamForm({ member }: { member: any }) {
           </div>
 
           {/* Game Preview Config */}
-          <div>
-            <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">GAME PREVIEW (Signature Game)</label>
-            <div className="bg-[#1C1B1C] border border-[#584235] p-4 flex flex-col gap-4">
-              <div>
-                <label className="block font-mono text-[10px] text-[#E0C0AF] mb-1">TITLE</label>
-                <input name="gpTitle" type="text" defaultValue={member.gamePreview?.title || ""} placeholder="e.g. NEON DRIFT" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
-              </div>
-              <div>
-                <label className="block font-mono text-[10px] text-[#E0C0AF] mb-1">IMAGE OVERRIDE</label>
-                {member.gamePreview?.image && (
-                  <div className="mb-2 w-[120px] h-[72px] border border-[#584235]">
-                    <img src={member.gamePreview.image} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                )}
-                <input name="gpImageFile" type="file" accept="image/*" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00] file:bg-[#FF7A00] file:text-[#5C2800] file:border-none file:px-3 file:py-1 file:mr-4 file:font-mono file:text-[10px] file:tracking-[1.2px] hover:file:brightness-110 cursor-pointer" />
+          {department === "ALL" && (
+            <div>
+              <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">GAME PREVIEW (Signature Game)</label>
+              <div className="bg-[#1C1B1C] border border-[#584235] p-4 flex flex-col gap-4">
+                <div>
+                  <label className="block font-mono text-[10px] text-[#E0C0AF] mb-1">TITLE</label>
+                  <input name="gpTitle" type="text" defaultValue={member.gamePreview?.title || ""} placeholder="e.g. NEON DRIFT" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+                </div>
+                <div>
+                  <label className="block font-mono text-[10px] text-[#E0C0AF] mb-1">IMAGE OVERRIDE</label>
+                  {member.gamePreview?.image && (
+                    <div className="mb-2 w-[120px] h-[72px] border border-[#584235]">
+                      <img src={member.gamePreview.image} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <input name="gpImageFile" type="file" accept="image/*" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00] file:bg-[#FF7A00] file:text-[#5C2800] file:border-none file:px-3 file:py-1 file:mr-4 file:font-mono file:text-[10px] file:tracking-[1.2px] hover:file:brightness-110 cursor-pointer" />
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+      </div>
 
 
       {uploadError && (

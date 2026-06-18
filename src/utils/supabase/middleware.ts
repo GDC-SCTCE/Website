@@ -27,28 +27,33 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with cross-browser cookies, e.g. Safari.
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/admin')
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
   const isLoginPage = request.nextUrl.pathname === '/admin/login'
 
-  // If trying to access /admin routes without being logged in, redirect to login
-  if (!user && isAuthRoute && !isLoginPage) {
+  if (!user && isAdminRoute && !isLoginPage) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/login'
     return NextResponse.redirect(url)
   }
 
-  // If logged in and trying to access login page, redirect to admin dashboard
-  if (user && isLoginPage) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/admin'
-    return NextResponse.redirect(url)
+  if (user) {
+    const isAdmin = process.env.ADMIN_EMAILS?.includes(user.email || '')
+
+    if (isLoginPage && isAdmin) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/admin'
+      return NextResponse.redirect(url)
+    }
+
+    if (!isAdmin && isAdminRoute) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
   }
 
   return supabaseResponse

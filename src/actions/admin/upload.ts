@@ -1,29 +1,25 @@
-import { createClient } from "@/utils/supabase/client";
+"use server";
 
-/**
- * Uploads an image to Supabase storage, optionally deleting an old image first.
- * @param file The File object to upload
- * @param bucket The Supabase storage bucket name
- * @param fileNamePrefix A prefix for the generated file name (e.g., username or context)
- * @param oldImageUrl The URL of an existing image to delete before uploading the new one
- * @returns The public URL of the uploaded image
- */
-export async function uploadImage(
-  file: File,
-  bucketAndPath: string, // e.g. 'team' or 'team/game'
-  fileNamePrefix: string,
-  oldImageUrl?: string | null
-): Promise<string> {
-  if (!file.type.startsWith('image/')) {
+import { verifyAuth } from "./shared";
+import { supabaseAdmin } from "@/lib/supabase";
+
+export async function uploadAdminImage(formData: FormData) {
+  await verifyAuth();
+
+  const file = formData.get("file") as File;
+  const bucketAndPath = formData.get("bucketAndPath") as string;
+  const fileNamePrefix = formData.get("fileNamePrefix") as string;
+  const oldImageUrl = formData.get("oldImageUrl") as string | null;
+
+  if (!file || !file.type.startsWith('image/')) {
     throw new Error("Only image files are allowed.");
   }
 
-  const supabase = createClient();
+  const supabase = supabaseAdmin;
 
   const [bucket, ...folders] = bucketAndPath.split('/');
   const folderPath = folders.length > 0 ? folders.join('/') + '/' : '';
 
-  // Delete old image if it exists in our bucket
   if (oldImageUrl && oldImageUrl.includes(`/public/${bucket}/`)) {
     const oldFilePath = oldImageUrl.split(`/public/${bucket}/`)[1];
     if (oldFilePath) {

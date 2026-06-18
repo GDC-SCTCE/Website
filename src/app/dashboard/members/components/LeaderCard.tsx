@@ -7,11 +7,13 @@ export function LeaderCard({
   isFirst,
   delay,
   visible,
+  onClick,
 }: {
   member: any;
   isFirst: boolean;
   delay: number;
   visible: boolean;
+  onClick?: (e: React.MouseEvent) => void;
 }) {
   return (
     <div
@@ -22,7 +24,10 @@ export function LeaderCard({
         transitionDelay: `${delay}ms`,
       }}
     >
-      <div className="w-full h-auto lg:h-[553px] bg-[#1C1B1C] border border-[#201F20] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(255,122,0,0.15)] hover:border-[#FF7A00] flex flex-col lg:flex-row relative group/card overflow-hidden">
+      <div 
+        onClick={onClick}
+        className="w-full h-auto lg:h-[553px] bg-[#1C1B1C] border border-[#201F20] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(255,122,0,0.15)] hover:border-[#FF7A00] flex flex-col lg:flex-row relative group/card overflow-hidden cursor-pointer"
+      >
         
         {/* Left: Photo container */}
         <div className="w-full lg:w-1/2 h-auto lg:h-full relative flex items-center justify-center bg-[#131314]">

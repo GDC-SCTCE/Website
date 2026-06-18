@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { createQuest, updateQuest } from "@/actions/adminActions";
+import { createQuest, updateQuest } from "@/actions/admin/quests";
+import { handleImageUpload } from "@/utils/uploadHelper";
 import { filters } from "@/constants/quests";
-import { uploadImage } from "@/utils/supabase/storage";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 
 export default function QuestForm({ quest, onComplete }: { quest?: any, onComplete?: () => void }) {
@@ -11,14 +11,6 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
   const [loading, setLoading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [status, setStatus] = useState(quest?.status || "UPCOMING");
-
-  useEffect(() => {
-    if (quest) {
-      setStatus(quest.status || "UPCOMING");
-    } else {
-      setStatus("UPCOMING");
-    }
-  }, [quest]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,31 +26,36 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
       location: formData.get("location") as string || null,
       capacity: parseInt(formData.get("capacity") as string) || 0,
       seatsTaken: parseInt(formData.get("seatsTaken") as string) || 0,
+      price: parseInt(formData.get("price") as string) || 0,
+      upiLink: formData.get("upiLink") as string || null,
     };
 
     if (data.status === "ACTIVE" || data.status === "UPCOMING") {
       const td = formData.get("targetDate") as string;
       if (td) data.targetDate = new Date(td);
+      const ed = formData.get("endDate") as string;
+      if (ed) data.endDate = new Date(ed);
       data.recapUrl = null;
-      data.attendees = null;
-      data.rating = null;
     } else if (data.status === "COMPLETED") {
       data.targetDate = null;
       data.recapUrl = formData.get("recapUrl") as string || null;
-      data.attendees = parseInt(formData.get("attendees") as string) || 0;
-      data.rating = parseFloat(formData.get("rating") as string) || 0;
     }
 
     let finalImageUrl = quest?.image || "";
     const imageFile = formData.get("imageFile") as File;
     if (imageFile && imageFile.size > 0) {
-      try {
-        finalImageUrl = await uploadImage(imageFile, "quests", data.title.replace(/\s+/g, '_'), finalImageUrl);
-      } catch (err: any) {
-        setUploadError(`Image upload failed: ${err.message}`);
+      const newUrl = await handleImageUpload(
+        imageFile,
+        "quests",
+        data.title.replace(/\s+/g, '_'),
+        finalImageUrl,
+        setUploadError
+      );
+      if (!newUrl) {
         setLoading(false);
         return;
       }
+      finalImageUrl = newUrl;
     }
 
     const finalData = { ...data, image: finalImageUrl };
@@ -69,16 +66,9 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
       await createQuest(finalData);
       formRef.current?.reset();
     }
-    
     if (onComplete) onComplete();
     setLoading(false);
   };
-
-  useEffect(() => {
-    if (formRef.current) {
-      formRef.current.reset();
-    }
-  }, [quest]);
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -102,9 +92,9 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">CATEGORY</label>
-          <select name="category" required defaultValue={quest?.category || filters[1]} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]">
-            {filters.filter(f => f !== "All").map((f) => (
-              <option key={f} value={f}>{f}</option>
+          <select name="category" required defaultValue={quest?.category || filters[1].id} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]">
+            {filters.filter(f => f.id !== "All").map((f) => (
+              <option key={f.id} value={f.id}>{f.label}</option>
             ))}
           </select>
         </div>
@@ -142,31 +132,42 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
           <input name="seatsTaken" type="number" defaultValue={quest?.seatsTaken || 0} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
         </div>
       </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">PRICE (₹) (0 for free)</label>
+          <input name="price" type="number" required defaultValue={quest?.price || 0} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+        </div>
+        <div>
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">UPI LINK (if price {'>'} 0)</label>
+          <input name="upiLink" type="text" defaultValue={quest?.upiLink || ""} placeholder="upi://pay?pa=..." className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+        </div>
+      </div>
 
       {(status === "ACTIVE" || status === "UPCOMING") && (
-        <div>
-          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">TARGET DATE (For Countdown)</label>
-          <input 
-            name="targetDate" 
-            type="datetime-local" 
-            defaultValue={quest?.targetDate ? new Date(quest.targetDate).toISOString().slice(0, 16) : ""} 
-            className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" 
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">TARGET DATE</label>
+            <input 
+              name="targetDate" 
+              type="datetime-local" 
+              defaultValue={quest?.targetDate ? new Date(quest.targetDate).toISOString().slice(0, 16) : ""} 
+              className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" 
+            />
+          </div>
+          <div>
+            <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">END DATE</label>
+            <input 
+              name="endDate" 
+              type="datetime-local" 
+              defaultValue={quest?.endDate ? new Date(quest.endDate).toISOString().slice(0, 16) : ""} 
+              className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" 
+            />
+          </div>
         </div>
       )}
 
       {status === "COMPLETED" && (
         <>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">ATTENDEES</label>
-              <input name="attendees" type="number" defaultValue={quest?.attendees || 0} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
-            </div>
-            <div>
-              <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">RATING (out of 5)</label>
-              <input name="rating" type="number" step="0.1" defaultValue={quest?.rating || 0} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
-            </div>
-          </div>
           <div>
             <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">RECAP URL</label>
             <input name="recapUrl" type="url" placeholder="https://..." defaultValue={quest?.recapUrl || ""} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />

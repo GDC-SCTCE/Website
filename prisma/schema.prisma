@@ -9,8 +9,8 @@ datasource db {
 model Quest {
   id           String    @id @default(uuid())
   title        String
-  category     String    
-  status       String    
+  category     QuestCategory    
+  status       QuestStatus    
   
   dateText     String    
   location     String?   
@@ -20,39 +20,34 @@ model Quest {
   seatsTaken   Int       @default(0)
   
   targetDate   DateTime? 
-
-  attendees    Int?      
-  rating       Float?    
+  endDate      DateTime? 
+  
+  price        Float     @default(0)
+  upiLink      String?
+  
   recapUrl     String?  
+
+  registrations Registration[]
+  ratings       QuestRating[]
 
   createdAt    DateTime  @default(now())
 }
 
 model Game {
-  id          String        @id @default(uuid())
-  title       String
-  description String
-  genre       String
-  developer   String
-  rating      Float?
-  coverUrl    String?
-  releaseYear String?
-  features    String[]
-  playable    Boolean       @default(false)
-  highScores  GameHighScore[]
-  createdAt   DateTime      @default(now())
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  engine          String   @default("Custom") // e.g., "Unity", "Godot", "Web", "Custom"
+  genre           String   // e.g., "Racing", "Puzzle", "Thriller"
+  dimension       String?  // e.g., "2D", "3D"
+  duration        String?  // e.g., "2h"
+  year            String?  // e.g., "2024", "2025"
+  coverUrl        String?  // Image URL
+  playUrl         String?  // Link to the game site
+  developer       String
+  isEditorsChoice Boolean  @default(false)
+  createdAt       DateTime @default(now())
 }
-
-model GameHighScore {
-  id        String   @id @default(uuid())
-  gameId    String
-  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  player    String
-  score     Float
-  date      String
-  createdAt DateTime @default(now())
-}
-
 
 
 model TeamMember {
@@ -60,7 +55,7 @@ model TeamMember {
   name        String
   role        String
   avatar      String?
-  department  String
+  department  Department
   stats       Json?
   gamePreview Json?
   createdAt   DateTime   @default(now())
@@ -74,4 +69,80 @@ model Leaderboard {
   gameTitle String
   date      String
   createdAt DateTime @default(now())
+}
+
+enum XPLevel {
+  Newbie
+  Apprentice
+  Veteran
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  phone        String
+  fullName     String
+  rollNo       String
+  academicYear String
+  tools        String[]
+  xpLevel      XPLevel @default(Newbie)
+  
+  registrations Registration[]
+  ratings       QuestRating[]
+  
+  createdAt    DateTime  @default(now())
+}
+
+model Registration {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questId   String
+  quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+  status    RegistrationStatus   // "PENDING", "REGISTERED", "ATTENDED"
+  upiRef    String?
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, questId])
+}
+
+model QuestRating {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questId   String
+  quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+  rating    Int
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, questId])
+}
+
+enum QuestCategory {
+  Workshops
+  Game_Jams @map("Game Jams")
+  Talks
+}
+
+enum QuestStatus {
+  UPCOMING
+  ACTIVE
+  COMPLETED
+}
+
+enum Department {
+  ALL
+  DESIGN
+  TECH
+  MEDIA
+  COMMUNITY
+  EVENT
+  MARKETING
+  E_SPORTS @map("E-SPORTS")
+}
+
+enum RegistrationStatus {
+  PENDING
+  REGISTERED
+  ATTENDED
 }

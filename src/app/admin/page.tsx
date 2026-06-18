@@ -20,7 +20,7 @@ export default async function AdminDashboard() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Link href="/admin/quests" className="bg-[#1A1A1B] border border-[#584235] p-6 hover:border-[#FF7A00] transition-colors group no-underline">
           <h2 className="font-sora font-bold text-[20px] text-white group-hover:text-[#FF7A00] transition-colors mb-4">QUESTS</h2>
           <div className="flex justify-between items-center">

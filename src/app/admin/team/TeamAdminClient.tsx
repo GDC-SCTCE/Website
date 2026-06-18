@@ -36,7 +36,7 @@ export default function TeamAdminClient({ members }: { members: any[] }) {
             className={`bg-[#1A1A1B] border ${selectedMember?.id === member.id ? 'border-[#FF7A00]' : 'border-[#584235] hover:border-[#FF7A00]/50'} p-4 flex gap-4 cursor-pointer transition-colors items-center`}
           >
             {/* Avatar / Photo */}
-            <div className="w-[64px] h-[64px] shrink-0 border border-[#584235] overflow-hidden mix-blend-luminosity hover:mix-blend-normal transition-all">
+            <div className="w-[64px] h-[64px] shrink-0 border border-[#584235] overflow-hidden transition-all">
               {member.avatar ? (
                  <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
               ) : (

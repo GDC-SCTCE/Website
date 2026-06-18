@@ -3,6 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 import * as dotenv from 'dotenv'
 
+dotenv.config({ path: '.env.local' })
 dotenv.config()
 
 const connectionString = `${process.env.DIRECT_URL || process.env.DATABASE_URL}`
@@ -22,8 +23,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 12,
       "targetDate": new Date(Date.now() + 12 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -36,8 +36,7 @@ const data = {
       "capacity": 30,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -50,13 +49,12 @@ const data = {
       "capacity": 25,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
       "title": "Game Jam #3 - April 2025",
-      "category": "Game Jams",
+      "category": "Game_Jams",
       "status": "COMPLETED",
       "dateText": "April 2025",
       "location": "Virtual",
@@ -64,8 +62,7 @@ const data = {
       "capacity": 100,
       "seatsTaken": 100,
       "targetDate": new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      "attendees": 67,
-      "rating": 5.0,
+
       "recapUrl": "#",
     },
     {
@@ -78,8 +75,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -92,8 +88,7 @@ const data = {
       "capacity": 30,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -106,8 +101,7 @@ const data = {
       "capacity": 30,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -120,8 +114,7 @@ const data = {
       "capacity": 30,
       "seatsTaken": 0,
       "targetDate": new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      "attendees": null,
-      "rating": null,
+
       "recapUrl": null,
     },
     {
@@ -134,8 +127,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -148,8 +140,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -162,8 +153,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -176,8 +166,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
     {
@@ -190,8 +179,7 @@ const data = {
       "capacity": 50,
       "seatsTaken": 50,
       "targetDate": new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-      "attendees": 41,
-      "rating": 4.7,
+
       "recapUrl": "#",
     },
   ],
@@ -201,44 +189,48 @@ const data = {
       "description": "Slide through synthwave grids avoiding firewalls and scanning lasers in this neon arcade runner.",
       "genre": "Arcade / Racing",
       "developer": "Abhirag R Nair & Johan Gejo",
-      "rating": 4.8,
-      "coverUrl": "/images/covers/neon-drift.jpg",
-      "releaseYear": "2025",
-      "features": [],
-      "playable": true,
+      "engine": "Unity",
+      "dimension": "3D",
+      "duration": "1h",
+      "coverUrl": "",
+      "year": "2025",
+      "isEditorsChoice": true,
     },
     {
       "title": "Hollow Maze",
       "description": "A dark rogue-lite puzzle explorer where your flashlight is your only defense against creeping glitches.",
       "genre": "Puzzle / Horror",
       "developer": "Aleena Thomas & Nidhim Nair",
-      "rating": 4.5,
-      "coverUrl": "/images/covers/hollow-maze.jpg",
-      "releaseYear": "2025",
-      "features": [],
-      "playable": true,
+      "engine": "Godot",
+      "dimension": "2D",
+      "duration": "2h",
+      "coverUrl": "",
+      "year": "2025",
+      "isEditorsChoice": false,
     },
     {
       "title": "Grid Runner",
       "description": "Deconstruct obstacles by shooting packets of debug data at compiling compiler errors.",
       "genre": "Shooter / Retro",
       "developer": "Gagandeep M",
-      "rating": 4.6,
-      "coverUrl": "/images/covers/grid-runner.jpg",
-      "releaseYear": "2025",
-      "features": [],
-      "playable": true,
+      "engine": "Custom",
+      "dimension": "2D",
+      "duration": "30m",
+      "coverUrl": "",
+      "year": "2025",
+      "isEditorsChoice": false,
     },
     {
       "title": "Coda: The Last Protocol",
       "description": "A visual novel / terminal simulator where your choices compile the fate of an isolated AI server room.",
       "genre": "Simulation / Narrative",
       "developer": "GDSC Game Dev Team",
-      "rating": 4.9,
-      "coverUrl": "/images/covers/coda.jpg",
-      "releaseYear": "2024",
-      "features": [],
-      "playable": false,
+      "engine": "Web",
+      "dimension": "2D",
+      "duration": "4h",
+      "coverUrl": "",
+      "year": "2024",
+      "isEditorsChoice": false,
     }
   ],
   "gameHighScores": [],
@@ -367,7 +359,7 @@ const data = {
     "name": "Manas Joby Joseph",
     "role": "E-Sports Lead",
     "avatar": "",
-    "department": "E-SPORTS",
+    "department": "E_SPORTS",
     "stats": null,
     "gamePreview": null
   },
@@ -375,7 +367,7 @@ const data = {
     "name": "Sanjay K S",
     "role": "E-Sports Co Lead",
     "avatar": "",
-    "department": "E-SPORTS",
+    "department": "E_SPORTS",
     "stats": null,
     "gamePreview": null
   },
@@ -475,7 +467,6 @@ const data = {
 
 async function main() {
   console.log("Cleaning database...");
-  await prisma.gameHighScore.deleteMany();
   await prisma.game.deleteMany();
   await prisma.quest.deleteMany();
   await prisma.teamMember.deleteMany();
@@ -483,17 +474,12 @@ async function main() {
 
   console.log("Seeding Quests...");
   for (const item of data.quests) {
-    await prisma.quest.create({ data: item });
+    await prisma.quest.create({ data: item as any });
   }
 
   console.log("Seeding Games...");
   for (const item of data.games) {
-    await prisma.game.create({ data: item });
-  }
-
-  console.log("Seeding GameHighScores...");
-  for (const item of data.gameHighScores) {
-    await prisma.gameHighScore.create({ data: item });
+    await prisma.game.create({ data: item as any });
   }
 
   console.log("Seeding TeamMembers...");
@@ -503,7 +489,7 @@ async function main() {
 
   console.log("Seeding Leaderboards...");
   for (const item of data.leaderboards) {
-    await prisma.leaderboard.create({ data: item });
+    await prisma.leaderboard.create({ data: item as any });
   }
 
   console.log("Seeding complete!");

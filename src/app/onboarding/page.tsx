@@ -5,29 +5,42 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { useGameForge } from "@/context/GameForgeContext";
+import { createClient } from "@/utils/supabase/client";
+import { syncUserToDatabase } from "@/actions/authActions";
+import { checkUserExists } from "@/actions/userActions";
 
-import { XPLevel } from "./types";
-import { DEV_TOOLS, YEAR_OPTIONS, XP_LEVELS } from "./constants";
+import { XPLevel } from "@prisma/client";
+import OtpModal from "./components/OtpModal";
+import LoginFields from "./components/LoginFields";
+import SignupFields from "./components/SignupFields";
 
 export default function OnboardingPage() {
-  const { user, login, loading } = useGameForge();
   const router = useRouter();
 
+  const [isLoginMode, setIsLoginMode] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [rollNo, setRollNo] = useState("");
   const [year, setYear] = useState("1st");
   const [selectedTools, setSelectedTools] = useState<string[]>(["Unity"]);
   const [xpLevel, setXpLevel] = useState<XPLevel>("Newbie");
+  
   const [submitting, setSubmitting] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [authError, setAuthError] = useState("");
 
   useEffect(() => {
-    if (!loading && user && !submitting) {
-      // Already logged in — go directly to dashboard
-      router.push("/dashboard/quests");
-    }
-  }, [user, loading, router, submitting]);
+    const checkUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        router.push("/dashboard/quests");
+      }
+    };
+    checkUser();
+  }, [router]);
 
   const toggleTool = (tool: string) => {
     setSelectedTools((prev) =>
@@ -35,32 +48,115 @@ export default function OnboardingPage() {
     );
   };
 
-  const handleJoin = () => {
-    if (!fullName.trim()) return;
+  const handleJoinOrLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setAuthError("");
+    const trimmedEmail = email.trim();
+
+    // 1. Email check (required for both login and signup)
+    if (!trimmedEmail) {
+      setAuthError("Please enter your email.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setAuthError("Please enter a valid email address.");
+      return;
+    }
+
+    // 2. Extra validations for signup mode only
+    if (!isLoginMode) {
+      const trimmedFullName = fullName.trim();
+      const trimmedPhone = phone.trim();
+      const trimmedRollNo = rollNo.trim();
+
+      if (!trimmedFullName || !trimmedPhone || !trimmedRollNo) {
+        setAuthError("Please fill all required fields.");
+        return;
+      }
+
+      // Roll Number Validation (Format: SCT22CS001, case-insensitive check but auto-capitalized)
+      const rollNoRegex = /^SCT\d{2}[A-Z]{2}\d{3}$/i;
+      if (!rollNoRegex.test(trimmedRollNo)) {
+        setAuthError("Roll number must follow the format: SCT[Year][Branch][RollNo] (e.g., SCT22CS001).");
+        return;
+      }
+
+      // Phone Number Validation (10-digit number with optional country code/spacers)
+      const phoneRegex = /^(\+?\d{1,4}[- ]?)?\d{10}$/;
+      if (!phoneRegex.test(trimmedPhone)) {
+        setAuthError("Please enter a valid 10-digit phone number (e.g., +91 9876543210 or 9876543210).");
+        return;
+      }
+
+      // Development Tools Validation
+      if (selectedTools.length === 0) {
+        setAuthError("Please select at least one development tool.");
+        return;
+      }
+    }
+
     setSubmitting(true);
-    // Map XP level → loadout for the context
-    const loadoutMap: Record<XPLevel, "Developer" | "Artist" | "Musician" | "Designer"> = {
-      Newbie: "Developer",
-      Apprentice: "Artist",
-      Veteran: "Designer",
-    };
-    const stats = { tech: 10, design: 10, agility: 10, strength: 10 };
-    login(fullName.trim(), loadoutMap[xpLevel], stats);
-    router.push("/onboarding/success");
+    
+    if (isLoginMode) {
+      const exists = await checkUserExists(trimmedEmail);
+      if (!exists) {
+        setAuthError("No account found with this email. Please sign up instead.");
+        setSubmitting(false);
+        return;
+      }
+    }
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOtp({
+      email: trimmedEmail,
+    });
+
+    if (error) {
+      setAuthError(error.message);
+      setSubmitting(false);
+    } else {
+      setShowOtpModal(true);
+      setSubmitting(false);
+    }
   };
 
-  if (loading || (user && !submitting)) {
-    return (
-      <div className="min-h-screen bg-[#131314] flex items-center justify-center">
-        <span className="font-mono text-[12px] text-[#FF7A00] tracking-[1.2px]">
-          CONNECTING TO COMPILER...
-        </span>
-      </div>
-    );
-  }
+  const handleVerifyOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setSubmitting(true);
+    setAuthError("");
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: email.trim(),
+      token: otp,
+      type: 'email',
+    });
+
+    if (error) {
+      setAuthError(error.message);
+      setSubmitting(false);
+    } else {
+      try {
+        const userData = isLoginMode ? null : {
+          fullName: fullName.trim(),
+          phone: phone.trim(),
+          rollNo: rollNo.trim(),
+          year,
+          selectedTools,
+          xpLevel
+        };
+        await syncUserToDatabase(userData);
+        router.push("/onboarding/success");
+      } catch (err: any) {
+        setAuthError(err.message || "Failed to sync user data. If logging in, you may need to sign up first.");
+        await supabase.auth.signOut();
+        setSubmitting(false);
+      }
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] relative overflow-x-hidden">
+    <div className="min-h-dvh bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] relative overflow-x-hidden">
       {/* ── Ambient blobs ── */}
       <div className="absolute w-[512px] h-[746px] left-[-136px] top-[79px] bg-[#FFB68B]/3 blur-[60px] rotate-12 pointer-events-none" />
       <div className="absolute w-[640px] h-[622px] left-[870px] top-[242px] bg-[#00DBE9]/3 blur-[75px] -rotate-12 pointer-events-none" />
@@ -70,198 +166,75 @@ export default function OnboardingPage() {
 
       {/* ── MAIN ── */}
       <main className="max-w-[1440px] mx-auto px-4 md:px-[64px] pb-[80px]">
+        <form onSubmit={handleJoinOrLogin}>
         {/* ── PROGRESS HEADER ── */}
-        <div className="text-center pt-[96px] mb-[56px]">
+        <div className="text-center pt-[48px] md:pt-[96px] mb-[32px] md:mb-[56px]">
           {/* Phase label */}
           <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#00DBE9] mb-[28px]">
-            PHASE 02 / CHARACTER DATA
+            {isLoginMode ? "PHASE 01 / RECONNECT" : "PHASE 02 / CHARACTER DATA"}
           </p>
 
           {/* Heading */}
-          <h1 className="font-sora font-bold text-[48px] leading-[53px] tracking-[-2.4px] uppercase text-[#FFB68B] mb-[24px]">
-            Initialize Protocol
+          <h1 className="font-sora font-bold text-[32px] md:text-[48px] leading-[38px] md:leading-[53px] tracking-[-2.4px] uppercase text-[#FFB68B] mb-[24px]">
+            {isLoginMode ? "Enter Terminal" : "Initialize Protocol"}
           </h1>
 
           {/* Progress bar */}
-          <div className="inline-block w-[128px] relative">
-            {/* Shadow layer */}
+          <div className="inline-block w-[128px] relative mb-[24px]">
             <div className="absolute w-[128px] h-[4px] top-0 left-0 bg-transparent shadow-[0_4px_20px_-5px_rgba(255,182,139,0.6)]" />
-            {/* Fill */}
-            <div className="w-[128px] h-[4px] bg-[#FFB68B] mt-[4px]" />
+            <div className="w-[128px] h-[4px] bg-[#FFB68B]" />
           </div>
         </div>
 
-        {/* ── TWO COLUMN FORM ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-[64px] items-start max-w-[1280px] mx-auto">
-          {/* ───── LEFT: BASE STATS ───── */}
-          <div>
-            {/* Section title */}
-            <div className="flex items-baseline gap-[16px] mb-[48px]">
-              <span className="font-sora font-bold text-[48px] leading-[53px] tracking-[-0.96px] text-[#353436]">
-                03
-              </span>
-              <span className="font-sora font-bold text-[32px] leading-[48px] uppercase text-[#E5E2E3]">
-                BASE STATS
-              </span>
-            </div>
-
-            {/* Row 1: Full Name + Email */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] mb-[36px] w-full">
-              {/* Full Name */}
-              <div>
-                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                  FULL NAME
-                </label>
-                <div className="border-b border-[#D0D0D0] pb-[13px]">
-                  <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="e.g. Jaxen Sterling"
-                    className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
-                  />
-                </div>
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                  EMAIL ADDRESS
-                </label>
-                <div className="border-b border-[#D0D0D0] pb-[13px]">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="jaxen@ignition.hub"
-                    className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Row 2: Roll No + Academic Year */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] w-full">
-              {/* Roll No */}
-              <div>
-                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                  ROLL NO.
-                </label>
-                <div className="border-b border-[#D0D0D0] pb-[13px]">
-                  <input
-                    type="text"
-                    value={rollNo}
-                    onChange={(e) => setRollNo(e.target.value)}
-                    placeholder="IH-8829-X"
-                    className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
-                  />
-                </div>
-              </div>
-
-              {/* Academic Year */}
-              <div>
-                <label className="block font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[20px] pl-[4px]">
-                  ACADEMIC YEAR
-                </label>
-                <div className="flex flex-wrap border border-[#353436]">
-                  {YEAR_OPTIONS.map((y) => {
-                    const isActive = year === y;
-                    return (
-                      <button
-                        key={y}
-                        onClick={() => setYear(y)}
-                        className={`w-[83.33px] h-[48px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer uppercase transition-all duration-150 border-none ${isActive ? "bg-[#FF7A00] text-[#522300]" : "bg-transparent text-[#E5E2E3] hover:bg-white/5"}`}
-                      >
-                        {y}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ───── RIGHT: LOADOUT ───── */}
-          <div>
-            {/* Section title */}
-            <div className="flex items-baseline gap-[16px] mb-[48px]">
-              <span className="font-sora font-bold text-[48px] leading-[53px] tracking-[-0.96px] text-[#353436]">
-                04
-              </span>
-              <span className="font-sora font-bold text-[32px] leading-[48px] uppercase text-[#E5E2E3]">
-                LOADOUT
-              </span>
-            </div>
-
-            {/* Development Tools */}
-            <div className="mb-[56px]">
-              <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[28px]">
-                DEVELOPMENT TOOLS
-              </p>
-              <div className="flex gap-[8px] flex-wrap">
-                {DEV_TOOLS.map((tool) => {
-                  const isSelected = selectedTools.includes(tool);
-                  return (
-                    <button
-                      key={tool}
-                      onClick={() => toggleTool(tool)}
-                      className={`h-[33px] px-[16px] font-mono font-normal text-[10px] leading-[15px] cursor-pointer transition-all duration-150 ${isSelected ? "bg-[#FFB68B] text-[#522300] border-none shadow-[0_4px_20px_-5px_rgba(255,182,139,0.6)]" : "bg-transparent text-[#E0C0AF] border border-[#353436] hover:border-[#FFB68B]"}`}
-                    >
-                      {tool}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* XP Classification */}
-            <div>
-              <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] mb-[28px]">
-                XP CLASSIFICATION
-              </p>
-              <div className="flex flex-col gap-[12px]">
-                {XP_LEVELS.map((lvl) => {
-                  const isSelected = xpLevel === lvl.id;
-                  return (
-                    <button
-                      key={lvl.id}
-                      onClick={() => setXpLevel(lvl.id)}
-                      className={`w-full h-[69px] bg-[#1C1B1C] pl-[49px] pr-[17px] py-[17px] text-left cursor-pointer relative box-border transition-colors duration-150 border ${isSelected ? "border-[#FFB68B]" : "border-[#353436] hover:border-[#FFB68B]/50"}`}
-                    >
-                      {/* Radio circle */}
-                      <span className={`absolute left-[17px] top-[26.5px] w-[16px] h-[16px] border-2 border-[#353436] rounded-full inline-block box-border ${isSelected ? "bg-[#FFB68B]" : "bg-transparent"}`} />
-                      <p className="font-mono font-normal text-[12px] leading-[18px] text-[#FFB68B] m-0 mb-[2px]">
-                        {lvl.label}
-                      </p>
-                      <p className="font-sora font-normal text-[11px] leading-[16px] text-[#E0C0AF] m-0 truncate">
-                        {lvl.desc}
-                      </p>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
+        {isLoginMode ? (
+          <LoginFields email={email} setEmail={setEmail} />
+        ) : (
+          <SignupFields
+            fullName={fullName} setFullName={setFullName}
+            email={email} setEmail={setEmail}
+            rollNo={rollNo} setRollNo={setRollNo}
+            phone={phone} setPhone={setPhone}
+            year={year} setYear={setYear}
+            selectedTools={selectedTools} toggleTool={toggleTool}
+            xpLevel={xpLevel} setXpLevel={setXpLevel}
+          />
+        )}
 
         {/* ── CTA BUTTON ── */}
-        <div className="text-center mt-[96px]">
-          <div className="inline-block relative">
-            {/* Glow behind button */}
-            <div className="absolute inset-[-4px] bg-gradient-to-r from-[#FFB68B] to-[#FDD400] opacity-25 blur-[4px] pointer-events-none" />
+        <div className={`text-center ${isLoginMode ? "mt-[48px]" : "mt-[96px]"} flex flex-col items-center`}>
+          {authError && <p className="text-red-500 font-mono text-[12px] mb-4">{authError}</p>}
+          <div className="inline-block relative w-full max-w-[420px]">
+            <div className="absolute inset-0 bg-[#FF7A00] blur-[15px] opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
             <button
-              onClick={handleJoin}
-              disabled={submitting || !fullName.trim()}
-              className={`relative w-full max-w-[469.81px] h-[78px] border-none font-sora font-normal text-[20px] leading-[30px] tracking-[4px] uppercase text-[#522300] transition-all duration-200 ${!fullName.trim() ? "bg-[#584235] opacity-60 cursor-not-allowed" : "bg-[#FFB68B] cursor-pointer hover:scale-[1.01]"}`}
+              type="submit"
+              disabled={submitting}
+              className={`relative flex items-center justify-center w-full h-[60px] border border-[#FF7A00] font-mono font-bold text-[14px] tracking-[2px] uppercase transition-all duration-300 ${submitting ? "bg-[#1C1B1C] text-[#A78B7C] opacity-60 cursor-not-allowed border-[#584235]" : "bg-[#FF7A00] text-[#131314] cursor-pointer hover:bg-[#131314] hover:text-[#FF7A00] hover:shadow-[0_0_20px_rgba(255,122,0,0.3)]"}`}
             >
-              {submitting ? "INITIALIZING..." : "JOIN THE COLLECTIVE →"}
+              {submitting ? "INITIALIZING..." : (isLoginMode ? "ENTER THE CLUB" : "JOIN THE COLLECTIVE")}
             </button>
           </div>
-          <p className="font-mono font-normal text-[10px] leading-[15px] text-[#353436] mt-[20px]">
-            By joining, you agree to the Terms of Service
-          </p>
+          
+          <button 
+            type="button"
+            onClick={() => { setIsLoginMode(!isLoginMode); setAuthError(""); }}
+            className="font-mono text-[12px] text-[#E0C0AF] underline hover:text-[#FFB68B] transition-colors bg-transparent border-none cursor-pointer mt-[24px]"
+          >
+            {isLoginMode ? "Need an account? Sign Up" : "Already have an account? Log In"}
+          </button>
         </div>
+        </form>
       </main>
+
+      <OtpModal
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        email={email}
+        otp={otp}
+        setOtp={setOtp}
+        submitting={submitting}
+        authError={authError}
+        onVerify={handleVerifyOtp}
+      />
     </div>
   );
 }
