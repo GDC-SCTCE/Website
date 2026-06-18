@@ -6,6 +6,69 @@ datasource db {
   provider = "postgresql"
 }
 
+
+enum XPLevel {
+  Newbie
+  Apprentice
+  Veteran
+}
+
+enum Department {
+  ALL
+  DESIGN
+  TECH
+  MEDIA
+  COMMUNITY
+  EVENT
+  MARKETING
+  E_SPORTS @map("E-SPORTS")
+}
+
+enum QuestCategory {
+  Workshops
+  Game_Jams @map("Game Jams")
+  Talks
+}
+
+enum QuestStatus {
+  UPCOMING
+  ACTIVE
+  COMPLETED
+}
+
+enum RegistrationStatus {
+  PENDING
+  REGISTERED
+  ATTENDED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  phone        String
+  fullName     String
+  rollNo       String
+  academicYear String
+  tools        String[]
+  xpLevel      XPLevel @default(Newbie)
+  
+  registrations Registration[]
+  ratings       QuestRating[]
+  
+  createdAt    DateTime  @default(now())
+}
+
+model TeamMember {
+  id          String     @id @default(uuid())
+  name        String
+  role        String
+  avatar      String?
+  department  Department
+  stats       Json?
+  gamePreview Json?
+  createdAt   DateTime   @default(now())
+}
+
 model Quest {
   id           String    @id @default(uuid())
   title        String
@@ -33,6 +96,31 @@ model Quest {
   createdAt    DateTime  @default(now())
 }
 
+model QuestRating {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questId   String
+  quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+  rating    Int
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, questId])
+}
+
+model Registration {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questId   String
+  quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+  status    RegistrationStatus   // "PENDING", "REGISTERED", "ATTENDED"
+  upiRef    String?
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, questId])
+}
+
 model Game {
   id              String   @id @default(uuid())
   title           String
@@ -49,18 +137,6 @@ model Game {
   createdAt       DateTime @default(now())
 }
 
-
-model TeamMember {
-  id          String     @id @default(uuid())
-  name        String
-  role        String
-  avatar      String?
-  department  Department
-  stats       Json?
-  gamePreview Json?
-  createdAt   DateTime   @default(now())
-}
-
 model Leaderboard {
   id        String   @id @default(uuid())
   rank      Int
@@ -69,80 +145,4 @@ model Leaderboard {
   gameTitle String
   date      String
   createdAt DateTime @default(now())
-}
-
-enum XPLevel {
-  Newbie
-  Apprentice
-  Veteran
-}
-
-model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  phone        String
-  fullName     String
-  rollNo       String
-  academicYear String
-  tools        String[]
-  xpLevel      XPLevel @default(Newbie)
-  
-  registrations Registration[]
-  ratings       QuestRating[]
-  
-  createdAt    DateTime  @default(now())
-}
-
-model Registration {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questId   String
-  quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
-  status    RegistrationStatus   // "PENDING", "REGISTERED", "ATTENDED"
-  upiRef    String?
-  createdAt DateTime @default(now())
-  
-  @@unique([userId, questId])
-}
-
-model QuestRating {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questId   String
-  quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
-  rating    Int
-  createdAt DateTime @default(now())
-  
-  @@unique([userId, questId])
-}
-
-enum QuestCategory {
-  Workshops
-  Game_Jams @map("Game Jams")
-  Talks
-}
-
-enum QuestStatus {
-  UPCOMING
-  ACTIVE
-  COMPLETED
-}
-
-enum Department {
-  ALL
-  DESIGN
-  TECH
-  MEDIA
-  COMMUNITY
-  EVENT
-  MARKETING
-  E_SPORTS @map("E-SPORTS")
-}
-
-enum RegistrationStatus {
-  PENDING
-  REGISTERED
-  ATTENDED
 }

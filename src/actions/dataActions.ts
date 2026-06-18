@@ -44,10 +44,17 @@ export async function submitQuestRating(questId: string, rating: number) {
       userId: user.id,
       questId,
       rating,
+
     },
   });
 
   return { success: true };
 }
 
-
+export async function fetchActiveQuests() {
+  const quests = await prisma.quest.findMany({
+    where: { status: "ACTIVE" },
+    orderBy: { targetDate: "asc" },
+  });
+  return quests;
+}
