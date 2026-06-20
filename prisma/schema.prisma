@@ -6,7 +6,6 @@ datasource db {
   provider = "postgresql"
 }
 
-
 enum XPLevel {
   Newbie
   Apprentice
@@ -145,4 +144,32 @@ model Leaderboard {
   gameTitle String
   date      String
   createdAt DateTime @default(now())
+}
+
+enum ToolCategory {
+  ENGINES
+  ART
+  AUDIO
+  COLLAB
+  LEARNING
+}
+
+enum ToolPricing {
+  FREE
+  FREEMIUM
+  PAID
+}
+
+model Tool {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  category    ToolCategory
+  rating      Int          @default(5)
+  pricing     ToolPricing  @default(FREE)
+  platforms   String
+  description String
+  url         String
+  iconUrl     String?       // URL to the tool's logo/icon in Supabase Storage
+
+  createdAt   DateTime     @default(now())
 }

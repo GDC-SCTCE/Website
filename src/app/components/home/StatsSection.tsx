@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useInView } from "@/hooks/useInView";
+import { useAuth } from "@/context/AuthContext";
 
 const stats = [
   { value: "847", label: "Members", textColor: "text-[#FF7A00]" },
@@ -13,6 +14,7 @@ const stats = [
 
 export default function StatsSection() {
   const { ref: statsRef, inView: statsVisible } = useInView(0.15);
+  const { user, loading } = useAuth();
 
   return (
     <section
@@ -38,9 +40,9 @@ export default function StatsSection() {
           <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] max-w-[448px] mb-[40px]">
             Real-time metrics from our distributed global network of creators and players.
           </p>
-          <Link href="/onboarding">
+          <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
             <button className="bg-[#FDD400] w-[130.41px] h-[44px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#6F5C00] border-none rounded-[2px] cursor-pointer hover:brightness-110 transition-all duration-200 shadow-md hover:shadow-[#FDD400]/20">
-              Enlist
+              {!loading && user ? "Dashboard" : "Enlist"}
             </button>
           </Link>
         </div>
