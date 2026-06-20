@@ -121,7 +121,7 @@ export default function ToolAdminClient({ tools }: { tools: Tool[] }) {
         </div>
 
         {/* RIGHT COLUMN: FORM */}
-        <div className="lg:sticky lg:top-8 border border-[#584235] bg-[#1A1A1B] p-6 shadow-2xl">
+        <div className="lg:col-span-1 bg-[#1A1A1B] border border-[#584235] p-6 h-fit sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
             <h2 className="font-sora font-bold text-[20px] text-white uppercase">
               {selectedTool ? `EDIT TOOL` : "ADD NEW TOOL"}

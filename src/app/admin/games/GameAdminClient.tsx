@@ -173,9 +173,7 @@ export default function GameAdminClient({ games }: { games: Game[] }) {
             key={selectedGame?.id || "new"} 
             game={selectedGame} 
             onComplete={() => {
-              if (!selectedGame) {
-                // Keep selected game as null if creating new
-              }
+              setSelectedGame(null);
             }}
           />
         </div>

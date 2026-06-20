@@ -8,12 +8,14 @@ export async function createGame(data: any) {
   await verifyAuth();
   await prisma.game.create({ data });
   revalidatePath("/admin/games");
+  revalidatePath("/dashboard/arcade");
 }
 
 export async function updateGame(id: string, data: any) {
   await verifyAuth();
   await prisma.game.update({ where: { id }, data });
   revalidatePath("/admin/games");
+  revalidatePath("/dashboard/arcade");
 }
 
 export async function deleteGame(id: string) {
@@ -22,6 +24,7 @@ export async function deleteGame(id: string) {
   if (game?.coverUrl) await deleteImageIfPresent(game.coverUrl, "games");
   await prisma.game.delete({ where: { id } });
   revalidatePath("/admin/games");
+  revalidatePath("/dashboard/arcade");
 }
 
 export async function deleteAllGames() {
@@ -32,6 +35,7 @@ export async function deleteAllGames() {
   }
   await prisma.game.deleteMany({});
   revalidatePath("/admin/games");
+  revalidatePath("/dashboard/arcade");
 }
 
 export async function setEditorsChoiceGame(id: string) {

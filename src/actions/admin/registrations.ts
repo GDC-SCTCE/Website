@@ -18,6 +18,7 @@ export async function approveRegistration(userId: string, questId: string) {
   });
   
   revalidatePath("/admin/registrations");
+  revalidatePath("/");
   revalidatePath("/dashboard/quests");
 }
 
@@ -27,4 +28,6 @@ export async function rejectRegistration(userId: string, questId: string) {
     where: { userId_questId: { userId, questId } }
   });
   revalidatePath("/admin/registrations");
+  revalidatePath("/");
+  revalidatePath("/dashboard/quests");
 }

@@ -8,12 +8,16 @@ export async function createQuest(data: any) {
   await verifyAuth();
   await prisma.quest.create({ data });
   revalidatePath("/admin/quests");
+  revalidatePath("/");
+  revalidatePath("/dashboard/quests");
 }
 
 export async function updateQuest(id: string, data: any) {
   await verifyAuth();
   await prisma.quest.update({ where: { id }, data });
   revalidatePath("/admin/quests");
+  revalidatePath("/");
+  revalidatePath("/dashboard/quests");
 }
 
 export async function deleteQuest(id: string) {
@@ -22,6 +26,8 @@ export async function deleteQuest(id: string) {
   if (quest?.image) await deleteImageIfPresent(quest.image, "quests");
   await prisma.quest.delete({ where: { id } });
   revalidatePath("/admin/quests");
+  revalidatePath("/");
+  revalidatePath("/dashboard/quests");
 }
 
 export async function deleteAllQuests() {
@@ -32,4 +38,6 @@ export async function deleteAllQuests() {
   }
   await prisma.quest.deleteMany({});
   revalidatePath("/admin/quests");
+  revalidatePath("/");
+  revalidatePath("/dashboard/quests");
 }
