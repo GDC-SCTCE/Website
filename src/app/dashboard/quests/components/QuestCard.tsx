@@ -48,8 +48,12 @@ export function QuestCard({
 
   return (
     <div
-      className={`flex flex-col flex-1 bg-gradient-to-b from-[#161618] to-[#131314] border-t border-[#FF7A00] ${isUpcoming ? "opacity-90" : ""} relative cursor-pointer hover:border-[#FFB68B] transition-colors`}
-      onClick={() => setShowDetails(true)}
+      className={`flex flex-col flex-1 bg-gradient-to-b from-[#161618] to-[#131314] border-t border-[#FF7A00] relative ${
+        isUpcoming 
+          ? "opacity-75 cursor-default" 
+          : "cursor-pointer hover:border-[#FFB68B] transition-colors"
+      }`}
+      onClick={() => { if (!isUpcoming) setShowDetails(true); }}
     >
       {/* Image area */}
       <div className="relative mx-4 md:mx-6 mt-4 md:mt-6 h-[200px] md:h-[290px]">
@@ -143,8 +147,7 @@ export function QuestCard({
                   alert("Notification enabled! We will notify you when this quest starts.");
                 }
               }}
-              className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] border-2 border-[#FFB68B] flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/10 cursor-pointer"
-              style={{ backgroundColor: '#1C1B1C', color: '#FFB68B' }}
+              className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] border-2 border-[#FFB68B] bg-[#1C1B1C] text-[#FFB68B] flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/10 cursor-pointer"
             >
               <Bell className="w-4 h-5 text-[#FFB68B]" />
               <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFB68B]">

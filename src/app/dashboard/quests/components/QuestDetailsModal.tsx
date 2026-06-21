@@ -42,8 +42,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto" onClick={(e) => { e.stopPropagation(); onClose(); }}>
       <div 
-        className="border border-[#584235] w-full max-w-5xl my-auto shadow-2xl relative flex flex-col md:flex-row h-auto md:h-[600px] overflow-y-auto md:overflow-hidden" 
-        style={{ backgroundColor: '#1C1B1C' }}
+        className="bg-[#1C1B1C] border border-[#584235] w-full max-w-5xl my-auto shadow-2xl relative flex flex-col md:flex-row h-auto md:h-[600px] overflow-y-auto md:overflow-hidden" 
         onClick={(e) => e.stopPropagation()}
       >
 
@@ -95,15 +94,9 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
         </div>
 
         {/* Right Info and Registration Panel */}
-        <div 
-          className="w-full md:w-7/12 flex flex-col h-auto md:h-full md:min-h-0 overflow-visible md:overflow-hidden" 
-          style={{ backgroundColor: '#161618' }}
-        >
+        <div className="w-full md:w-7/12 flex flex-col h-auto md:h-full md:min-h-0 overflow-visible md:overflow-hidden bg-[#161618]">
           {/* Header */}
-          <div 
-            className="flex justify-between items-center p-4 md:p-6 border-b border-[#3A2D25] shrink-0 z-10"
-            style={{ backgroundColor: '#161618' }}
-          >
+          <div className="flex justify-between items-center p-4 md:p-6 border-b border-[#3A2D25] shrink-0 bg-[#161618] z-10">
             <span className="font-mono text-[11px] text-[#A78B7C] tracking-[1.5px] uppercase">Dossier Details</span>
             <button onClick={onClose} className="text-[#A78B7C] hover:text-white transition-colors p-1 hover:bg-[#1C1C1E] rounded-sm">
               <X className="w-5 h-5" />
