@@ -34,13 +34,13 @@ export default function OtpModal({
           type="text"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
-          placeholder="00000000"
+          placeholder="000000"
           className="w-full bg-[#131314] border border-[#584235] p-4 text-center font-mono text-[24px] text-[#FFB68B] tracking-[8px] outline-none mb-4 focus:border-[#FFB68B]"
         />
         {authError && <p className="text-red-500 mb-4 text-[12px]">{authError}</p>}
         <button
           type="submit"
-          disabled={submitting || otp.length !== 8}
+          disabled={submitting || otp.length !== 6}
           className="w-full h-[48px] bg-[#FF7A00] text-[#522300] font-mono font-bold tracking-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting ? "VERIFYING..." : "VERIFY CODE"}
