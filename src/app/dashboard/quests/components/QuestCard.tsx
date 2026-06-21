@@ -47,9 +47,13 @@ export function QuestCard({
   });
 
   return (
-    <div 
-      className={`flex flex-col flex-1 bg-gradient-to-b from-[#161618] to-[#131314] border-t border-[#FF7A00] ${isUpcoming ? "opacity-90" : ""} relative cursor-pointer hover:border-[#FFB68B] transition-colors`}
-      onClick={() => setShowDetails(true)}
+    <div
+      className={`flex flex-col flex-1 bg-gradient-to-b from-[#161618] to-[#131314] border-t border-[#FF7A00] relative ${
+        isUpcoming 
+          ? "opacity-75 cursor-default" 
+          : "cursor-pointer hover:border-[#FFB68B] transition-colors"
+      }`}
+      onClick={() => { if (!isUpcoming) setShowDetails(true); }}
     >
       {/* Image area */}
       <div className="relative mx-4 md:mx-6 mt-4 md:mt-6 h-[200px] md:h-[290px]">
@@ -134,9 +138,16 @@ export function QuestCard({
 
         {!isAdmin && (
           isUpcoming ? (
-            <button 
-              onClick={() => { if (!user) router.push("/onboarding"); }}
-              className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] border-2 border-[#FFB68B] bg-transparent flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/5 cursor-pointer"
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!user) {
+                  router.push("/onboarding");
+                } else {
+                  alert("Notification enabled! We will notify you when this quest starts.");
+                }
+              }}
+              className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] border-2 border-[#FFB68B] bg-[#1C1B1C] text-[#FFB68B] flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/10 cursor-pointer"
             >
               <Bell className="w-4 h-5 text-[#FFB68B]" />
               <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFB68B]">
@@ -144,31 +155,31 @@ export function QuestCard({
               </span>
             </button>
           ) : (
-              <button 
-                onClick={(e) => { e.stopPropagation(); setShowDetails(true); }}
-                disabled={!!successMsg}
-                className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] bg-[#FF7A00] flex items-center justify-center gap-2 transition-opacity hover:opacity-90 cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800]">
-                  {successMsg ? successMsg : "VIEW DETAILS"}
-                </span>
-              </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowDetails(true); }}
+              disabled={!!successMsg}
+              className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] bg-[#FF7A00] flex items-center justify-center gap-2 transition-opacity hover:opacity-90 cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#5C2800]">
+                {successMsg ? successMsg : "VIEW DETAILS"}
+              </span>
+            </button>
           )
         )}
       </div>
 
       {showDetails && (
-        <QuestDetailsModal 
+        <QuestDetailsModal
           quest={{
             ...quest,
-            registrations: successMsg 
-              ? [{ 
-                  id: "temp", 
-                  userId: user?.id || "", 
-                  questId: quest.id, 
-                  status: (successMsg === "PENDING APPROVAL" ? "PENDING" : "REGISTERED") as any,
-                  createdAt: new Date()
-                }] 
+            registrations: successMsg
+              ? [{
+                id: "temp",
+                userId: user?.id || "",
+                questId: quest.id,
+                status: (successMsg === "PENDING APPROVAL" ? "PENDING" : "REGISTERED") as any,
+                createdAt: new Date()
+              }]
               : quest.registrations
           }}
           user={user}
