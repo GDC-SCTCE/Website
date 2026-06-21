@@ -28,6 +28,7 @@
   --animate-shimmer: shimmer 3s ease-in-out infinite;
   --animate-dot-pulse: dot-pulse 1.5s ease-in-out infinite;
   --animate-scanline-sweep: scanline-sweep 4s linear infinite;
+  --animate-nudge-horizontal: nudge-horizontal 1.5s ease-in-out infinite;
 }
 
 @keyframes scanline {
@@ -94,6 +95,11 @@
   5%   { opacity: 0.4; }
   95%  { opacity: 0.4; }
   100% { top: 100%;    opacity: 0; }
+}
+
+@keyframes nudge-horizontal {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
 }
 
 :root {

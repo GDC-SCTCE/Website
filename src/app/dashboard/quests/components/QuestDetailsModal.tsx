@@ -41,8 +41,8 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto" onClick={(e) => { e.stopPropagation(); onClose(); }}>
-      <div 
-        className="bg-[#1C1B1C] border border-[#584235] w-full max-w-5xl my-auto shadow-2xl relative flex flex-col md:flex-row h-auto md:h-[600px] overflow-y-auto md:overflow-hidden" 
+      <div
+        className="bg-[#1C1B1C] border border-[#584235] w-full max-w-5xl my-auto shadow-2xl relative flex flex-col md:flex-row h-auto md:h-[600px] overflow-y-auto md:overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
 
