@@ -108,15 +108,25 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
   };
 
   return (
-    <div className="bg-[#131314] min-h-[400px]  border border-[#FF7A00] p-6 relative mt-4 overflow-hidden">
+    <div 
+      className="border border-[#FF7A00] p-6 relative mt-4 overflow-hidden"
+      style={{ backgroundColor: '#131314', minHeight: isUpcoming ? '150px' : '400px' }}
+    >
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#93000A] via-[#FF7A00] to-[#FDD400]" />
 
       {isUpcoming ? (
         <>
           <h3 className="font-sora text-[16px] text-[#FFB68B] mb-4">QUEST LOCKED</h3>
           <button
-            onClick={() => { if (!user) router.push("/onboarding"); }}
+            onClick={() => { 
+              if (!user) {
+                router.push("/onboarding"); 
+              } else {
+                alert("Notification enabled! We will notify you when this quest starts.");
+              }
+            }}
             className="w-full h-[48px] border border-[#FFB68B] flex items-center justify-center gap-2 hover:bg-[#FFB68B]/10 transition-colors"
+            style={{ backgroundColor: '#1C1B1C', color: '#FFB68B' }}
           >
             <Bell className="w-4 h-4 text-[#FFB68B]" />
             <span className="font-mono text-[12px] tracking-[1.2px] text-[#FFB68B]">NOTIFY ME</span>
