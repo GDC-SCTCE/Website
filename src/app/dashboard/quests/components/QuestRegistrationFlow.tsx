@@ -62,7 +62,7 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
       setRegError(`You must provide at least ${minMates} teammate email(s).`);
       return;
     }
-    
+
     setRegError("");
     if (quest.price && quest.price > 0) {
       setShowPayment(true);
@@ -108,13 +108,13 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
   };
 
   return (
-    <div className="bg-[#131314] border border-[#FF7A00] p-6 relative overflow-hidden mt-4">
+    <div className="bg-[#131314] min-h-[400px]  border border-[#FF7A00] p-6 relative mt-4 overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#93000A] via-[#FF7A00] to-[#FDD400]" />
-      
+
       {isUpcoming ? (
         <>
           <h3 className="font-sora text-[16px] text-[#FFB68B] mb-4">QUEST LOCKED</h3>
-          <button 
+          <button
             onClick={() => { if (!user) router.push("/onboarding"); }}
             className="w-full h-[48px] border border-[#FFB68B] flex items-center justify-center gap-2 hover:bg-[#FFB68B]/10 transition-colors"
           >
@@ -136,41 +136,43 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
               </div>
             )}
           </div>
-          {dynamicUpiLink ? (
+          <div className="flex flex-col gap-6">
+            {dynamicUpiLink ? (
               <div className="flex flex-col items-center">
                 <div className="bg-white p-2 mb-2 flex items-center justify-center" style={{ width: 150, height: 150 }}>
                   <QRCode value={dynamicUpiLink} size={134} />
                 </div>
                 <a href={dynamicUpiLink} className="font-mono text-[10px] text-[#FF7A00] underline hover:text-[#FFB68B] transition-colors">Pay on Mobile</a>
               </div>
-          ) : (
-            <p className="text-red-400 text-xs font-mono text-center">No UPI link configured.</p>
-          )}
-          <div>
-            <input
-              type="text"
-              value={upiRef}
-              onChange={(e) => setUpiRef(e.target.value)}
-              placeholder="Enter UTR / Ref No."
-              className="w-full bg-[#1C1B1C] border border-[#584235] p-3 font-mono text-[14px] text-[#E5E2E3] outline-none focus:border-[#FFB68B]"
-            />
+            ) : (
+              <p className="text-red-400 text-xs font-mono text-center">No UPI link configured.</p>
+            )}
+            <div>
+              <input
+                type="text"
+                value={upiRef}
+                onChange={(e) => setUpiRef(e.target.value)}
+                placeholder="Enter UTR / Ref No."
+                className="w-full bg-[#1C1B1C] border border-[#584235] p-3 font-mono text-[14px] text-[#E5E2E3] outline-none focus:border-[#FFB68B]"
+              />
+            </div>
+            {regError && <p className="text-red-500 text-[12px] font-mono leading-tight bg-red-500/10 p-3 border border-red-500/30">{regError}</p>}
+            <button
+              onClick={executeRegistration}
+              disabled={registering || !upiRef.trim()}
+              className="w-full h-[56px] bg-[#FF7A00] text-[#522300] font-mono font-bold text-[14px] tracking-[2px] disabled:opacity-50 hover:brightness-110 transition-all"
+            >
+              {registering ? "PROCESSING..." : "REGISTER"}
+            </button>
+            <button onClick={() => setShowPayment(false)} className="text-[#A78B7C] font-mono text-[10px] hover:text-white underline text-center">Back to Registration</button>
           </div>
-          {regError && <p className="text-red-500 text-[12px] font-mono leading-tight bg-red-500/10 p-3 border border-red-500/30">{regError}</p>}
-          <button
-            onClick={executeRegistration}
-            disabled={registering || !upiRef.trim()}
-            className="w-full h-[56px] bg-[#FF7A00] text-[#522300] font-mono font-bold text-[14px] tracking-[2px] disabled:opacity-50 hover:brightness-110 transition-all"
-          >
-            {registering ? "PROCESSING..." : "REGISTER"}
-          </button>
-          <button onClick={() => setShowPayment(false)} className="text-[#A78B7C] font-mono text-[10px] hover:text-white underline text-center">Back to Registration</button>
         </div>
       ) : (
         // REGISTRATION FLOW
         <div className="flex flex-col gap-6">
-          <div className="flex justify-between items-center border-b border-[#584235] pb-4">
+          <div className="flex  justify-between items-center border-b border-[#584235] pb-4">
             <h3 className="font-sora text-[18px] text-white uppercase flex items-center gap-2">
-              <Users className="w-5 h-5 text-[#FF7A00]" /> 
+              <Users className="w-5 h-5 text-[#FF7A00]" />
               {isTeamQuest ? "TEAM REGISTRATION" : "SOLO REGISTRATION"}
             </h3>
             {totalPrice > 0 && (
@@ -180,76 +182,78 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
               </div>
             )}
           </div>
-          
-          {isTeamQuest && (
-            <div className="flex flex-col gap-4">
-              <div>
-                <label className="block font-mono text-[10px] text-[#FFB68B] tracking-[1.2px] mb-2">TEAM NAME</label>
-                <input
-                  type="text"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  placeholder="Awesome Team"
-                  className="w-full bg-[#1C1B1C] border border-[#584235] p-3 font-mono text-[14px] text-white outline-none focus:border-[#FFB68B]"
-                />
-              </div>
-              
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <label className="block font-mono text-[10px] text-[#FFB68B] tracking-[1.2px]">TEAM MEMBERS (GDC Users)</label>
-                  <span className="font-mono text-[10px] text-[#A78B7C]">Min: {quest.minTeamSize || 1} | Max: {quest.maxTeamSize || 1}</span>
+
+          <div className="flex flex-col gap-4">
+            {isTeamQuest && (
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="block font-mono text-[10px] text-[#FFB68B] tracking-[1.2px] mb-2">TEAM NAME</label>
+                  <input
+                    type="text"
+                    value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)}
+                    placeholder="Awesome Team"
+                    className="w-full bg-[#1C1B1C] border border-[#584235] p-3 font-mono text-[14px] text-white outline-none focus:border-[#FFB68B]"
+                  />
                 </div>
-                
-                <div className="flex flex-col gap-2">
-                  {/* Member 1 (Current User) */}
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-[12px] text-[#A78B7C] w-4 text-right">1.</span>
-                    <input
-                      type="email"
-                      value={user?.email || ""}
-                      disabled
-                      className="flex-1 bg-[#1C1B1C] border border-[#3A2D25] p-3 font-mono text-[14px] text-zinc-500 outline-none cursor-not-allowed"
-                    />
+
+                <div>
+                  <div className="flex justify-between items-end mb-2">
+                    <label className="block font-mono text-[10px] text-[#FFB68B] tracking-[1.2px]">TEAM MEMBERS (GDC Users)</label>
+                    <span className="font-mono text-[10px] text-[#A78B7C]">Min: {quest.minTeamSize || 1} | Max: {quest.maxTeamSize || 1}</span>
                   </div>
-                  
-                  {/* Added Teammates */}
-                  {teammates.map((mate, idx) => (
-                    <div key={idx} className="flex items-center gap-3">
-                      <span className="font-mono text-[12px] text-[#A78B7C] w-4 text-right">{idx + 2}.</span>
+
+                  <div className="flex flex-col gap-2 border border-[#3A2D25]/30 p-2 bg-[#1C1B1C]/40 rounded-sm">
+                    {/* Member 1 (Current User) */}
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-[12px] text-[#A78B7C] w-4 text-right">1.</span>
                       <input
                         type="email"
-                        value={mate}
-                        onChange={(e) => updateTeammate(idx, e.target.value)}
-                        placeholder="Teammate Email"
-                        className="flex-1 bg-[#1C1B1C] border border-[#584235] p-3 font-mono text-[14px] text-white outline-none focus:border-[#FFB68B]"
+                        value={user?.email || ""}
+                        disabled
+                        className="flex-1 bg-[#1C1B1C] border border-[#3A2D25] p-3 font-mono text-[14px] text-zinc-500 outline-none cursor-not-allowed"
                       />
-                      {idx >= minMates && (
-                        <button onClick={() => removeTeammateField(idx)} className="text-red-500 hover:text-red-400 p-2 transition-colors">
-                          <X className="w-5 h-5"/>
-                        </button>
-                      )}
                     </div>
-                  ))}
-                </div>
-                
-                {teammates.length < maxMates && (
-                  <button onClick={addTeammateField} className="mt-3 text-[#FF7A00] font-mono text-[12px] text-left hover:text-[#FFB68B] transition-colors flex items-center gap-1">
-                    <span>+</span> ADD ANOTHER MEMBER
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
 
-          {regError && <p className="text-red-500 text-[12px] font-mono leading-tight bg-red-500/10 p-3 border border-red-500/30">{regError}</p>}
-          
-          <button
-            onClick={handleRegisterClick}
-            disabled={registering}
-            className="w-full h-[56px] bg-[#FF7A00] text-[#522300] font-mono font-bold text-[14px] tracking-[2px] disabled:opacity-50 hover:brightness-110 transition-all mt-4"
-          >
-            {registering ? "PROCESSING..." : (totalPrice > 0 ? `PAY ₹${totalPrice} & JOIN QUEST` : "ACCEPT QUEST")}
-          </button>
+                    {/* Added Teammates */}
+                    {teammates.map((mate, idx) => (
+                      <div key={idx} className="flex items-center gap-3">
+                        <span className="font-mono text-[12px] text-[#A78B7C] w-4 text-right">{idx + 2}.</span>
+                        <input
+                          type="email"
+                          value={mate}
+                          onChange={(e) => updateTeammate(idx, e.target.value)}
+                          placeholder="Teammate Email"
+                          className="flex-1 bg-[#1C1B1C] border border-[#584235] p-3 font-mono text-[14px] text-white outline-none focus:border-[#FFB68B]"
+                        />
+                        {idx >= minMates && (
+                          <button onClick={() => removeTeammateField(idx)} className="text-red-500 hover:text-red-400 p-2 transition-colors">
+                            <X className="w-5 h-5" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {teammates.length < maxMates && (
+                    <button onClick={addTeammateField} className="mt-3 text-[#FF7A00] font-mono text-[12px] text-left hover:text-[#FFB68B] transition-colors flex items-center gap-1">
+                      <span>+</span> ADD ANOTHER MEMBER
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {regError && <p className="text-red-500 text-[12px] font-mono leading-tight bg-red-500/10 p-3 border border-red-500/30">{regError}</p>}
+
+            <button
+              onClick={handleRegisterClick}
+              disabled={registering}
+              className="w-full h-[56px] bg-[#FF7A00] text-[#522300] font-mono font-bold text-[14px] tracking-[2px] disabled:opacity-50 hover:brightness-110 transition-all mt-4"
+            >
+              {registering ? "PROCESSING..." : (totalPrice > 0 ? `PAY ₹${totalPrice} & JOIN QUEST` : "ACCEPT QUEST")}
+            </button>
+          </div>
         </div>
       )}
     </div>
