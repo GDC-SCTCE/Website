@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { DEV_TOOLS, YEAR_OPTIONS, XP_LEVELS } from "@/app/onboarding/constants";
 import { XPLevel } from "@prisma/client";
-import { StatBar } from "@/app/dashboard/members/components/StatBar";
 import { updateUserProfile } from "@/actions/userActions";
 
 
@@ -17,6 +16,7 @@ interface ProfileClientProps {
     academicYear: string;
     tools: string[];
     xpLevel: XPLevel;
+    score: number;
   };
 }
 
@@ -47,34 +47,6 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
     );
   };
 
-  // Live stats calculation based on form state
-  const calculateStats = () => {
-    // Tech/Logic rating: base 20, +20 for each engine/code tool, +xp modifier
-    let tech = 20;
-    if (selectedTools.includes("Unity")) tech += 20;
-    if (selectedTools.includes("Godot")) tech += 20;
-    if (selectedTools.includes("Unreal")) tech += 20;
-    if (xpLevel === "Veteran") tech += 20;
-    else if (xpLevel === "Apprentice") tech += 10;
-    tech = Math.min(tech, 100);
-
-    // Design/Art rating: base 20, +30 for Blender/Figma, +xp modifier
-    let design = 20;
-    if (selectedTools.includes("Blender")) design += 30;
-    if (selectedTools.includes("Figma")) design += 30;
-    if (xpLevel === "Veteran") design += 20;
-    else if (xpLevel === "Apprentice") design += 10;
-    design = Math.min(design, 100);
-
-    // General ignition score
-    let xpVal = 30;
-    if (xpLevel === "Veteran") xpVal = 95;
-    else if (xpLevel === "Apprentice") xpVal = 65;
-
-    return { tech, design, xpVal };
-  };
-
-  const { tech, design, xpVal } = calculateStats();
 
   // Generate name initials for Avatar
   const getInitials = (name: string) => {
@@ -226,15 +198,19 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
               </div>
             </div>
 
-            {/* Dynamic Attributes Bars */}
-            <div className="w-full mt-8">
-              <p className="font-mono font-bold text-[10px] tracking-[1.5px] text-[#584235] uppercase mb-4 pl-0.5">
-                LIVE CHARACTER ATTRIBUTES
+            {/* Character Score Card */}
+            <div className="w-full mt-8 bg-[#131314] border border-[#FF7A00]/20 p-5 relative overflow-hidden clip-cyber-sm">
+              <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-[#FF7A00]/10 to-transparent pointer-events-none" />
+              <p className="font-mono font-bold text-[10px] tracking-[1.5px] text-[#584235] uppercase mb-2">
+                TOTAL HUB SCORE
               </p>
-              <div className="space-y-1">
-                <StatBar label="Logic & Scripts (Tech)" value={tech} />
-                <StatBar label="Creative & Assets (Design)" value={design} />
-                <StatBar label="Ignition XP Level" value={xpVal} />
+              <div className="flex items-baseline gap-2">
+                <span className="font-sora font-extrabold text-[36px] leading-none text-[#FF7A00] tracking-tight glow-orange">
+                  {initialUser.score ?? 0}
+                </span>
+                <span className="font-mono text-[10px] text-[#E0C0AF] opacity-50 uppercase tracking-[1px]">
+                  XP PTS
+                </span>
               </div>
             </div>
 

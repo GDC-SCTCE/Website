@@ -50,6 +50,7 @@ model User {
   academicYear String
   tools        String[]
   xpLevel      XPLevel @default(Newbie)
+  score        Int     @default(0)
   
   registrations Registration[]
   ratings       QuestRating[]
