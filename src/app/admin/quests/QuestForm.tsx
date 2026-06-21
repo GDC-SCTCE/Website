@@ -5,12 +5,16 @@ import { createQuest, updateQuest } from "@/actions/admin/quests";
 import { handleImageUpload } from "@/utils/uploadHelper";
 import { filters } from "@/constants/quests";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function QuestForm({ quest, onComplete }: { quest?: any, onComplete?: () => void }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [status, setStatus] = useState(quest?.status || "UPCOMING");
+  const [description, setDescription] = useState(quest?.description || "");
+  const [previewMode, setPreviewMode] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,8 +28,11 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
       status: formData.get("status") as string,
       dateText: formData.get("dateText") as string,
       location: formData.get("location") as string || null,
+      description: description || null,
       capacity: parseInt(formData.get("capacity") as string) || 0,
       seatsTaken: parseInt(formData.get("seatsTaken") as string) || 0,
+      minTeamSize: parseInt(formData.get("minTeamSize") as string) || 1,
+      maxTeamSize: parseInt(formData.get("maxTeamSize") as string) || 1,
       price: parseInt(formData.get("price") as string) || 0,
       upiLink: formData.get("upiLink") as string || null,
     };
@@ -122,6 +129,36 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
           <input name="location" type="text" defaultValue={quest?.location || ""} placeholder="Virtual" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
         </div>
       </div>
+      
+      {/* Markdown Description */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <label className="block font-mono text-[10px] text-[#FFB68B] tracking-[1.2px]">DESCRIPTION (MARKDOWN)</label>
+          <button 
+            type="button" 
+            onClick={() => setPreviewMode(!previewMode)}
+            className="font-mono text-[10px] bg-[#584235] text-[#FFB68B] px-2 py-1 hover:bg-[#FF7A00] hover:text-[#5C2800] transition-colors"
+          >
+            {previewMode ? "EDIT" : "PREVIEW"}
+          </button>
+        </div>
+        {previewMode ? (
+          <div className="w-full min-h-[150px] bg-[#1C1B1C] border border-[#584235] p-4 text-white prose prose-invert prose-sm md:prose-base max-w-none text-zinc-300 overflow-y-auto max-h-[300px]">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {description || "*No description provided.*"}
+            </ReactMarkdown>
+          </div>
+        ) : (
+          <textarea 
+            name="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Write quest description in markdown here..." 
+            className="w-full min-h-[150px] bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00] resize-y" 
+          />
+        )}
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">CAPACITY</label>
@@ -130,6 +167,16 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
         <div>
           <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">SEATS TAKEN</label>
           <input name="seatsTaken" type="number" defaultValue={quest?.seatsTaken || 0} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">MIN TEAM SIZE (1 for solo)</label>
+          <input name="minTeamSize" type="number" required defaultValue={quest?.minTeamSize || 1} min="1" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
+        </div>
+        <div>
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">MAX TEAM SIZE (1 for solo)</label>
+          <input name="maxTeamSize" type="number" required defaultValue={quest?.maxTeamSize || 1} min="1" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">

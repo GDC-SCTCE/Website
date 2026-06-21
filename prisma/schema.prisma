@@ -39,6 +39,8 @@ enum RegistrationStatus {
   PENDING
   REGISTERED
   ATTENDED
+  NOT_ATTENDED
+  REJECTED
 }
 
 model User {
@@ -78,9 +80,12 @@ model Quest {
   dateText     String    
   location     String?   
   image        String?   
+  description  String?
   
   capacity     Int       @default(30)
   seatsTaken   Int       @default(0)
+  minTeamSize  Int       @default(1)
+  maxTeamSize  Int       @default(1)
   
   targetDate   DateTime? 
   endDate      DateTime? 
@@ -116,6 +121,7 @@ model Registration {
   quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
   status    RegistrationStatus   // "PENDING", "REGISTERED", "ATTENDED"
   upiRef    String?
+  teamName  String?
   createdAt DateTime @default(now())
   
   @@unique([userId, questId])

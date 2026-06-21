@@ -13,46 +13,54 @@ export async function checkUserExists(email: string) {
   return !!user;
 }
 
-export async function registerForQuest(questId: string, upiRef?: string) {
+export async function registerForQuest(questId: string, upiRef?: string, teamName?: string, teammates: string[] = []) {
   const user = await verifyUser();
   if (!user) throw new Error("Unauthorized");
 
   const quest = await prisma.quest.findUnique({ where: { id: questId } });
   if (!quest) throw new Error("Quest not found");
 
-  if (quest.capacity && quest.seatsTaken >= quest.capacity) {
-    throw new Error("Quest is full");
+  const requiredSeats = 1 + teammates.length;
+  if (quest.capacity && quest.seatsTaken + requiredSeats > quest.capacity) {
+    throw new Error(`Quest is full or not enough seats for ${requiredSeats} members`);
   }
 
-  // Check if already registered
-  const existing = await prisma.registration.findUnique({
-    where: {
-      userId_questId: {
-        userId: user.id,
-        questId: questId,
-      }
-    }
+  // Validate teammates
+  const teamUsers = [];
+  for (const email of teammates) {
+    const tUser = await prisma.user.findUnique({ where: { email } });
+    if (!tUser) throw new Error(`User with email ${email} is not registered on GDC.`);
+    if (tUser.id === user.id) throw new Error(`You cannot add yourself as a teammate.`);
+    teamUsers.push(tUser);
+  }
+
+  const allUserIds = [user.id, ...teamUsers.map(u => u.id)];
+  
+  // Check if any is already registered
+  const existing = await prisma.registration.findMany({
+    where: { questId, userId: { in: allUserIds } }
   });
 
-  if (existing) {
-    throw new Error("Already registered for this quest.");
+  if (existing.length > 0) {
+    throw new Error("One or more team members are already registered for this quest.");
   }
 
   const status = quest.price > 0 ? "PENDING" : "REGISTERED";
 
-  await prisma.registration.create({
-    data: {
-      userId: user.id,
-      questId: questId,
-      status: status,
-      upiRef: upiRef || null,
-    }
-  });
+  const data = allUserIds.map(uid => ({
+    userId: uid,
+    questId,
+    status: status as any,
+    upiRef: uid === user.id ? (upiRef || null) : null,
+    teamName: teamName || null,
+  }));
+
+  await prisma.registration.createMany({ data });
 
   if (status === "REGISTERED") {
     await prisma.quest.update({
       where: { id: questId },
-      data: { seatsTaken: { increment: 1 } },
+      data: { seatsTaken: { increment: requiredSeats } },
     });
   }
 

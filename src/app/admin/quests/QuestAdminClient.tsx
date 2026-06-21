@@ -8,6 +8,7 @@ import Link from "next/link";
 import { filters as questFilters } from "@/constants/quests";
 import { deleteQuest, deleteAllQuests } from "@/actions/admin/quests";
 import { Quest, QuestFilterCategory } from "@/types";
+import { X } from "lucide-react";
 
 export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
   const [activeFilter, setActiveFilter] = useState<QuestFilterCategory>("All");
@@ -107,8 +108,16 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
+        {/* TOP BAR WITH ADD NEW BUTTON */}
+        <div className="flex justify-end mb-2">
+          <button 
+            onClick={() => setSelectedQuest({} as Quest)}
+            className="font-mono text-[12px] bg-[#FF7A00] text-[#5C2800] px-4 py-2 hover:brightness-110 transition-colors font-bold tracking-[1.2px]"
+          >
+            + ADD NEW QUEST
+          </button>
+        </div>
 
           {filteredQuests.map((quest) => (
             <div 
@@ -168,25 +177,29 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
               NO QUESTS FOUND.
             </div>
           )}
-        </div>
+      </div>
 
-        <div className="lg:col-span-1 bg-[#1A1A1B] border border-[#584235] p-6 h-fit sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="font-sora font-bold text-[20px] text-white">
-              {selectedQuest ? "EDIT QUEST" : "ADD NEW QUEST"}
-            </h2>
-            {selectedQuest && (
+      {/* MODAL OVERLAY FOR QUEST FORM */}
+      {selectedQuest && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-[#1A1A1B] border border-[#584235] w-full max-w-3xl my-auto shadow-2xl relative flex flex-col max-h-[90vh]">
+            <div className="flex justify-between items-center p-6 border-b border-[#584235] shrink-0 sticky top-0 bg-[#1A1A1B] z-10">
+              <h2 className="font-sora font-bold text-[20px] text-white">
+                {selectedQuest.id ? "EDIT QUEST" : "ADD NEW QUEST"}
+              </h2>
               <button 
                 onClick={() => setSelectedQuest(null)}
-                className="font-mono text-[10px] bg-[#FF7A00]/10 text-[#FF7A00] px-2 py-1 hover:bg-[#FF7A00]/20 transition-colors"
+                className="text-[#A78B7C] hover:text-white transition-colors"
               >
-                + NEW
+                <X className="w-6 h-6" />
               </button>
-            )}
+            </div>
+            <div className="p-6 flex-1 overflow-y-auto">
+              <QuestForm key={selectedQuest.id || "new"} quest={selectedQuest.id ? selectedQuest : undefined} onComplete={() => setSelectedQuest(null)} />
+            </div>
           </div>
-          <QuestForm key={selectedQuest?.id || "new"} quest={selectedQuest} onComplete={() => setSelectedQuest(null)} />
         </div>
-      </div>
+      )}
     </div>
   );
 }
