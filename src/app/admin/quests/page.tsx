@@ -5,7 +5,8 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminQuests() {
   const quests = await prisma.quest.findMany({
-    orderBy: { createdAt: "desc" }
+    orderBy: { createdAt: "desc" },
+    include: { ratings: true }
   });
 
   return (

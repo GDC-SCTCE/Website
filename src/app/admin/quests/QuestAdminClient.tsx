@@ -158,8 +158,17 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
                   </div>
                 </div>
                 <p className="font-sans text-[14px] text-zinc-300">{quest.dateText} | {quest.location}</p>
-                <div className="mt-2 flex items-center justify-between gap-4">
-                  <span className="font-mono text-[12px] text-[#A78B7C]">SEATS: <span className="text-[#FF7A00]">{quest.seatsTaken}/{quest.capacity}</span></span>
+                <div className="mt-2 flex items-center justify-between gap-4 flex-wrap">
+                  <div className="flex gap-4 items-center">
+                    <span className="font-mono text-[12px] text-[#A78B7C]">SEATS: <span className="text-[#FF7A00]">{quest.seatsTaken}/{quest.capacity}</span></span>
+                    <span className="font-mono text-[12px] text-[#A78B7C]">
+                      RATING: <span className="text-[#FF7A00]">
+                        {quest.ratings?.length 
+                          ? `${(quest.ratings.reduce((s: number, r: any) => s + (r.rating || 0), 0) / quest.ratings.length).toFixed(1)} ★ (${quest.ratings.length})` 
+                          : "NO RATINGS"}
+                      </span>
+                    </span>
+                  </div>
                   <Link
                     href={`/admin/quests/${quest.id}/registrations`}
                     onClick={(e) => e.stopPropagation()}

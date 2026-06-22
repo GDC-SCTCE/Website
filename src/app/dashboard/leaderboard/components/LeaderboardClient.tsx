@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Play, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search } from "lucide-react";
 import type { User } from "@prisma/client";
+import { fetchLeaderboard } from "@/actions/leaderboard";
 
 // ─── Score opacity by rank ─────────────────────────────────────────────────
 const SCORE_OPACITY: Record<number, string> = {
@@ -53,7 +54,7 @@ function LeaderRow({ user, rank, delay, visible }: { user: User; rank: number; d
       </div>
 
       {/* Name + XP */}
-      <div className="flex-1 min-w-0 flex items-center py-10 pl-0">
+      <div className="flex-[2] min-w-[300px] flex items-center py-10 pl-0 pr-4">
         <div>
           <h3 className="font-sora font-black text-[24px] leading-[32px] tracking-[-0.6px] uppercase text-[#E5E2E3] m-0 transition-colors duration-200 group-hover:text-[#FFB68B]">
             {user.fullName}
@@ -65,7 +66,7 @@ function LeaderRow({ user, rank, delay, visible }: { user: User; rank: number; d
       </div>
 
       {/* Engine + Team */}
-      <div className="w-[240px] shrink-0 flex flex-col gap-2 py-10">
+      <div className="flex-1 min-w-[180px] shrink-0 flex flex-col gap-2 py-10">
         <div className="flex gap-1 flex-wrap">
           <span className="inline-flex items-center h-[26px] px-2 bg-[#2A2A2B] border border-[#353436] font-mono text-[12px] leading-[16px] text-[#FFB68B] transition-colors duration-200 hover:bg-[#FFB68B]/10">
             {user.academicYear}
@@ -77,7 +78,7 @@ function LeaderRow({ user, rank, delay, visible }: { user: User; rank: number; d
       </div>
 
       {/* Score */}
-      <div className="w-[193px] shrink-0 flex items-center justify-end py-10 pr-8">
+      <div className="flex-[0.8] min-w-[140px] shrink-0 flex items-center justify-end py-10 pr-8">
         <span
           className={`font-sora font-black text-[48px] leading-[48px] transition-all duration-300 group-hover:scale-105 ${
             SCORE_OPACITY[rank] ?? "text-[#E5E2E3]/30"
@@ -93,15 +94,47 @@ function LeaderRow({ user, rank, delay, visible }: { user: User; rank: number; d
 export default function LeaderboardClient({ users }: { users: User[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [loadedUsers, setLoadedUsers] = useState<User[]>(users);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(users.length === 10);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const filteredUsers = users.filter((u) => 
-    u.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    (u.rollNo && u.rollNo.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Debounced server-side search
+  useEffect(() => {
+    if (!mounted) return;
+    const timer = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const results = await fetchLeaderboard(0, 10, searchQuery);
+        setLoadedUsers(results);
+        setPage(1);
+        setHasMore(results.length === 10);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, mounted]);
+
+  const handleLoadMore = async () => {
+    setIsLoading(true);
+    try {
+      const results = await fetchLeaderboard(page * 10, 10, searchQuery);
+      setLoadedUsers(prev => [...prev, ...results]);
+      setPage(prev => prev + 1);
+      setHasMore(results.length === 10);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -155,35 +188,48 @@ export default function LeaderboardClient({ users }: { users: User[] }) {
         }}
       >
         <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 min-w-[900px]">
-          <div className="flex items-center border-b border-[#353436]/30 h-[61px]">
-            <div className="w-[140px] shrink-0 pl-4">
-              <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
-                RANK
-              </span>
+          <div className="max-h-[70vh] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[#131314] [&::-webkit-scrollbar-thumb]:bg-[#353436] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#584235]">
+            <div className="flex items-center border-b border-[#353436]/30 h-[61px] sticky top-0 bg-[#131314] z-10">
+              <div className="w-[140px] shrink-0 pl-4">
+                <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
+                  RANK
+                </span>
+              </div>
+              <div className="flex-[2] min-w-[300px] pl-0 pr-4">
+                <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
+                  PLAYER / XP LEVEL
+                </span>
+              </div>
+              <div className="flex-1 min-w-[180px] shrink-0">
+                <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
+                  YEAR / ROLL NO
+                </span>
+              </div>
+              <div className="flex-[0.8] min-w-[140px] shrink-0 text-right pr-8">
+                <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
+                  SCORE
+                </span>
+              </div>
             </div>
-            <div className="flex-1 pl-0">
-              <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
-                PLAYER / XP LEVEL
-              </span>
-            </div>
-            <div className="w-[240px] shrink-0">
-              <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
-                YEAR / ROLL NO
-              </span>
-            </div>
-            <div className="w-[193px] shrink-0 text-right pr-8">
-              <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
-                SCORE
-              </span>
-            </div>
-          </div>
 
-          {filteredUsers.map((user, idx) => (
-            <LeaderRow key={user.id} user={user} rank={idx + 1} delay={idx * 80} visible={mounted} />
-          ))}
-          {filteredUsers.length === 0 && (
-             <div className="py-20 text-center font-mono text-[#E0C0AF]">No scores found.</div>
-          )}
+            {loadedUsers.map((user, idx) => (
+              <LeaderRow key={user.id} user={user} rank={idx + 1} delay={idx * 80} visible={mounted} />
+            ))}
+            {loadedUsers.length === 0 && !isLoading && (
+               <div className="py-20 text-center font-mono text-[#E0C0AF]">No scores found.</div>
+            )}
+            {hasMore && (
+              <div className="py-12 flex justify-center">
+                <button
+                  onClick={handleLoadMore}
+                  disabled={isLoading}
+                  className="bg-[#1C1B1C] border border-[#584235] hover:border-[#FF7A00] text-[#FFB68B] px-8 py-3 font-mono text-[12px] tracking-[1.2px] uppercase transition-all duration-300 disabled:opacity-50"
+                >
+                  {isLoading ? "Loading..." : "Load More"}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>
