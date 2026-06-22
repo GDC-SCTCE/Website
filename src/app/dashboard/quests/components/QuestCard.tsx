@@ -7,7 +7,7 @@ import { useCountdown } from "@/hooks/useCountdown";
 import { Bell } from "lucide-react";
 import { Quest } from "@/types";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
-import { QuestDetailsModal } from "./QuestDetailsModal";
+import { QuestDetailsWithWinnersModal } from "./QuestDetailsWithWinnersModal";
 
 function QuestCardTimer({ targetDate, isUpcoming }: { targetDate: Date | null; isUpcoming: boolean }) {
   const targetMs = targetDate ? new Date(targetDate).getTime() : Date.now();
@@ -195,7 +195,7 @@ export function QuestCard({
       </div>
 
       {showDetails && (
-        <QuestDetailsModal
+        <QuestDetailsWithWinnersModal
           quest={{
             ...quest,
             registrations: successMsg
