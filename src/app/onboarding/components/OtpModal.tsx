@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 interface OtpModalProps {
   isOpen: boolean;
@@ -9,6 +9,7 @@ interface OtpModalProps {
   submitting: boolean;
   authError: string;
   onVerify: (e: React.FormEvent) => void;
+  onResend?: () => void;
 }
 
 export default function OtpModal({
@@ -20,7 +21,32 @@ export default function OtpModal({
   submitting,
   authError,
   onVerify,
+  onResend,
 }: OtpModalProps) {
+  const [cooldown, setCooldown] = useState(30);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setCooldown(30);
+      return;
+    }
+    
+    if (cooldown <= 0) return;
+
+    const timer = setInterval(() => {
+      setCooldown(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isOpen, cooldown]);
+
+  const handleResendClick = () => {
+    if (onResend) {
+      onResend();
+      setCooldown(30);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -41,17 +67,30 @@ export default function OtpModal({
         <button
           type="submit"
           disabled={submitting || otp.length !== 6}
-          className="w-full h-[48px] bg-[#FF7A00] text-[#522300] font-mono font-bold tracking-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-[48px] bg-[#FF7A00] text-[#522300] font-mono font-bold tracking-[2px] disabled:opacity-50 disabled:cursor-not-allowed mb-4"
         >
           {submitting ? "VERIFYING..." : "VERIFY CODE"}
         </button>
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-4 text-[12px] text-[#E0C0AF] underline bg-transparent border-none cursor-pointer hover:text-[#FFB68B]"
-        >
-          Cancel
-        </button>
+        
+        <div className="flex justify-between items-center mt-2">
+          {onResend && (
+            <button
+              type="button"
+              onClick={handleResendClick}
+              disabled={submitting || cooldown > 0}
+              className={`text-[12px] bg-transparent border-none font-mono tracking-[1px] transition-colors ${cooldown > 0 ? 'text-[#A78B7C]/50 cursor-not-allowed' : 'text-[#00DBE9] cursor-pointer hover:text-white disabled:opacity-50 hover:underline hover:underline-offset-4'}`}
+            >
+              {cooldown > 0 ? `RESEND IN ${cooldown}S` : "RESEND CODE"}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-[12px] text-[#E0C0AF] bg-transparent border-none cursor-pointer hover:text-[#FFB68B] font-mono tracking-[1px] transition-colors hover:underline hover:underline-offset-4 uppercase"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

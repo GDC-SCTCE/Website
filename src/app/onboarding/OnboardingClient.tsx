@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import { createClient } from "@/utils/supabase/client";
 import { syncUserToDatabase } from "@/actions/authActions";
 import { checkUserExists } from "@/actions/userActions";
+import { validateUserData } from "@/utils/validation";
 
 import { XPLevel } from "@prisma/client";
 import OtpModal from "./components/OtpModal";
@@ -58,32 +59,15 @@ export default function OnboardingClient() {
 
     // 2. Extra validations for signup mode only
     if (!isLoginMode) {
-      const trimmedFullName = fullName.trim();
-      const trimmedPhone = phone.trim();
-      const trimmedRollNo = rollNo.trim();
+      const validationError = validateUserData({
+        fullName,
+        phone,
+        rollNo,
+        selectedTools
+      });
 
-      if (!trimmedFullName || !trimmedPhone || !trimmedRollNo) {
-        setAuthError("Please fill all required fields.");
-        return;
-      }
-
-      // Roll Number Validation (Format: SCT22CS001, case-insensitive check but auto-capitalized)
-      const rollNoRegex = /^SCT\d{2}[A-Z]{2}\d{3}$/i;
-      if (!rollNoRegex.test(trimmedRollNo)) {
-        setAuthError("Roll number must follow the format: SCT[Year][Branch][RollNo] (e.g., SCT22CS001).");
-        return;
-      }
-
-      // Phone Number Validation (10-digit number with optional country code/spacers)
-      const phoneRegex = /^(\+?\d{1,4}[- ]?)?\d{10}$/;
-      if (!phoneRegex.test(trimmedPhone)) {
-        setAuthError("Please enter a valid 10-digit phone number (e.g., +91 9876543210 or 9876543210).");
-        return;
-      }
-
-      // Development Tools Validation
-      if (selectedTools.length === 0) {
-        setAuthError("Please select at least one development tool.");
+      if (validationError) {
+        setAuthError(validationError);
         return;
       }
     }
@@ -94,6 +78,13 @@ export default function OnboardingClient() {
       const exists = await checkUserExists(trimmedEmail);
       if (!exists) {
         setAuthError("No account found with this email. Please sign up instead.");
+        setSubmitting(false);
+        return;
+      }
+    } else {
+      const exists = await checkUserExists(trimmedEmail);
+      if (exists) {
+        setAuthError("An account with this email already exists. Please switch to Log In.");
         setSubmitting(false);
         return;
       }
@@ -110,6 +101,27 @@ export default function OnboardingClient() {
     } else {
       setShowOtpModal(true);
       setSubmitting(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setAuthError("");
+    setSubmitting(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { shouldCreateUser: !isLoginMode },
+    });
+    setSubmitting(false);
+
+    if (error) {
+      if (error.message.toLowerCase().includes("rate limit") || error.status === 429) {
+        setAuthError("Please wait a minute before requesting another code.");
+      } else {
+        setAuthError(error.message);
+      }
+    } else {
+      alert("A new verification code has been sent! Check your email.");
     }
   };
 
@@ -234,6 +246,7 @@ export default function OnboardingClient() {
         submitting={submitting}
         authError={authError}
         onVerify={handleVerifyOtp}
+        onResend={handleResendOtp}
       />
     </div>
   );

@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
+import { validateUserData } from "@/utils/validation";
 
 export async function syncUserToDatabase(data: any) {
   const supabase = await createClient();
@@ -16,6 +17,17 @@ export async function syncUserToDatabase(data: any) {
   let dbUser = await prisma.user.findUnique({ where: { email: user.email } });
   
   if (!dbUser && data) {
+    const validationError = validateUserData({
+      fullName: data.fullName,
+      phone: data.phone,
+      rollNo: data.rollNo,
+      selectedTools: data.selectedTools
+    });
+
+    if (validationError) {
+      throw new Error(validationError);
+    }
+
     dbUser = await prisma.user.create({
       data: {
         id: user.id, // match supabase auth id

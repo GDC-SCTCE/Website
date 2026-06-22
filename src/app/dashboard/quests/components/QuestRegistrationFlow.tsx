@@ -87,6 +87,14 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
     try {
       setRegistering(true);
       setRegError("");
+      
+      if (showPayment) {
+        const trimmedUpi = upiRef.trim();
+        if (!/^\d{12}$/.test(trimmedUpi)) {
+          throw new Error("UPI Reference Number must be exactly 12 digits.");
+        }
+      }
+
       const finalTeammates = teammates.filter(t => t.trim() !== "");
       // Pass upiRef, teamName, and teammateEmails to server action
       const res = await registerForQuest(quest.id, upiRef, teamName, finalTeammates);

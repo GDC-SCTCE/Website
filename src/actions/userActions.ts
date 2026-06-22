@@ -3,7 +3,8 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { verifyUser } from "./authActions";
-import { XPLevel } from "@prisma/client";
+import { RegistrationStatus, XPLevel } from "@prisma/client";
+import { validateUserData } from "@/utils/validation";
 
 export async function checkUserExists(email: string) {
   const user = await prisma.user.findUnique({
@@ -112,27 +113,20 @@ export async function updateUserProfile(data: {
   const user = await verifyUser();
   if (!user) throw new Error("Unauthorized");
 
+  const validationError = validateUserData({
+    fullName: data.fullName,
+    phone: data.phone,
+    rollNo: data.rollNo,
+    selectedTools: data.tools
+  });
+
+  if (validationError) {
+    throw new Error(validationError);
+  }
+
   const trimmedFullName = data.fullName.trim();
   const trimmedPhone = data.phone.trim();
   const trimmedRollNo = data.rollNo.trim();
-
-  if (!trimmedFullName || !trimmedPhone || !trimmedRollNo) {
-    throw new Error("Base stats cannot be empty.");
-  }
-
-  const rollNoRegex = /^SCT\d{2}[A-Z]{2}\d{3}$/i;
-  if (!rollNoRegex.test(trimmedRollNo)) {
-    throw new Error("Roll number must follow the format: SCT[Year][Branch][RollNo] (e.g., SCT22CS001).");
-  }
-
-  const phoneRegex = /^(\+?\d{1,4}[- ]?)?\d{10}$/;
-  if (!phoneRegex.test(trimmedPhone)) {
-    throw new Error("Please enter a valid 10-digit phone number.");
-  }
-
-  if (data.tools.length === 0) {
-    throw new Error("Please select at least one development tool.");
-  }
 
   const updatedUser = await prisma.user.update({
     where: { id: user.id },

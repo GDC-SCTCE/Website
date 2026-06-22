@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { DEV_TOOLS, YEAR_OPTIONS, XP_LEVELS } from "@/app/onboarding/constants";
 import { XPLevel } from "@prisma/client";
 import { updateUserProfile } from "@/actions/userActions";
+import { validateUserData } from "@/utils/validation";
 
 
 interface ProfileClientProps {
@@ -65,34 +66,21 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
     setSuccessMessage("");
 
     // 1. Validation
+    const validationError = validateUserData({
+      fullName,
+      phone,
+      rollNo,
+      selectedTools
+    });
+
+    if (validationError) {
+      setErrorMessage(validationError);
+      return;
+    }
+
     const trimmedFullName = fullName.trim();
     const trimmedPhone = phone.trim();
     const trimmedRollNo = rollNo.trim();
-
-    if (!trimmedFullName || !trimmedPhone || !trimmedRollNo) {
-      setErrorMessage("Base stats cannot be empty.");
-      return;
-    }
-
-    // Roll Number: e.g. SCT22CS001
-    const rollNoRegex = /^SCT\d{2}[A-Z]{2}\d{3}$/i;
-    if (!rollNoRegex.test(trimmedRollNo)) {
-      setErrorMessage("Roll number must match standard format: SCT[Year][Branch][RollNo] (e.g. SCT22CS001).");
-      return;
-    }
-
-    // Phone: 10-digit check
-    const phoneRegex = /^(\+?\d{1,4}[- ]?)?\d{10}$/;
-    if (!phoneRegex.test(trimmedPhone)) {
-      setErrorMessage("Please enter a valid 10-digit phone number.");
-      return;
-    }
-
-    // Tools: At least one tool
-    if (selectedTools.length === 0) {
-      setErrorMessage("Loadout must contain at least one tool.");
-      return;
-    }
 
     // 2. Real database submission
     setSubmitting(true);
