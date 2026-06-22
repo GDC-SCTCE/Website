@@ -103,17 +103,7 @@ export function QuestBoardClient({ initialQuests: quests, isAdmin, user }: Quest
 
   const activeQuests = filteredQuests.filter((q) => q.status === "ACTIVE");
   const upcomingQuests = filteredQuests.filter((q) => q.status === "UPCOMING");
-  const completedQuests = filteredQuests.filter((q) => {
-    if (q.status !== "COMPLETED") return false;
-    
-    // If admin or guest, show all past quests as a portfolio
-    if (isAdmin || !user) {
-      return true;
-    }
-    
-    // If normal logged in user, only show quests they successfully registered for
-    return q.registrations && q.registrations.some((r: any) => r.status === "REGISTERED");
-  });
+  const completedQuests = filteredQuests.filter((q) => q.status === "COMPLETED");
 
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
@@ -238,7 +228,7 @@ export function QuestBoardClient({ initialQuests: quests, isAdmin, user }: Quest
         </div>
 
         {/* ── QUESTS CONQUERED ── */}
-        <ConqueredQuests completedQuests={completedQuests} isLoading={false} />
+        <ConqueredQuests completedQuests={completedQuests} isLoading={false} user={user} isAdmin={isAdmin} />
       </div>
     </div>
   );

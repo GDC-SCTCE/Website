@@ -58,3 +58,62 @@ export async function fetchActiveQuests() {
   });
   return quests;
 }
+
+export async function getQuestWinners(questId: string) {
+  const registrations = await prisma.registration.findMany({
+    where: {
+      questId,
+      status: "ATTENDED",
+      pointsAwarded: { gt: 0 },
+    },
+    include: {
+      user: {
+        select: {
+          fullName: true,
+          email: true,
+          rollNo: true,
+          xpLevel: true,
+        },
+      },
+    },
+  });
+
+  const groups: {
+    [key: string]: {
+      name: string;
+      isTeam: boolean;
+      points: number;
+      members: Array<{
+        fullName: string;
+        email: string;
+        rollNo: string;
+        xpLevel: string;
+      }>;
+    };
+  } = {};
+
+  for (const reg of registrations) {
+    const key = reg.teamName ? `team:${reg.teamName}` : `user:${reg.userId}`;
+    if (!groups[key]) {
+      groups[key] = {
+        name: reg.teamName || reg.user.fullName,
+        isTeam: !!reg.teamName,
+        points: reg.pointsAwarded,
+        members: [],
+      };
+    }
+    groups[key].members.push({
+      fullName: reg.user.fullName,
+      email: reg.user.email,
+      rollNo: reg.user.rollNo,
+      xpLevel: reg.user.xpLevel,
+    });
+    if (reg.pointsAwarded > groups[key].points) {
+      groups[key].points = reg.pointsAwarded;
+    }
+  }
+
+  const sorted = Object.values(groups).sort((a, b) => b.points - a.points);
+  return sorted.slice(0, 3);
+}
+
