@@ -68,7 +68,14 @@ export default function HeroSection() {
           </button>
         </Link>
 
-        <a href="#jam" className="w-full sm:w-auto">
+        <a 
+          href="#jam" 
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById("jam")?.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="w-full sm:w-auto"
+        >
           <button className="bg-transparent border border-[#FF7A00] w-full sm:w-[248.48px] h-[52px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] cursor-pointer hover:bg-[#FF7A00]/10 hover:shadow-md hover:shadow-[#FF7A00]/10 transition-all duration-300">
             View Quest →
           </button>

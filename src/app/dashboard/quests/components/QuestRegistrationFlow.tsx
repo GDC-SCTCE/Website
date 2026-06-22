@@ -100,6 +100,7 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
       const res = await registerForQuest(quest.id, upiRef, teamName, finalTeammates);
       if (res.success) {
         onSuccess(res.status === "PENDING" ? "PENDING APPROVAL" : "REGISTERED ✓");
+        router.refresh();
         onClose();
       }
     } catch (err: any) {

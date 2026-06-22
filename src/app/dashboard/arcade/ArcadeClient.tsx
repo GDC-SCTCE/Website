@@ -196,10 +196,10 @@ export function ArcadeClient({ games }: { games: Game[] }) {
             <div
               ref={scrollRef}
               onScroll={handleScroll}
-              className="flex overflow-x-auto pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory scroll-smooth"
+              className="flex overflow-x-auto pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory"
             >
               {filtered.map((game, idx) => (
-                <div key={`${activeFilter}-${game.id}`} className="w-[85vw] sm:w-[50%] lg:w-[33.333%] shrink-0 snap-start flex">
+                <div key={`${activeFilter}-${game.id}`} className="w-[85vw] sm:w-[50%] lg:w-[33.333%] shrink-0 snap-start snap-always flex">
                   <GameColumn
                     game={game}
                     isLast={idx === filtered.length - 1}
@@ -239,7 +239,11 @@ export function ArcadeClient({ games }: { games: Game[] }) {
             className="flex items-center justify-center py-32 font-mono text-[12px] text-[#584235] uppercase tracking-widest transition-opacity duration-300"
             style={{ opacity: gridVisible ? 1 : 0 }}
           >
-            No games matching this filter yet
+            {games.length === 0
+              ? "No games available yet"
+              : games.length === 1
+              ? "No other games available"
+              : "No games matching this filter"}
           </div>
         )}
       </div>

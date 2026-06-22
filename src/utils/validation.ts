@@ -15,7 +15,7 @@ export function validateUserData(data: {
   // Phone Number Validation (10-digit number with optional country code/spacers)
   const phoneRegex = /^(\+?\d{1,4}[- ]?)?\d{10}$/;
   if (!phoneRegex.test(trimmedPhone)) {
-    return "Please enter a valid 10-digit phone number (e.g., +91 9876543210 or 9876543210).";
+    return "Please enter a valid 10-digit phone number";
   }
 
   // Development Tools Validation (only if passed)

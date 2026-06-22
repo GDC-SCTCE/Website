@@ -118,7 +118,7 @@ export default function Navbar({
         {/* Logo */}
         <Link href={logoHref} className="flex items-center gap-[12px] no-underline shrink-0">
           <div className="w-[39px] h-[40px] relative" style={{ position: "relative" }}>
-            <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" sizes="39px" />
+            <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" sizes="39px" priority />
           </div>
           <span className={`font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] ${isAdmin ? "text-[#FF7A00]" : "text-[#FFB68B]"} hidden min-[420px]:inline-block`}>
             {finalLogoText}
@@ -129,27 +129,24 @@ export default function Navbar({
         <nav className="hidden xl:flex items-center gap-[40px]">
           {links.map((l) => {
               const isActive = pathname === l.href;
-              if (isHome) {
-                return (
-                  <button
-                    key={l.label}
-                    onClick={() => handleNavLink(l.href)}
-                    className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] bg-transparent border-none cursor-pointer p-0 hover:text-[#FFB68B] transition-colors duration-300 relative group"
-                  >
-                    {l.label}
-                    <span className="absolute bottom-[-4px] left-0 w-full h-[1px] bg-[#FFB68B] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                  </button>
-                );
-              }
+              const isHomeNavStyle = isHome;
               return (
                 <Link
                   key={l.label}
                   href={l.href}
+                  onClick={() => setMobileOpen(false)}
                   className={`font-mono text-[12px] leading-[12px] tracking-[1.2px] no-underline transition-colors duration-200 ${
-                    isActive ? "font-bold text-[#FFB68B]" : "font-semibold text-[#E0C0AF] hover:text-[#FFB68B]"
+                    isHomeNavStyle
+                      ? "font-semibold text-[#E0C0AF] hover:text-[#FFB68B] relative group"
+                      : isActive
+                      ? "font-bold text-[#FFB68B]"
+                      : "font-semibold text-[#E0C0AF] hover:text-[#FFB68B]"
                   }`}
                 >
                   {l.label}
+                  {isHomeNavStyle && (
+                    <span className="absolute bottom-[-4px] left-0 w-full h-[1px] bg-[#FFB68B] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  )}
                 </Link>
               );
             })}
@@ -174,7 +171,13 @@ export default function Navbar({
 
       {/* Mobile Nav Overlay */}
       {mobileOpen && (
-        <div className="absolute top-[79px] left-0 w-full bg-[#131314] border-b border-[#584235]/30 xl:hidden flex flex-col items-center py-8 gap-6 shadow-2xl">
+        <>
+          <div 
+            className="fixed inset-[0] w-screen h-[100dvh] z-40 bg-transparent xl:hidden cursor-pointer"
+            onClick={() => setMobileOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="absolute top-[79px] left-0 w-full bg-[#131314] border-b border-[#584235]/30 xl:hidden flex flex-col items-center py-8 gap-6 shadow-2xl z-50">
           {links.map((l) => {
             const isActive = pathname === l.href;
             if (isHome) {
@@ -202,6 +205,7 @@ export default function Navbar({
             );
           })}
         </div>
+        </>
       )}
     </header>
   );

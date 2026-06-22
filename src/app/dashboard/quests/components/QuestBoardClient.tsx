@@ -13,8 +13,7 @@ interface QuestBoardClientProps {
   user: any;
 }
 
-export function QuestBoardClient({ initialQuests, isAdmin, user }: QuestBoardClientProps) {
-  const [quests] = useState<Quest[]>(initialQuests);
+export function QuestBoardClient({ initialQuests: quests, isAdmin, user }: QuestBoardClientProps) {
   const [activeFilter, setActiveFilter] = useState<QuestFilterCategory>("All");
   const [search, setSearch] = useState("");
   const [mounted, setMounted] = useState(false);
@@ -167,10 +166,10 @@ export function QuestBoardClient({ initialQuests, isAdmin, user }: QuestBoardCli
                 <div
                   ref={scrollRef}
                   onScroll={handleScroll}
-                  className="flex overflow-x-auto gap-[44px] pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory scroll-smooth"
+                  className="flex overflow-x-auto gap-[44px] pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory"
                 >
                   {activeQuests.map((quest, idx) => (
-                    <div key={quest.id} className="w-full md:w-[calc(50%-22px)] shrink-0 snap-start flex">
+                    <div key={quest.id} className="w-full md:w-[calc(50%-22px)] shrink-0 snap-start snap-always flex">
                       <QuestCard
                         quest={quest}
                         user={user}
