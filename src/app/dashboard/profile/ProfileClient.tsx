@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { DEV_TOOLS, YEAR_OPTIONS, XP_LEVELS } from "@/app/onboarding/constants";
+import { YEAR_OPTIONS, XP_LEVELS } from "@/app/onboarding/constants";
 import { XPLevel } from "@prisma/client";
 import { updateUserProfile } from "@/actions/userActions";
 import { validateUserData } from "@/utils/validation";
@@ -41,12 +41,6 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const toggleTool = (tool: string) => {
-    setSelectedTools((prev) =>
-      prev.includes(tool) ? prev.filter((t) => t !== tool) : [...prev, tool]
-    );
-  };
 
 
   // Generate name initials for Avatar
@@ -330,30 +324,27 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
                     </span>
                   </div>
 
-                  {/* Dev Tools Multi-select */}
+                  {/* Dev Tools display (static loadout list) */}
                   <div>
                     <p className="font-mono font-semibold text-[11px] tracking-[1.2px] text-[#E0C0AF] mb-4 uppercase">
                       DEVELOPMENT TOOLS
                     </p>
-                    <div className="flex gap-2 flex-wrap">
-                      {DEV_TOOLS.map((tool) => {
-                        const isSelected = selectedTools.includes(tool);
-                        return (
-                          <button
-                            type="button"
+                    {selectedTools.length > 0 ? (
+                      <div className="flex gap-2 flex-wrap">
+                        {selectedTools.map((tool) => (
+                          <div
                             key={tool}
-                            onClick={() => toggleTool(tool)}
-                            className={`h-[30px] px-4 font-mono text-[10px] cursor-pointer transition-all duration-150 ${
-                              isSelected
-                                ? "bg-[#FFB68B] text-[#522300] border-none shadow-[0_4px_12px_-3px_rgba(255,182,139,0.4)]"
-                                : "bg-transparent text-[#E0C0AF] border border-[#353436] hover:border-[#FFB68B]"
-                            }`}
+                            className="h-[30px] px-4 flex items-center justify-center font-mono text-[10px] bg-[#FFB68B] text-[#522300] shadow-[0_4px_12px_-3px_rgba(255,182,139,0.4)]"
                           >
                             {tool}
-                          </button>
-                        );
-                      })}
-                    </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="font-mono text-[11px] text-[#584235] uppercase pl-0.5 leading-relaxed">
+                        No tools equipped. Visit the inventory tab to manage your loadout.
+                      </p>
+                    )}
                   </div>
 
                   {/* XP Levels Radio List */}
