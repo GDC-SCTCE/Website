@@ -5,8 +5,7 @@ import { createQuest, updateQuest } from "@/actions/admin/quests";
 import { handleImageUpload } from "@/utils/uploadHelper";
 import { filters } from "@/constants/quests";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 export default function QuestForm({ quest, onComplete }: { quest?: any, onComplete?: () => void }) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -143,10 +142,8 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
           </button>
         </div>
         {previewMode ? (
-          <div className="w-full min-h-[150px] bg-[#1C1B1C] border border-[#584235] p-4 text-white prose prose-invert prose-sm md:prose-base max-w-none text-zinc-300 overflow-y-auto max-h-[300px]">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {description || "*No description provided.*"}
-            </ReactMarkdown>
+          <div className="w-full min-h-[150px] bg-[#1C1B1C] border border-[#584235] p-4 text-white overflow-y-auto max-h-[300px]">
+            <MarkdownRenderer content={description || "*No description provided yet.*"} />
           </div>
         ) : (
           <textarea 

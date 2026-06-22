@@ -2,8 +2,7 @@
 
 import React from "react";
 import { X, Clock, Users, User, CreditCard, Calendar, MapPin } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { Quest } from "@/types";
 import { useCountdown } from "@/hooks/useCountdown";
 import { QuestRegistrationFlow } from "./QuestRegistrationFlow";
@@ -191,9 +190,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
               <div className="bg-[#1C1B1C] p-6 border border-[#3A2D25] relative">
                 <div className="absolute top-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-[#FF7A00]/30 to-transparent" />
                 <h3 className="font-sora font-semibold text-[13px] text-white uppercase tracking-wider mb-4">Quest Briefing</h3>
-                <div className="prose prose-invert prose-sm md:prose-base max-w-none text-zinc-300 font-sans leading-relaxed">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{quest.description}</ReactMarkdown>
-                </div>
+                <MarkdownRenderer content={quest.description} />
               </div>
             )}
 
