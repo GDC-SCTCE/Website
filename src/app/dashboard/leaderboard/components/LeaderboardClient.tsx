@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Play, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search } from "lucide-react";
 import type { User } from "@prisma/client";
 import { fetchLeaderboard } from "@/actions/leaderboard";
 
