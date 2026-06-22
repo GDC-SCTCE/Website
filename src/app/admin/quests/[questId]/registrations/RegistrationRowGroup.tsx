@@ -27,7 +27,10 @@ export function RegistrationRowGroup({
       {members.map((r: any, idx: number) => (
         <tr key={`${r.userId}-${r.questId}`} className={idx !== members.length - 1 ? "border-b border-[#584235]/30" : ""}>
           <td className="p-4 w-1/4">
-            <p className="font-sora font-bold text-[14px] text-white">{r.user.fullName}</p>
+            <p className="font-sora font-bold text-[14px] text-white flex items-center gap-2">
+              {r.user.fullName}
+              {r.user.rollNo && <span className="font-mono text-[10px] font-normal text-[#A78B7C]">({r.user.rollNo})</span>}
+            </p>
             <p className="font-mono text-[10px] text-[#A78B7C] mt-1">{r.user.email} • {r.user.phone || 'No phone'}</p>
           </td>
           

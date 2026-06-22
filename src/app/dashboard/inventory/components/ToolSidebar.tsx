@@ -12,11 +12,13 @@ export default function ToolSidebar({
   loadout,
   onEquipChange,
   isSignedIn,
+  isAdmin = false,
 }: {
   selectedTool: DbTool;
   loadout: Set<string>;
   onEquipChange: (newLoadout: string[]) => void;
   isSignedIn: boolean;
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -133,19 +135,21 @@ export default function ToolSidebar({
               OPEN TOOL <ExternalLink className="w-4 h-4" />
             </span>
           </a>
-          <button
-            onClick={handleToggleEquip}
-            disabled={loading}
-            className={`w-full h-[62px] border-2 flex items-center justify-center font-sora font-bold text-[16px] leading-[26px] tracking-[-0.4px] uppercase transition-all duration-200 cursor-pointer ${
-              loading ? "opacity-50" : "hover:scale-[1.01]"
-            } ${
-              isEquipped
-                ? "border-[#39ff14] text-[#39ff14] bg-[#39ff14]/5"
-                : "border-[#FF7A00] text-[#FF7A00] bg-transparent hover:bg-[#FF7A00]/5"
-            }`}
-          >
-            {loading ? "SAVING..." : isEquipped ? "✓ EQUIPPED" : "ADD TO LOADOUT"}
-          </button>
+          {!isAdmin && (
+            <button
+              onClick={handleToggleEquip}
+              disabled={loading}
+              className={`w-full h-[62px] border-2 flex items-center justify-center font-sora font-bold text-[16px] leading-[26px] tracking-[-0.4px] uppercase transition-all duration-200 cursor-pointer ${
+                loading ? "opacity-50" : "hover:scale-[1.01]"
+              } ${
+                isEquipped
+                  ? "border-[#39ff14] text-[#39ff14] bg-[#39ff14]/5"
+                  : "border-[#FF7A00] text-[#FF7A00] bg-transparent hover:bg-[#FF7A00]/5"
+              }`}
+            >
+              {loading ? "SAVING..." : isEquipped ? "✓ EQUIPPED" : "ADD TO LOADOUT"}
+            </button>
+          )}
         </div>
       </div>
     </div>

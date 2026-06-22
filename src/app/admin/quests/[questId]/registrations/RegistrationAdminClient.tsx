@@ -11,11 +11,12 @@ export default function RegistrationAdminClient({ registrations }: { registratio
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const downloadCSV = () => {
-    const headers = ["Name", "Email", "Phone", "Status", "Team Name", "Price", "UPI Ref", "Date Registered"];
+    const headers = ["Name", "Email", "Phone", "Roll No", "Status", "Team Name", "Price", "UPI Ref", "Date Registered"];
     const rows = filtered.map(r => [
       `"${r.user.fullName}"`,
       `"${r.user.email}"`,
-      `"${r.user.phone}"`,
+      `"${r.user.phone || ''}"`,
+      `"${r.user.rollNo || ''}"`,
       `"${r.status}"`,
       `"${r.teamName || 'Solo'}"`,
       r.quest.price || 0,

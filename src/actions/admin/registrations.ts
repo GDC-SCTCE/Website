@@ -17,7 +17,7 @@ export async function approveRegistration(userId: string, questId: string) {
     data: { seatsTaken: { increment: 1 } }
   });
   
-  revalidatePath("/admin/registrations");
+  revalidatePath(`/admin/quests/${questId}/registrations`);
   revalidatePath("/");
   revalidatePath("/dashboard/quests");
 }
@@ -43,7 +43,7 @@ export async function rejectRegistration(userId: string, questId: string) {
     });
   }
 
-  revalidatePath("/admin/registrations");
+  revalidatePath(`/admin/quests/${questId}/registrations`);
   revalidatePath("/");
   revalidatePath("/dashboard/quests");
 }
@@ -54,7 +54,7 @@ export async function updateAttendance(userId: string, questId: string, status: 
     where: { userId_questId: { userId, questId } },
     data: { status }
   });
-  revalidatePath("/admin/registrations");
+  revalidatePath(`/admin/quests/${questId}/registrations`);
   revalidatePath("/");
   revalidatePath("/dashboard/quests");
 }

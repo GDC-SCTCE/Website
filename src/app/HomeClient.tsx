@@ -11,7 +11,7 @@ import StatsSection from "./components/home/StatsSection";
 import CommunitySection from "./components/home/CommunitySection";
 import ActiveQuestsSection from "./components/home/ActiveQuestsSection";
 
-export default function HomeClient({ activeQuests }: { activeQuests: Quest[] }) {
+export default function HomeClient({ activeQuests, isAdmin }: { activeQuests: Quest[], isAdmin: boolean }) {
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
       <SplashOverlay />
@@ -22,7 +22,7 @@ export default function HomeClient({ activeQuests }: { activeQuests: Quest[] }) 
         <FeaturesSection />
         <StatsSection />
         <CommunitySection />
-        <ActiveQuestsSection activeQuests={activeQuests} />
+        <ActiveQuestsSection activeQuests={activeQuests} isAdmin={isAdmin} />
       </main>
     </div>
   );

@@ -12,10 +12,12 @@ export default function InventoryClient({
   dbTools,
   initialUserTools,
   isSignedIn,
+  isAdmin = false,
 }: {
   dbTools: DbTool[];
   initialUserTools: string[];
   isSignedIn: boolean;
+  isAdmin?: boolean;
 }) {
   const [activeCategory, setActiveCategory] = useState<Category>("ALL");
   const [selectedTool, setSelectedTool] = useState<DbTool | null>(dbTools[0] || null);
@@ -116,6 +118,7 @@ export default function InventoryClient({
               loadout={loadout}
               onEquipChange={(newLoadout) => setLoadout(new Set(newLoadout))}
               isSignedIn={isSignedIn}
+              isAdmin={isAdmin}
             />
           )}
         </div>

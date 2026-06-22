@@ -9,6 +9,23 @@ import { Quest } from "@/types";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 import { QuestDetailsModal } from "./QuestDetailsModal";
 
+function QuestCardTimer({ targetDate, isUpcoming }: { targetDate: Date | null; isUpcoming: boolean }) {
+  const targetMs = targetDate ? new Date(targetDate).getTime() : Date.now();
+  const timer = useCountdown(targetMs);
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return (
+    <div>
+      <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
+        {isUpcoming ? "Unlocks In" : "Time Remaining"}
+      </p>
+      <p className={`mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] ${isUpcoming ? "text-[#E5E2E3]" : "text-[#FFB68B]"}`}>
+        {pad(timer.d)}d : {pad(timer.h)}h : {pad(timer.m)}m
+      </p>
+    </div>
+  );
+}
+
 export interface QuestCardProps {
   quest: Quest;
   user: any; // Using any for simplicity as per original
@@ -27,14 +44,34 @@ export function QuestCard({
   const router = useRouter();
   const isUpcoming = quest.status === "UPCOMING";
   const imageAlt = quest.title;
-  const targetMs = quest.targetDate ? new Date(quest.targetDate).getTime() : Date.now();
   const seatsTaken = quest.seatsTaken || 0;
   const seatsTotal = quest.capacity || 30;
   const progressPct = seatsTotal > 0 ? (seatsTaken / seatsTotal) * 100 : 0;
-  const timer = useCountdown(targetMs);
-  const pad = (n: number) => String(n).padStart(2, "0");
 
   const [showDetails, setShowDetails] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("open") === quest.id) {
+        setShowDetails(true);
+      }
+    }
+  }, [quest.id]);
+
+  const openModal = () => {
+    setShowDetails(true);
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, '', `?open=${quest.id}`);
+    }
+  };
+
+  const closeModal = () => {
+    setShowDetails(false);
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, '', window.location.pathname);
+    }
+  };
   const [successMsg, setSuccessMsg] = React.useState(() => {
     if (quest.registrations && quest.registrations.length > 0) {
       const regStatus = quest.registrations[0].status;
@@ -53,7 +90,7 @@ export function QuestCard({
           ? "opacity-75 cursor-default" 
           : "cursor-pointer hover:border-[#FFB68B] transition-colors"
       }`}
-      onClick={() => { if (!isUpcoming) setShowDetails(true); }}
+      onClick={() => { if (!isUpcoming) openModal(); }}
     >
       {/* Image area */}
       <div className="relative mx-4 md:mx-6 mt-4 md:mt-6 h-[200px] md:h-[290px]">
@@ -105,14 +142,7 @@ export function QuestCard({
 
         {/* Timer + Stats */}
         <div className="flex items-start justify-between mt-4 md:mt-6">
-          <div>
-            <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
-              {isUpcoming ? "Unlocks In" : "Time Remaining"}
-            </p>
-            <p className={`mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] ${isUpcoming ? "text-[#E5E2E3]" : "text-[#FFB68B]"}`}>
-              {pad(timer.d)}d : {pad(timer.h)}h : {pad(timer.m)}m
-            </p>
-          </div>
+          <QuestCardTimer targetDate={quest.targetDate} isUpcoming={isUpcoming} />
           <div className="text-right">
             <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
               {isUpcoming ? "Reservation" : "Seats Available"}
@@ -156,7 +186,7 @@ export function QuestCard({
             </button>
           ) : (
             <button
-              onClick={(e) => { e.stopPropagation(); setShowDetails(true); }}
+              onClick={(e) => { e.stopPropagation(); openModal(); }}
               disabled={!!successMsg}
               className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] bg-[#FF7A00] flex items-center justify-center gap-2 transition-opacity hover:opacity-90 cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -184,7 +214,7 @@ export function QuestCard({
           }}
           user={user}
           isAdmin={isAdmin}
-          onClose={() => setShowDetails(false)}
+          onClose={closeModal}
           onSuccess={(msg) => setSuccessMsg(msg)}
         />
       )}

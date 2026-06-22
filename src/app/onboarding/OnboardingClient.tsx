@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/utils/supabase/client";
 import { syncUserToDatabase } from "@/actions/authActions";
@@ -16,6 +16,8 @@ import SignupFields from "./components/SignupFields";
 
 export default function OnboardingClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
 
   const [isLoginMode, setIsLoginMode] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -136,7 +138,15 @@ export default function OnboardingClient() {
           xpLevel
         };
         await syncUserToDatabase(userData);
-        router.push("/onboarding/success");
+        if (redirectUrl) {
+          if (isLoginMode) {
+             router.push(redirectUrl);
+          } else {
+             router.push(`/onboarding/success?redirect=${encodeURIComponent(redirectUrl)}`);
+          }
+        } else {
+          router.push("/onboarding/success");
+        }
       } catch (err: any) {
         setAuthError(err.message || "Failed to sync user data. If logging in, you may need to sign up first.");
         await supabase.auth.signOut();

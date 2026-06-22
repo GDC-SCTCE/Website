@@ -9,15 +9,29 @@ import { useInView } from "@/hooks/useInView";
 import { useCountdown } from "@/hooks/useCountdown";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 
-export default function ActiveQuestsSection({ activeQuests }: { activeQuests: Quest[] }) {
+function LandingQuestTimer({ targetDate }: { targetDate: Date }) {
+  const targetMs = new Date(targetDate).getTime();
+  const countdown = useCountdown(targetMs);
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return (
+    <div>
+      <p className="font-mono font-normal text-[10px] leading-[15px] text-[#A78B7C] uppercase mb-[12px]">
+        Countdown
+      </p>
+      <p className="font-mono font-bold text-[24px] leading-[32px] text-[#FF7A00] animate-pulse">
+        {pad(countdown.d)}d : {pad(countdown.h)}h : {pad(countdown.m)}m
+      </p>
+    </div>
+  );
+}
+
+export default function ActiveQuestsSection({ activeQuests, isAdmin = false }: { activeQuests: Quest[], isAdmin?: boolean }) {
   const { user, loading } = useAuth();
   const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
   const { ref: jamRef, inView: jamVisible } = useInView(0.15);
 
   const currentQuest = activeQuests[currentQuestIdx];
-  const targetMs = currentQuest?.targetDate ? new Date(currentQuest.targetDate).getTime() : 0;
-  const countdown = useCountdown(targetMs);
-  const pad = (n: number) => String(n).padStart(2, "0");
 
   useEffect(() => {
     if (activeQuests.length <= 1) return;
@@ -63,23 +77,18 @@ export default function ActiveQuestsSection({ activeQuests }: { activeQuests: Qu
                 </p>
               </div>
               {currentQuest.targetDate && (
-                <div>
-                  <p className="font-mono font-normal text-[10px] leading-[15px] text-[#A78B7C] uppercase mb-[12px]">
-                    Countdown
-                  </p>
-                  <p className="font-mono font-bold text-[24px] leading-[32px] text-[#FF7A00] animate-pulse">
-                    {pad(countdown.d)}d : {pad(countdown.h)}h : {pad(countdown.m)}m
-                  </p>
-                </div>
+                <LandingQuestTimer targetDate={currentQuest.targetDate} />
               )}
             </div>
 
-            <Link href={!loading && user ? "/dashboard/quests" : "/onboarding"}>
-              <button className="bg-[#FF7A00] w-[213.61px] h-[60px] font-mono font-semibold text-[14px] leading-[20px] tracking-[1.4px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-300 relative overflow-hidden group/btn-jam shadow-lg hover:shadow-[#FF7A00]/20">
-                <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn-jam:translate-x-[300%] transition-transform duration-700 ease-in-out" />
-                <span className="relative z-10">ACCEPT QUEST →</span>
-              </button>
-            </Link>
+            {!isAdmin && (
+              <Link href={!loading && user ? `/dashboard/quests?open=${currentQuest.id}` : `/onboarding?redirect=${encodeURIComponent('/dashboard/quests?open=' + currentQuest.id)}`}>
+                <button className="bg-[#FF7A00] w-[213.61px] h-[60px] font-mono font-semibold text-[14px] leading-[20px] tracking-[1.4px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-300 relative overflow-hidden group/btn-jam shadow-lg hover:shadow-[#FF7A00]/20">
+                  <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn-jam:translate-x-[300%] transition-transform duration-700 ease-in-out" />
+                  <span className="relative z-10">ACCEPT QUEST →</span>
+                </button>
+              </Link>
+            )}
           </div>
         </div>
 

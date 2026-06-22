@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { X, Bell, Users } from "lucide-react";
 import QRCode from "react-qr-code";
 import { Quest } from "@/types";
-import { registerForQuest } from "@/actions/userActions";
+import { registerForQuest, validateQuestRegistration } from "@/actions/userActions";
 
 interface QuestRegistrationFlowProps {
   quest: Quest;
@@ -48,9 +48,10 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
 
   const dynamicUpiLink = getDynamicUpiLink(quest.upiLink || "", totalPrice);
 
-  const handleRegisterClick = () => {
+  const handleRegisterClick = async () => {
     if (!user) {
-      router.push("/onboarding");
+      const currentPath = window.location.pathname + window.location.search;
+      router.push(`/onboarding?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
     if (isTeamQuest && !teamName.trim()) {
@@ -64,10 +65,21 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
     }
 
     setRegError("");
-    if (quest.price && quest.price > 0) {
-      setShowPayment(true);
-    } else {
-      executeRegistration();
+    setRegistering(true);
+
+    try {
+      const res = await validateQuestRegistration(quest.id, filledTeammates);
+      if (res.success) {
+        if (quest.price && quest.price > 0) {
+          setShowPayment(true);
+        } else {
+          executeRegistration();
+        }
+      }
+    } catch (err: any) {
+      setRegError(err.message);
+    } finally {
+      setRegistering(false);
     }
   };
 
@@ -108,7 +120,7 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
   };
 
   return (
-    <div className={`bg-[#131314] border border-[#FF7A00] p-6 relative mt-4 overflow-hidden ${isUpcoming ? "min-h-[150px]" : "min-h-[400px]"}`}>
+    <div className="bg-[#131314] border border-[#FF7A00] p-6 relative mt-4 overflow-hidden shrink-0">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#93000A] via-[#FF7A00] to-[#FDD400]" />
 
       {isUpcoming ? (
@@ -117,7 +129,8 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
           <button
             onClick={() => { 
               if (!user) {
-                router.push("/onboarding"); 
+                const currentPath = window.location.pathname + window.location.search;
+                router.push(`/onboarding?redirect=${encodeURIComponent(currentPath)}`); 
               } else {
                 alert("Notification enabled! We will notify you when this quest starts.");
               }
@@ -172,6 +185,26 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
             </button>
             <button onClick={() => setShowPayment(false)} className="text-[#A78B7C] font-mono text-[10px] hover:text-white underline text-center">Back to Registration</button>
           </div>
+        </div>
+      ) : !user ? (
+        // UNAUTHENTICATED FLOW
+        <div className="flex flex-col gap-6">
+          <div className="flex justify-between items-center border-b border-[#584235] pb-4">
+            <h3 className="font-sora text-[18px] text-white uppercase flex items-center gap-2">
+              <Users className="w-5 h-5 text-[#FF7A00]" />
+              JOIN THIS QUEST
+            </h3>
+          </div>
+          <p className="font-mono text-[12px] text-[#A78B7C]">You must be logged in to register for quests.</p>
+          <button
+            onClick={() => {
+              const currentPath = window.location.pathname + window.location.search;
+              router.push(`/onboarding?redirect=${encodeURIComponent(currentPath)}`);
+            }}
+            className="w-full h-[56px] bg-[#FF7A00] text-[#522300] font-mono font-bold text-[14px] tracking-[2px] hover:brightness-110 transition-all"
+          >
+            LOG IN TO REGISTER
+          </button>
         </div>
       ) : (
         // REGISTRATION FLOW

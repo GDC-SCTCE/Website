@@ -1,3 +1,4 @@
+import React from "react";
 import { redirect } from "next/navigation";
 import { verifyUser } from "@/actions/authActions";
 import { createClient } from "@/utils/supabase/server";
@@ -20,5 +21,9 @@ export default async function OnboardingSuccessPage() {
     actualName = user.email.split('@')[0];
   }
 
-  return <SuccessClient actualName={actualName} />;
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-[#131314]" />}>
+      <SuccessClient actualName={actualName} />
+    </React.Suspense>
+  );
 }

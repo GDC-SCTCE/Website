@@ -3,11 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
 export default function SuccessClient({ actualName }: { actualName: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -118,14 +120,14 @@ export default function SuccessClient({ actualName }: { actualName: string }) {
             </svg>
           </a>
 
-          {/* Secondary: GO TO INVENTORY */}
+          {/* Secondary: GO TO INVENTORY or RETURN TO QUEST */}
           <Link
             id="success-go-inventory"
-            href="/dashboard/inventory"
+            href={redirectUrl || "/dashboard/inventory"}
             className="flex items-center justify-center w-full sm:w-[326px] h-[80px] border-2 border-[#FF7A00] no-underline shrink-0 hover:bg-[rgba(255,122,0,0.05)] transition-all duration-200"
           >
             <span className="font-sora font-bold text-[18px] md:text-[20px] leading-[28px] tracking-[2px] uppercase text-[#FFB68B]">
-              Go To Inventory
+              {redirectUrl ? "Return to Quest" : "Go To Inventory"}
             </span>
           </Link>
         </div>

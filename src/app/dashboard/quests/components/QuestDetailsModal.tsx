@@ -8,6 +8,28 @@ import { Quest } from "@/types";
 import { useCountdown } from "@/hooks/useCountdown";
 import { QuestRegistrationFlow } from "./QuestRegistrationFlow";
 
+function TimerDisplay({ targetDate, isUpcoming }: { targetDate: Date | null; isUpcoming: boolean }) {
+  const targetMs = targetDate ? new Date(targetDate).getTime() : Date.now();
+  const timer = useCountdown(targetMs);
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return (
+    <div className="bg-[#1C1B1C] border border-[#3A2D25] hover:border-[#FF7A00]/30 transition-colors p-4 flex items-center gap-4">
+      <div className="p-3 bg-[#131314] border border-[#3A2D25] text-[#FFB68B] shrink-0">
+        <Clock className="w-5 h-5" />
+      </div>
+      <div>
+        <p className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px] uppercase">
+          {isUpcoming ? "Unlocks In" : "Time Remaining"}
+        </p>
+        <p className={`font-mono text-[14px] font-bold mt-0.5 ${isUpcoming ? "text-[#E5E2E3]" : "text-[#FFB68B]"}`}>
+          {pad(timer.d)}d : {pad(timer.h)}h : {pad(timer.m)}m
+        </p>
+      </div>
+    </div>
+  );
+}
+
 interface QuestDetailsModalProps {
   quest: Quest;
   user: any;
@@ -18,10 +40,6 @@ interface QuestDetailsModalProps {
 
 export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: QuestDetailsModalProps) {
   const isUpcoming = quest.status === "UPCOMING";
-
-  const targetMs = quest.targetDate ? new Date(quest.targetDate).getTime() : Date.now();
-  const timer = useCountdown(targetMs);
-  const pad = (n: number) => String(n).padStart(2, "0");
 
   const existingRegStatus = quest.registrations && quest.registrations.length > 0
     ? quest.registrations[0].status
@@ -42,7 +60,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto" onClick={(e) => { e.stopPropagation(); onClose(); }}>
       <div
-        className="bg-[#1C1B1C] border border-[#584235] w-full max-w-5xl my-auto shadow-2xl relative flex flex-col md:flex-row h-auto md:h-[600px] overflow-y-auto md:overflow-hidden"
+        className="bg-[#1C1B1C] border border-[#584235] w-full max-w-5xl my-auto shadow-2xl relative flex flex-col md:flex-row h-auto md:h-[600px] md:max-h-[85vh] overflow-y-auto md:overflow-hidden shrink-0"
         onClick={(e) => e.stopPropagation()}
       >
 
@@ -104,7 +122,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
           </div>
 
           {/* Scrollable content container */}
-          <div className="flex-1 overflow-visible md:overflow-y-auto md:min-h-0 p-4 md:p-6 flex flex-col gap-6">
+          <div className="flex-1 overflow-visible md:overflow-y-auto md:min-h-0 p-4 md:p-6 flex flex-col gap-6 transform-gpu will-change-transform overscroll-contain">
 
             {/* Special Highlight for Team Quests */}
             {isTeamQuest && (
@@ -125,19 +143,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
               {/* Card 1: Time Remaining */}
-              <div className="bg-[#1C1B1C] border border-[#3A2D25] hover:border-[#FF7A00]/30 transition-colors p-4 flex items-center gap-4">
-                <div className="p-3 bg-[#131314] border border-[#3A2D25] text-[#FFB68B] shrink-0">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px] uppercase">
-                    {isUpcoming ? "Unlocks In" : "Time Remaining"}
-                  </p>
-                  <p className={`font-mono text-[14px] font-bold mt-0.5 ${isUpcoming ? "text-[#E5E2E3]" : "text-[#FFB68B]"}`}>
-                    {pad(timer.d)}d : {pad(timer.h)}h : {pad(timer.m)}m
-                  </p>
-                </div>
-              </div>
+              <TimerDisplay targetDate={quest.targetDate} isUpcoming={isUpcoming} />
 
               {/* Card 2: Seats Available */}
               <div className="bg-[#1C1B1C] border border-[#3A2D25] hover:border-[#FF7A00]/30 transition-colors p-4 flex items-center gap-4">
@@ -181,17 +187,15 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
             </div>
 
             {/* Markdown Description */}
-            <div className="bg-[#1C1B1C] p-6 border border-[#3A2D25] relative">
-              <div className="absolute top-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-[#FF7A00]/30 to-transparent" />
-              <h3 className="font-sora font-semibold text-[13px] text-white uppercase tracking-wider mb-4">Quest Briefing</h3>
-              <div className="prose prose-invert prose-sm md:prose-base max-w-none text-zinc-300 font-sans leading-relaxed">
-                {quest.description ? (
+            {quest.description && quest.description.trim() !== "" && (
+              <div className="bg-[#1C1B1C] p-6 border border-[#3A2D25] relative">
+                <div className="absolute top-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-[#FF7A00]/30 to-transparent" />
+                <h3 className="font-sora font-semibold text-[13px] text-white uppercase tracking-wider mb-4">Quest Briefing</h3>
+                <div className="prose prose-invert prose-sm md:prose-base max-w-none text-zinc-300 font-sans leading-relaxed">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{quest.description}</ReactMarkdown>
-                ) : (
-                  <p className="text-zinc-500 font-mono text-xs">No description provided for this quest.</p>
-                )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Registration Box */}
             {!isAdmin && existingRegStatus && (
@@ -203,14 +207,24 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
             )}
 
             {!isAdmin && !existingRegStatus && (
-              <QuestRegistrationFlow
-                quest={quest}
-                user={user}
-                isUpcoming={isUpcoming}
-                onClose={onClose}
-                onSuccess={onSuccess}
-              />
+              quest.capacity !== null && quest.capacity !== undefined && (quest.seatsTaken || 0) >= quest.capacity ? (
+                <div className="bg-[#1C1B1C] border border-[#584235] p-6 text-center shrink-0">
+                  <p className="font-mono text-[#E5E2E3] text-[14px] uppercase">
+                    QUEST STATUS: <span className="font-bold ml-2 text-[#FFB68B]">MAX CAPACITY REACHED</span>
+                  </p>
+                </div>
+              ) : (
+                <QuestRegistrationFlow
+                  quest={quest}
+                  user={user}
+                  isUpcoming={isUpcoming}
+                  onClose={onClose}
+                  onSuccess={onSuccess}
+                />
+              )
             )}
+            {/* Spacer to ensure padding-bottom works in all browsers */}
+            <div className="h-4 md:h-6 shrink-0" />
           </div>
         </div>
 
