@@ -158,16 +158,7 @@ export function QuestBoardClient({ initialQuests: quests, isAdmin, user }: Quest
                   onScroll={handleScroll}
                   className="flex overflow-x-auto gap-[44px] pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory"
                 >
-                  {activeQuests.map((quest, idx) => (
-                    <div key={quest.id} className="w-full md:w-[calc(50%-22px)] shrink-0 snap-start snap-always flex">
-                      <QuestCard
-                        quest={quest}
-                        user={user}
-                        isAdmin={isAdmin}
-                      />
-                    </div>
-                  ))}
-                  {upcomingQuests.map((quest, idx) => (
+                  {[...activeQuests, ...upcomingQuests].map((quest) => (
                     <div key={quest.id} className="w-full md:w-[calc(50%-22px)] shrink-0 snap-start snap-always flex">
                       <QuestCard
                         quest={quest}

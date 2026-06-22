@@ -98,7 +98,7 @@ export async function getQuestWinners(questId: string) {
       groups[key] = {
         name: reg.teamName || reg.user.fullName,
         isTeam: !!reg.teamName,
-        points: reg.pointsAwarded,
+        points: 0,
         members: [],
       };
     }
@@ -108,9 +108,9 @@ export async function getQuestWinners(questId: string) {
       rollNo: reg.user.rollNo,
       xpLevel: reg.user.xpLevel,
     });
-    if (reg.pointsAwarded > groups[key].points) {
-      groups[key].points = reg.pointsAwarded;
-    }
+    
+    // Sum the points of all individuals in the team
+    groups[key].points += reg.pointsAwarded;
   }
 
   const sorted = Object.values(groups).sort((a, b) => b.points - a.points);

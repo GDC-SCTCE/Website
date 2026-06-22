@@ -9,7 +9,7 @@ import { useCountdown } from "@/hooks/useCountdown";
 import ActiveQuestsCarousel from "./ActiveQuestsCarousel";
 
 function LandingQuestTimer({ targetDate }: { targetDate: Date }) {
-  const targetMs = new Date(targetDate).getTime();
+  const targetMs = targetDate ? new Date(targetDate).getTime() : 0;
   const countdown = useCountdown(targetMs);
   const pad = (n: number) => String(n).padStart(2, "0");
 

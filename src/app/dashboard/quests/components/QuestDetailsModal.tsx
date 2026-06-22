@@ -1,16 +1,36 @@
 "use client";
 
-import React from "react";
-import { X, Clock, Users, User, CreditCard, Calendar, MapPin } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Clock, Users, User, CreditCard, Calendar, MapPin, Trophy, Crown, Medal, Award, Sparkles } from "lucide-react";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { Quest } from "@/types";
 import { useCountdown } from "@/hooks/useCountdown";
 import { QuestRegistrationFlow } from "./QuestRegistrationFlow";
+import { QuestChampionsList, WinnerGroup } from "./QuestChampionsList";
+import { getQuestWinners } from "@/actions/dataActions";
 
-function TimerDisplay({ targetDate, isUpcoming }: { targetDate: Date | null; isUpcoming: boolean }) {
-  const targetMs = targetDate ? new Date(targetDate).getTime() : Date.now();
+
+function TimerDisplay({ targetDate, status }: { targetDate: Date | null; status: string }) {
+  const targetMs = targetDate ? new Date(targetDate).getTime() : 0;
   const timer = useCountdown(targetMs);
   const pad = (n: number) => String(n).padStart(2, "0");
+  const isUpcoming = status === "UPCOMING";
+
+  const isZero = timer.d === 0 && timer.h === 0 && timer.m === 0 && timer.s === 0;
+
+  if (isZero) {
+    return (
+      <div className="bg-[#1C1B1C] border border-[#3A2D25] p-4 flex items-center gap-4">
+        <div className="p-3 bg-[#131314] border border-[#3A2D25] text-[#FF7A00] shrink-0">
+          <Clock className="w-5 h-5" />
+        </div>
+        <div>
+          <p className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px] uppercase">Status</p>
+          <p className="font-mono text-[14px] font-bold text-[#E5E2E3] mt-0.5">{status}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#1C1B1C] border border-[#3A2D25] hover:border-[#FF7A00]/30 transition-colors p-4 flex items-center gap-4">
@@ -37,14 +57,20 @@ interface QuestDetailsModalProps {
   onSuccess: (status: string) => void;
 }
 
+// WinnerGroup interface moved to QuestChampionsList
+
 export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: QuestDetailsModalProps) {
   const isUpcoming = quest.status === "UPCOMING";
+  const isCompleted = quest.status === "COMPLETED";
 
   const existingRegStatus = quest.registrations && quest.registrations.length > 0
     ? quest.registrations[0].status
     : null;
 
   const isTeamQuest = (quest.maxTeamSize || 1) > 1;
+  const [winners, setWinners] = useState<WinnerGroup[]>([]);
+  const [loadingWinners, setLoadingWinners] = useState(false);
+
   React.useEffect(() => {
     // Disable background page scrolling when modal is open
     const originalStyle = document.body.style.overflow;
@@ -55,6 +81,24 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
       document.body.style.overflow = originalStyle;
     };
   }, []);
+
+  useEffect(() => {
+    // Fetch winners only if quest is completed
+    async function loadWinners() {
+      if (!isCompleted) return;
+      
+      setLoadingWinners(true);
+      try {
+        const data = await getQuestWinners(quest.id);
+        setWinners(data);
+      } catch (err) {
+        console.error("Failed to load winners:", err);
+      } finally {
+        setLoadingWinners(false);
+      }
+    }
+    loadWinners();
+  }, [quest.id, isCompleted]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto" onClick={(e) => { e.stopPropagation(); onClose(); }}>
@@ -123,8 +167,13 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
           {/* Scrollable content container */}
           <div className="flex-1 overflow-visible md:overflow-y-auto md:min-h-0 p-4 md:p-6 flex flex-col gap-6 transform-gpu will-change-transform overscroll-contain">
 
+            {/* WINNERS SECTION (For Completed Quests Only) */}
+            {isCompleted && (
+              <QuestChampionsList winners={winners} loadingWinners={loadingWinners} />
+            )}
+
             {/* Special Highlight for Team Quests */}
-            {isTeamQuest && (
+            {isTeamQuest && !isCompleted && (
               <div className="bg-[#1C1B1C] border border-l-4 border-[#3A2D25] border-l-[#FF7A00] p-4 flex gap-4 items-start">
                 <div className="p-2 bg-[#FF7A00]/10 rounded-sm text-[#FF7A00] shrink-0 mt-0.5">
                   <Users className="w-5 h-5" />
@@ -142,7 +191,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
               {/* Card 1: Time Remaining */}
-              <TimerDisplay targetDate={quest.targetDate} isUpcoming={isUpcoming} />
+              <TimerDisplay targetDate={quest.targetDate} status={quest.status} />
 
               {/* Card 2: Seats Available */}
               <div className="bg-[#1C1B1C] border border-[#3A2D25] hover:border-[#FF7A00]/30 transition-colors p-4 flex items-center gap-4">
@@ -194,8 +243,10 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
               </div>
             )}
 
-            {/* Registration Box */}
-            {!isAdmin && existingRegStatus && (
+            {/* Registration Box (Only display if NOT completed) */}
+            {!isCompleted && (
+              <>
+                {!isAdmin && existingRegStatus && (
               <div className="bg-[#1C1B1C] border border-[#584235] p-6 text-center">
                 <p className="font-mono text-[#E5E2E3] text-[14px]">
                   YOUR STATUS: <span className={`font-bold ml-2 ${existingRegStatus === 'REJECTED' ? 'text-red-500' : 'text-emerald-400'}`}>{existingRegStatus.replace('_', ' ')}</span>
@@ -220,6 +271,8 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
                 />
               )
             )}
+            </>
+          )}
             {/* Spacer to ensure padding-bottom works in all browsers */}
             <div className="h-4 md:h-6 shrink-0" />
           </div>

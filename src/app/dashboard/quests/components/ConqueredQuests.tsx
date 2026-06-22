@@ -5,7 +5,7 @@ import { Quest } from "@/types";
 import { useInView } from "@/hooks/useInView";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 import { QuestRatingStars } from "./QuestRatingStars";
-import { QuestDetailsWithWinnersModal } from "./QuestDetailsWithWinnersModal";
+import { QuestDetailsModal } from "./QuestDetailsModal";
 
 interface ConqueredQuestsProps {
   completedQuests: Quest[];
@@ -218,8 +218,8 @@ export function ConqueredQuests({ completedQuests, isLoading = false, user, isAd
                   <ExternalLink className="w-[10.67px] h-[10.67px] text-[#FFF3D2] group-hover:text-[#FFB68B] group-hover:translate-x-1 transition-transform duration-200" />
                 </a>
 
-                {/* Star Rating (Only for approved / attended registrations) */}
-                {quest.registrations && quest.registrations.some(r => r.status === "REGISTERED" || r.status === "ATTENDED") && (
+                {/* Star Rating (Only for attended registrations) */}
+                {quest.registrations && quest.registrations.some(r => r.status === "ATTENDED") && (
                   <div onClick={(e) => e.stopPropagation()}>
                     <QuestRatingStars 
                       questId={quest.id} 
@@ -266,7 +266,7 @@ export function ConqueredQuests({ completedQuests, isLoading = false, user, isAd
       </div>
 
       {selectedQuest && (
-        <QuestDetailsWithWinnersModal
+        <QuestDetailsModal
           quest={selectedQuest}
           user={user}
           isAdmin={isAdmin}

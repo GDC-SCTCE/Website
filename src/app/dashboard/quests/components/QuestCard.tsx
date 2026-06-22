@@ -7,12 +7,27 @@ import { useCountdown } from "@/hooks/useCountdown";
 import { Bell } from "lucide-react";
 import { Quest } from "@/types";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
-import { QuestDetailsWithWinnersModal } from "./QuestDetailsWithWinnersModal";
+import { QuestDetailsModal } from "./QuestDetailsModal";
 
-function QuestCardTimer({ targetDate, isUpcoming }: { targetDate: Date | null; isUpcoming: boolean }) {
-  const targetMs = targetDate ? new Date(targetDate).getTime() : Date.now();
+function QuestCardTimer({ targetDate, status }: { targetDate: Date | null; status: string }) {
+  const targetMs = targetDate ? new Date(targetDate).getTime() : 0;
   const timer = useCountdown(targetMs);
   const pad = (n: number) => String(n).padStart(2, "0");
+  const isUpcoming = status === "UPCOMING";
+  const isZero = timer.d === 0 && timer.h === 0 && timer.m === 0 && timer.s === 0;
+
+  if (isZero) {
+    return (
+      <div>
+        <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
+          Status
+        </p>
+        <p className="mt-1 font-mono font-bold text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] text-[#E5E2E3]">
+          {status}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -138,7 +153,7 @@ export function QuestCard({
 
         {/* Timer + Stats */}
         <div className="flex items-start justify-between mt-4 md:mt-6">
-          <QuestCardTimer targetDate={quest.targetDate} isUpcoming={isUpcoming} />
+          <QuestCardTimer targetDate={quest.targetDate} status={quest.status} />
           <div className="text-right">
             <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
               {isUpcoming ? "Reservation" : "Seats Available"}
@@ -195,7 +210,7 @@ export function QuestCard({
       </div>
 
       {showDetails && (
-        <QuestDetailsWithWinnersModal
+        <QuestDetailsModal
           quest={{
             ...quest,
             registrations: successMsg
