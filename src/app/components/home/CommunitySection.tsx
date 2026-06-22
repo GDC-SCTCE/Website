@@ -37,7 +37,7 @@ export default function CommunitySection() {
         <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] max-w-[394px] mb-[40px]">
           We believe in radical transparency and cross-disciplinary mentorship for all members.
         </p>
-        <Link href="/onboarding">
+        <Link href="/dashboard/leaderboard">
           <button className="bg-transparent border border-[#FF7A00] w-[124.81px] h-[38px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] cursor-pointer hover:bg-[#FF7A00] hover:text-[#5C2800] transition-all duration-300">
             Connect
           </button>

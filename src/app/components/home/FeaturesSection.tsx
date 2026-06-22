@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useInView } from "@/hooks/useInView";
 
 const features = [
@@ -8,16 +9,19 @@ const features = [
     img: "/game_jams.png",
     title: "Game jams and quests",
     desc: "Collaborative sprints where high-speed dev meets narrative depth.",
+    href: "/dashboard/quests",
   },
   {
     img: "/arcade_showcase.png",
     title: "Arcade showcases",
     desc: "Feature your playable builds in our interactive neon-lit virtual lobby.",
+    href: "/dashboard/arcade",
   },
   {
     img: "/dev_toolkit.png",
     title: "Dev toolkit access",
     desc: "Proprietary assets and shared libraries for collective innovation.",
+    href: "/dashboard/inventory",
   },
 ];
 
@@ -62,7 +66,10 @@ export default function FeaturesSection() {
             }}
           >
             {/* Image card */}
-            <div className="w-[340px] max-w-full h-[191.25px] bg-[#201F20] border border-[#584235] rounded-[8px] overflow-hidden relative transition-all duration-300 group-hover/feature:border-[#FFB68B]/60 group-hover/feature:shadow-lg group-hover/feature:shadow-[#FFB68B]/5">
+            <Link
+              href={f.href}
+              className="w-[340px] max-w-full h-[191.25px] bg-[#201F20] border border-[#584235] rounded-[8px] overflow-hidden relative transition-all duration-300 group-hover/feature:border-[#FFB68B]/60 group-hover/feature:shadow-lg group-hover/feature:shadow-[#FFB68B]/5 block"
+            >
               <Image
                 src={f.img}
                 alt={f.title}
@@ -70,22 +77,24 @@ export default function FeaturesSection() {
                 sizes="(max-width: 768px) 100vw, 340px"
                 className="object-cover transition-transform duration-700 ease-out group-hover/feature:scale-105"
               />
-            </div>
+            </Link>
             {/* Title */}
-            <h3 className="font-sora font-normal text-[24px] leading-[32px] text-[#FFB68B] mt-[24px] mb-[16px] transition-colors duration-300 group-hover/feature:text-white">
-              {f.title}
-            </h3>
+            <Link href={f.href} className="no-underline">
+              <h3 className="font-sora font-normal text-[24px] leading-[32px] text-[#FFB68B] mt-[24px] mb-[16px] transition-colors duration-300 group-hover/feature:text-white">
+                {f.title}
+              </h3>
+            </Link>
             {/* Desc */}
             <p className="font-sora font-normal text-[16px] leading-[24px] text-[#E0C0AF] mb-[16px] max-w-[322px]">
               {f.desc}
             </p>
             {/* Explore link */}
-            <a
-              href="#"
+            <Link
+              href={f.href}
               className="inline-flex items-center gap-[8px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] no-underline hover:text-[#FFB68B] transition-all duration-200 group-hover/feature:translate-x-1"
             >
               Explore <span className="transition-transform duration-200 group-hover/feature:translate-x-1">→</span>
-            </a>
+            </Link>
           </div>
         ))}
       </div>
