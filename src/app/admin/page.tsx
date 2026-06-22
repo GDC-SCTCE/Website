@@ -4,10 +4,11 @@ import prisma from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const [questCount, gameCount, teamCount] = await Promise.all([
+  const [questCount, gameCount, teamCount, toolCount] = await Promise.all([
     prisma.quest.count(),
     prisma.game.count(),
     prisma.teamMember.count(),
+    prisma.tool.count(),
   ]);
 
   return (
@@ -41,6 +42,14 @@ export default async function AdminDashboard() {
           <div className="flex justify-between items-center">
             <span className="font-mono text-[12px] text-[#A78B7C]">TOTAL RECORDS</span>
             <span className="font-mono text-[24px] text-[#FFB68B]">{teamCount}</span>
+          </div>
+        </Link>
+
+        <Link href="/admin/tools" className="bg-[#1A1A1B] border border-[#584235] p-6 hover:border-[#FF7A00] transition-colors group no-underline">
+          <h2 className="font-sora font-bold text-[20px] text-white group-hover:text-[#FF7A00] transition-colors mb-4">TOOLS & INVENTORY</h2>
+          <div className="flex justify-between items-center">
+            <span className="font-mono text-[12px] text-[#A78B7C]">TOTAL RECORDS</span>
+            <span className="font-mono text-[24px] text-[#FFB68B]">{toolCount}</span>
           </div>
         </Link>
       </div>
