@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { Quest } from "@/types";
@@ -6,18 +6,28 @@ import { useInView } from "@/hooks/useInView";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 import { QuestRatingStars } from "./QuestRatingStars";
 import { QuestDetailsModal } from "./QuestDetailsModal";
+import { getPaginatedConqueredQuests } from "@/actions/dataActions";
+import { ConqueredQuestSkeleton } from "./ConqueredQuestSkeleton";
 
 interface ConqueredQuestsProps {
-  completedQuests: Quest[];
-  isLoading?: boolean;
   user: any;
   isAdmin: boolean;
+  search: string;
+  category: string;
 }
 
-export function ConqueredQuests({ completedQuests, isLoading = false, user, isAdmin }: ConqueredQuestsProps) {
+export function ConqueredQuests({ user, isAdmin, search, category }: ConqueredQuestsProps) {
   const [completedPage, setCompletedPage] = useState(0);
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
   const [attendanceFilter, setAttendanceFilter] = useState<"all" | "attended" | "not_attended">("all");
+  
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalFilteredCount, setTotalFilteredCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [attendedCount, setAttendedCount] = useState(0);
+  const [notAttendedCount, setNotAttendedCount] = useState(0);
+
   const COMPLETED_PER_PAGE = 5;
 
   const { ref: pastRef, inView: pastVisible } = useInView(0.15);
@@ -27,37 +37,50 @@ export function ConqueredQuests({ completedQuests, isLoading = false, user, isAd
     setCompletedPage(0);
   };
 
-  const filteredCompletedQuests = completedQuests.filter((quest) => {
-    if (attendanceFilter === "all") return true;
-    const userReg = quest.registrations && quest.registrations[0];
-    if (!userReg) return false;
-    if (attendanceFilter === "attended") {
-      return userReg.status === "ATTENDED";
-    }
-    if (attendanceFilter === "not_attended") {
-      return userReg.status === "NOT_ATTENDED" || userReg.status === "REGISTERED";
-    }
-    return true;
-  });
+  // Debounce the search term to prevent rapid API calls
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setCompletedPage(0); // Reset page on new search
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [search]);
 
-  const totalCompletedPages = Math.ceil(filteredCompletedQuests.length / COMPLETED_PER_PAGE);
-  const displayedCompletedQuests = filteredCompletedQuests.slice(
-    completedPage * COMPLETED_PER_PAGE,
-    (completedPage + 1) * COMPLETED_PER_PAGE
-  );
+  // Reset page on category change
+  useEffect(() => {
+    setCompletedPage(0);
+  }, [category]);
 
-  const totalCount = completedQuests.length;
-  const attendedCount = completedQuests.filter(
-    (q) => q.registrations?.[0]?.status === "ATTENDED"
-  ).length;
-  const notAttendedCount = completedQuests.filter(
-    (q) =>
-      q.registrations?.[0]?.status === "NOT_ATTENDED" ||
-      q.registrations?.[0]?.status === "REGISTERED"
-  ).length;
+  useEffect(() => {
+    async function loadQuests() {
+      setIsLoading(true);
+      try {
+        const data = await getPaginatedConqueredQuests(completedPage, COMPLETED_PER_PAGE, attendanceFilter, debouncedSearch, category);
+        setQuests(data.quests as any);
+        setTotalFilteredCount(data.filteredCount);
+        setTotalCount(data.totalCount);
+        setAttendedCount(data.attendedCount);
+        setNotAttendedCount(data.notAttendedCount);
+      } catch (err) {
+        console.error("Failed to load conquered quests", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadQuests();
+  }, [completedPage, attendanceFilter, debouncedSearch, category]);
+
+  const totalCompletedPages = Math.ceil(totalFilteredCount / COMPLETED_PER_PAGE);
+
+  // If we have finished initial load and there are 0 completed quests in the entire system, don't show the section.
+  if (!isLoading && totalCount === 0 && attendanceFilter === "all") {
+    return null;
+  }
 
   return (
-    <div ref={pastRef} className="px-6 md:px-16 mt-16 pb-16">
+    <div ref={pastRef} className="px-6 md:px-16 mt-16 pb-16 min-h-[400px]">
       {/* "Completed" label */}
       <p
         className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFF3D2] transition-all duration-700"
@@ -99,54 +122,39 @@ export function ConqueredQuests({ completedQuests, isLoading = false, user, isAd
                 attendanceFilter === "all"
                   ? "4px"
                   : attendanceFilter === "attended"
-                  ? "calc(33.33% + 4px)"
-                  : "calc(66.66% + 4px)",
+                  ? "calc(33.33% + 2px)"
+                  : "calc(66.66% - 0px)",
             }}
           />
 
           <button
             onClick={() => handleFilterChange("all")}
-            className={`font-mono text-[10px] sm:text-[11px] md:text-[12px] uppercase tracking-wider py-2 rounded-md transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer relative z-10 w-full ${
-              attendanceFilter === "all"
-                ? "text-[#131314] font-extrabold"
-                : "text-[#A78B7C] hover:text-white hover:bg-[#201F20]/30"
+            className={`relative z-10 font-mono text-[10px] sm:text-[11px] py-2 sm:py-2.5 rounded-md transition-colors duration-200 uppercase tracking-wider ${
+              attendanceFilter === "all" ? "text-white font-bold" : "text-[#A78B7C] hover:text-[#E0C0AF]"
             }`}
           >
-            <span>All</span>
-            <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
-              attendanceFilter === "all" ? "bg-black/20 text-[#131314]" : "bg-[#131314] text-[#A78B7C]"
-            }`}>{totalCount}</span>
+            All <span className="opacity-75">({totalCount})</span>
           </button>
           <button
             onClick={() => handleFilterChange("attended")}
-            className={`font-mono text-[10px] sm:text-[11px] md:text-[12px] uppercase tracking-wider py-2 rounded-md transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer relative z-10 w-full ${
-              attendanceFilter === "attended"
-                ? "text-[#131314] font-extrabold"
-                : "text-[#A78B7C] hover:text-white hover:bg-[#201F20]/30"
+            className={`relative z-10 font-mono text-[10px] sm:text-[11px] py-2 sm:py-2.5 rounded-md transition-colors duration-200 uppercase tracking-wider ${
+              attendanceFilter === "attended" ? "text-white font-bold" : "text-[#A78B7C] hover:text-[#E0C0AF]"
             }`}
           >
-            <span>Attended</span>
-            <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
-              attendanceFilter === "attended" ? "bg-black/20 text-[#131314]" : "bg-[#131314] text-[#A78B7C]"
-            }`}>{attendedCount}</span>
+            Attended <span className="opacity-75">({attendedCount})</span>
           </button>
           <button
             onClick={() => handleFilterChange("not_attended")}
-            className={`font-mono text-[10px] sm:text-[11px] md:text-[12px] uppercase tracking-wider py-2 rounded-md transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer relative z-10 w-full ${
-              attendanceFilter === "not_attended"
-                ? "text-white font-extrabold"
-                : "text-[#A78B7C] hover:text-white hover:bg-[#201F20]/30"
+            className={`relative z-10 font-mono text-[10px] sm:text-[11px] py-2 sm:py-2.5 rounded-md transition-colors duration-200 uppercase tracking-wider ${
+              attendanceFilter === "not_attended" ? "text-white font-bold" : "text-[#A78B7C] hover:text-[#E0C0AF]"
             }`}
           >
-            <span>Not Attended</span>
-            <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
-              attendanceFilter === "not_attended" ? "bg-black/20 text-white" : "bg-[#131314] text-[#A78B7C]"
-            }`}>{notAttendedCount}</span>
+            Missed <span className="opacity-75">({notAttendedCount})</span>
           </button>
         </div>
       )}
 
-      {/* Past Quests List */}
+      {/* QUESTS LIST */}
       <div
         key={`${attendanceFilter}-${completedPage}`}
         className="mt-8 transition-all duration-700"
@@ -155,8 +163,14 @@ export function ConqueredQuests({ completedQuests, isLoading = false, user, isAd
           transitionDelay: "200ms",
         }}
       >
-        {displayedCompletedQuests.length > 0 ? (
-          displayedCompletedQuests.map((quest, idx) => (
+        {isLoading ? (
+          <div className="flex flex-col">
+            {[...Array(COMPLETED_PER_PAGE)].map((_, idx) => (
+              <ConqueredQuestSkeleton key={idx} />
+            ))}
+          </div>
+        ) : quests.length > 0 ? (
+          quests.map((quest, idx) => (
             <div
               key={quest.id}
               className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-[25px] border-t border-[#584235] transition-all duration-300 hover:bg-[#201F20]/30 hover:px-4 group cursor-pointer ${
@@ -239,14 +253,14 @@ export function ConqueredQuests({ completedQuests, isLoading = false, user, isAd
         )}
 
         {/* Bottom border of last row */}
-        {displayedCompletedQuests.length > 0 && <div className="border-b border-[#584235]" />}
+        {(quests.length > 0 || isLoading) && <div className="border-b border-[#584235]" />}
 
         {/* Pagination Controls */}
         {totalCompletedPages > 1 && (
           <div className="flex justify-between items-center mt-6 pt-2 pb-8">
             <button 
               onClick={() => setCompletedPage(p => Math.max(0, p - 1))}
-              disabled={completedPage === 0}
+              disabled={completedPage === 0 || isLoading}
               className="font-mono font-bold text-[12px] tracking-[1.2px] text-[#FFB68B] disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80 transition-opacity"
             >
               &lt; PREV
@@ -256,7 +270,7 @@ export function ConqueredQuests({ completedQuests, isLoading = false, user, isAd
             </span>
             <button 
               onClick={() => setCompletedPage(p => Math.min(totalCompletedPages - 1, p + 1))}
-              disabled={completedPage === totalCompletedPages - 1}
+              disabled={completedPage === totalCompletedPages - 1 || isLoading}
               className="font-mono font-bold text-[12px] tracking-[1.2px] text-[#FFB68B] disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80 transition-opacity"
             >
               NEXT &gt;

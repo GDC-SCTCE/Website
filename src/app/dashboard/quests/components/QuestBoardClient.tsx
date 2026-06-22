@@ -103,7 +103,6 @@ export function QuestBoardClient({ initialQuests: quests, isAdmin, user }: Quest
 
   const activeQuests = filteredQuests.filter((q) => q.status === "ACTIVE");
   const upcomingQuests = filteredQuests.filter((q) => q.status === "UPCOMING");
-  const completedQuests = filteredQuests.filter((q) => q.status === "COMPLETED");
 
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
@@ -219,7 +218,12 @@ export function QuestBoardClient({ initialQuests: quests, isAdmin, user }: Quest
         </div>
 
         {/* ── QUESTS CONQUERED ── */}
-        <ConqueredQuests completedQuests={completedQuests} isLoading={false} user={user} isAdmin={isAdmin} />
+        <ConqueredQuests
+          user={user}
+          isAdmin={isAdmin}
+          search={search}
+          category={activeFilter}
+        />
       </div>
     </div>
   );

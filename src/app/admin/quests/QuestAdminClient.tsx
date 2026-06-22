@@ -6,16 +6,65 @@ import GDCPlaceholder from "@/components/GDCPlaceholder";
 import { Search, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { filters as questFilters } from "@/constants/quests";
-import { deleteQuest, deleteAllQuests } from "@/actions/admin/quests";
+import { deleteQuest, deleteAllQuests, getPaginatedAdminQuests } from "@/actions/admin/quests";
 import { Quest, QuestFilterCategory } from "@/types";
-import { X } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { AdminQuestSkeleton } from "./AdminQuestSkeleton";
+import Image from "next/image";
 
-export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
+export default function QuestAdminClient() {
   const [activeFilter, setActiveFilter] = useState<QuestFilterCategory>("All");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const PAGE_SIZE = 10;
+
+  // Debounce search
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(0); // Reset page on new search
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Handle filter changes (reset page)
+  const handleCategoryChange = (val: QuestFilterCategory) => {
+    setActiveFilter(val);
+    setPage(0);
+  };
+  const handleStatusChange = (val: string) => {
+    setStatusFilter(val);
+    setPage(0);
+  };
+
+  // Fetch data
+  React.useEffect(() => {
+    let isMounted = true;
+    async function loadQuests() {
+      setIsLoading(true);
+      try {
+        const data = await getPaginatedAdminQuests(page, PAGE_SIZE, debouncedSearch, activeFilter, statusFilter);
+        if (isMounted) {
+          setQuests(data.quests as any);
+          setTotalCount(data.totalCount);
+        }
+      } catch (err) {
+        console.error("Failed to load admin quests:", err);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+    loadQuests();
+    return () => { isMounted = false; };
+  }, [page, debouncedSearch, activeFilter, statusFilter]);
 
   const handleDeleteAll = async () => {
     if (window.confirm("WARNING: Are you sure you want to delete ALL quests? This cannot be undone!")) {
@@ -46,12 +95,7 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
     }
   }, [quests, selectedQuest]);
 
-  const filteredQuests = quests.filter((q) => {
-    const matchesSearch = q.title.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = activeFilter === "All" || q.category === activeFilter;
-    const matchesStatus = statusFilter === "ALL" || q.status === statusFilter;
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
     <div className="flex flex-col gap-6">
@@ -77,7 +121,7 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
             <span className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px]">CATEGORY:</span>
             <select
               value={activeFilter}
-              onChange={(e) => setActiveFilter(e.target.value as QuestFilterCategory)}
+              onChange={(e) => handleCategoryChange(e.target.value as QuestFilterCategory)}
               className="bg-[#131314] border border-[#584235] h-[36px] px-2 text-[#FFB68B] font-mono text-[12px] outline-none focus:border-[#FF7A00] min-w-[140px]"
             >
               {questFilters.map(f => (
@@ -90,7 +134,7 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
             <span className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px]">STATUS:</span>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => handleStatusChange(e.target.value)}
               className="bg-[#131314] border border-[#584235] h-[36px] px-2 text-[#FFB68B] font-mono text-[12px] outline-none focus:border-[#FF7A00] min-w-[120px]"
             >
               {["ALL", "ACTIVE", "UPCOMING", "COMPLETED"].map(status => (
@@ -119,7 +163,12 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
           </button>
         </div>
 
-          {filteredQuests.map((quest) => (
+        {isLoading ? (
+          <div className="flex flex-col gap-4">
+            {[...Array(PAGE_SIZE)].map((_, i) => <AdminQuestSkeleton key={`skel-${i}`} />)}
+          </div>
+        ) : quests.length > 0 ? (
+          quests.map((quest) => (
             <div 
               key={quest.id} 
               onClick={() => setSelectedQuest(quest)}
@@ -127,7 +176,7 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
             >
               <div className="w-[96px] h-[64px] shrink-0 border border-[#584235] overflow-hidden relative flex items-center justify-center bg-[#1C1B1C]">
                 {quest.image ? (
-                  <img src={quest.image} alt={quest.title} className="w-full h-full object-cover" />
+                  <Image src={quest.image} alt={quest.title} fill className="object-cover" sizes="96px" />
                 ) : (
                   <GDCPlaceholder textClassName="text-[20px]" />
                 )}
@@ -180,13 +229,36 @@ export default function QuestAdminClient({ quests }: { quests: Quest[] }) {
                 </div>
               </div>
             </div>
-          ))}
-          {filteredQuests.length === 0 && (
-            <div className="text-center font-mono text-[12px] text-[#A78B7C] p-8 border border-dashed border-[#584235]">
-              NO QUESTS FOUND.
-            </div>
-          )}
+          ))
+        ) : (
+          <div className="text-center font-mono text-[12px] text-[#A78B7C] p-8 border border-dashed border-[#584235]">
+            NO QUESTS FOUND.
+          </div>
+        )}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center mt-4">
+          <button 
+            onClick={() => setPage(p => Math.max(0, p - 1))}
+            disabled={page === 0 || isLoading}
+            className="flex items-center gap-1 font-mono font-bold text-[12px] tracking-[1.2px] text-[#FFB68B] disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80 transition-opacity"
+          >
+            <ChevronLeft className="w-4 h-4" /> PREV
+          </button>
+          <span className="font-mono text-[12px] text-[#E0C0AF] tracking-[1.2px]">
+            PAGE {page + 1} OF {totalPages}
+          </span>
+          <button 
+            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+            disabled={page === totalPages - 1 || isLoading}
+            className="flex items-center gap-1 font-mono font-bold text-[12px] tracking-[1.2px] text-[#FFB68B] disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-80 transition-opacity"
+          >
+            NEXT <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* MODAL OVERLAY FOR QUEST FORM */}
       {selectedQuest && (

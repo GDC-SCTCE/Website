@@ -41,3 +41,38 @@ export async function deleteAllQuests() {
   revalidatePath("/");
   revalidatePath("/dashboard/quests");
 }
+
+export async function getPaginatedAdminQuests(
+  page: number,
+  pageSize: number,
+  search: string,
+  categoryFilter: string,
+  statusFilter: string
+) {
+  await verifyAuth();
+
+  const whereClause: any = {};
+  
+  if (search) {
+    whereClause.title = { contains: search, mode: "insensitive" };
+  }
+  if (categoryFilter !== "All") {
+    whereClause.category = categoryFilter;
+  }
+  if (statusFilter !== "ALL") {
+    whereClause.status = statusFilter;
+  }
+
+  const [quests, totalCount] = await Promise.all([
+    prisma.quest.findMany({
+      where: whereClause,
+      orderBy: { createdAt: "desc" },
+      skip: page * pageSize,
+      take: pageSize,
+      include: { ratings: true }
+    }),
+    prisma.quest.count({ where: whereClause })
+  ]);
+
+  return { quests, totalCount };
+}

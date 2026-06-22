@@ -1,14 +1,8 @@
-import prisma from "@/lib/prisma";
 import QuestAdminClient from "./QuestAdminClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminQuests() {
-  const quests = await prisma.quest.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { ratings: true }
-  });
-
+export default function AdminQuests() {
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -18,7 +12,7 @@ export default async function AdminQuests() {
         </p>
       </div>
 
-      <QuestAdminClient quests={quests} />
+      <QuestAdminClient />
     </div>
   );
 }

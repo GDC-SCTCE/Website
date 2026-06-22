@@ -7,6 +7,9 @@ export async function fetchDashboardData() {
   const user = await verifyUser();
   const isAdmin = await verifyAdmin();
   const quests = await prisma.quest.findMany({
+    where: {
+      status: { in: ["ACTIVE", "UPCOMING"] }
+    },
     orderBy: { createdAt: "desc" },
     include: {
       registrations: user
@@ -19,6 +22,77 @@ export async function fetchDashboardData() {
   });
 
   return { quests, isAdmin, user };
+}
+
+export async function getPaginatedConqueredQuests(
+  page: number,
+  pageSize: number,
+  attendanceFilter: "all" | "attended" | "not_attended",
+  search?: string,
+  category?: string
+) {
+  const user = await verifyUser();
+  
+  // Base query: Only COMPLETED quests, plus search/category filters
+  const baseWhereClause: any = { 
+    status: "COMPLETED",
+    ...(search ? { title: { contains: search, mode: "insensitive" } } : {}),
+    ...(category && category !== "All" ? { category: category as any } : {})
+  };
+
+  const whereClause: any = { ...baseWhereClause };
+
+  if (user) {
+    if (attendanceFilter === "attended") {
+      whereClause.registrations = { some: { userId: user.id, status: "ATTENDED" } };
+    } else if (attendanceFilter === "not_attended") {
+      // Only quests they registered for but didn't attend
+      whereClause.registrations = { some: { userId: user.id, status: { in: ["NOT_ATTENDED", "REGISTERED"] } } };
+    }
+  }
+
+  const [quests, filteredCount, totalCount, attendedCount, notAttendedCount] = await Promise.all([
+    // Fetch paginated quests
+    prisma.quest.findMany({
+      where: whereClause,
+      orderBy: { createdAt: "desc" },
+      skip: page * pageSize,
+      take: pageSize,
+      include: {
+        registrations: user ? { where: { userId: user.id } } : false,
+        ratings: user ? { where: { userId: user.id } } : false,
+      },
+    }),
+    // Count based on current filter
+    prisma.quest.count({ where: whereClause }),
+    // Count ALL completed with search/category
+    // Count ALL completed with search/category
+    prisma.quest.count({ where: baseWhereClause }),
+    
+    // Count ATTENDED completed with search/category
+    user ? prisma.quest.count({
+      where: {
+        ...baseWhereClause,
+        registrations: { some: { userId: user.id, status: "ATTENDED" } }
+      }
+    }) : 0,
+
+    // Count NOT ATTENDED completed with search/category
+    user ? prisma.quest.count({
+      where: {
+        ...baseWhereClause,
+        registrations: { some: { userId: user.id, status: { in: ["NOT_ATTENDED", "REGISTERED"] } } }
+      }
+    }) : 0,
+  ]);
+
+  return {
+    quests,
+    filteredCount,
+    totalCount,
+    attendedCount,
+    notAttendedCount
+  };
 }
 
 export async function submitQuestRating(questId: string, rating: number) {
