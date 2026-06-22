@@ -148,6 +148,7 @@ export function ConqueredQuests({ completedQuests, isLoading = false, user, isAd
 
       {/* Past Quests List */}
       <div
+        key={`${attendanceFilter}-${completedPage}`}
         className="mt-8 transition-all duration-700"
         style={{
           opacity: pastVisible ? 1 : 0,
@@ -158,13 +159,13 @@ export function ConqueredQuests({ completedQuests, isLoading = false, user, isAd
           displayedCompletedQuests.map((quest, idx) => (
             <div
               key={quest.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-[25px] border-t border-[#584235] transition-all duration-300 hover:bg-[#201F20]/30 hover:px-4 group cursor-pointer"
+              className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-[25px] border-t border-[#584235] transition-all duration-300 hover:bg-[#201F20]/30 hover:px-4 group cursor-pointer ${
+                pastVisible ? "animate-fade-up" : "opacity-0"
+              }`}
               onClick={() => setSelectedQuest(quest)}
               style={{
-                opacity: pastVisible ? 1 : 0,
-                transform: pastVisible ? "translateX(0)" : "translateX(-24px)",
-                transition: "all 0.6s ease",
-                transitionDelay: `${idx * 80}ms`,
+                animationDelay: `${idx * 60}ms`,
+                animationFillMode: "both"
               }}
             >
               {/* Left: thumbnail + info */}
