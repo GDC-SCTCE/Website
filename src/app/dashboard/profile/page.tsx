@@ -1,4 +1,3 @@
-import React from "react";
 import ProfileClient from "@/app/dashboard/profile/ProfileClient";
 import { verifyUser } from "@/actions/authActions";
 import { redirect } from "next/navigation";

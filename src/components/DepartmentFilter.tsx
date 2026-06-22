@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Department } from "@/types";
 import { filters } from "@/constants/members";
 

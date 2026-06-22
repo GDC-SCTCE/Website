@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { Play } from "lucide-react";
 import { useInView } from "@/hooks/useInView";

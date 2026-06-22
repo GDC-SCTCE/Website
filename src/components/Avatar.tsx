@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function Avatar({ name, size = 300 }: { name: string; size?: number }) {
   const initials = name
     .split(" ")

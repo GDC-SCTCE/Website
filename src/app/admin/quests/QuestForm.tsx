@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState} from "react";
 import { createQuest, updateQuest } from "@/actions/admin/quests";
 import { handleImageUpload } from "@/utils/uploadHelper";
 import { filters } from "@/constants/quests";

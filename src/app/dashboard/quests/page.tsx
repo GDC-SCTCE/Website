@@ -1,4 +1,3 @@
-import React from "react";
 import { fetchDashboardData } from "@/actions/dataActions";
 import { QuestBoardClient } from "./components/QuestBoardClient";
 

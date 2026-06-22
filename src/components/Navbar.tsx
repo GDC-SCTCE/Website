@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { NAV_LINKS, ADMIN_NAV_LINKS } from "@/constants/navigation";
+import { NAV_LINKS } from "@/constants/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 
@@ -45,7 +45,6 @@ export default function Navbar({
   // Determine what type of navbar to render based on pathname
   const isHome = pathname === "/";
   const isOnboarding = pathname === "/onboarding";
-  const isSuccess = pathname === "/onboarding/success";
 
   // Use override logo text or default to "GAME DEV CLUB"
   const finalLogoText = logoText || (isAdmin ? "ADMIN OVERRIDE" : "GAME DEV CLUB");

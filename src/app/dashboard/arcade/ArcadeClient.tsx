@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Game } from "@prisma/client";
 import { GameColumn } from "./components/GameColumn";
 import { FeaturedGame } from "./components/FeaturedGame";
@@ -11,7 +11,6 @@ export function ArcadeClient({ games }: { games: Game[] }) {
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
   const [mounted, setMounted] = useState(false);
   const [gridVisible, setGridVisible] = useState(false);
-  const [filterTransition, setFilterTransition] = useState(false);
 
   // Dynamic tags
   const engines = Array.from(new Set(games.map(g => g.engine?.toUpperCase()).filter(Boolean)));
@@ -31,11 +30,9 @@ export function ArcadeClient({ games }: { games: Game[] }) {
   // Filter change with fade-out/fade-in transition
   const handleFilter = (tag: string) => {
     if (tag === activeFilter) return;
-    setFilterTransition(true);
     setGridVisible(false);
     setTimeout(() => {
       setActiveFilter(tag);
-      setFilterTransition(false);
       setTimeout(() => setGridVisible(true), 60);
     }, 220);
   };

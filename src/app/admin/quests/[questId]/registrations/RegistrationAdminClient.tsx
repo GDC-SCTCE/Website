@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Search, Download, Users } from "lucide-react";
+import { Search, Download} from "lucide-react";
 import { approveRegistration, rejectRegistration, updateAttendance } from "@/actions/admin/registrations";
 import { RegistrationRowGroup } from "./RegistrationRowGroup";
 

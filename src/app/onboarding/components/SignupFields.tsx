@@ -1,4 +1,3 @@
-import React from "react";
 import { XPLevel } from "@prisma/client";
 import { DEV_TOOLS, YEAR_OPTIONS, XP_LEVELS } from "../constants";
 

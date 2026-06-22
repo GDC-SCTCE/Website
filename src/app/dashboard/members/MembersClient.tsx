@@ -179,7 +179,6 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
             <LeaderCard 
               key={lead.id} 
               member={lead} 
-              isFirst={idx === 0} 
               delay={idx * 150} 
               visible={mounted} 
               onClick={(e) => handleMemberClick(lead, e)} 

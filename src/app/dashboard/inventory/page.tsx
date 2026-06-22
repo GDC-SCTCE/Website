@@ -1,4 +1,3 @@
-import React from "react";
 import prisma from "@/lib/prisma";
 import InventoryClient from "./InventoryClient";
 import { verifyUser, verifyAdmin } from "@/actions/authActions";

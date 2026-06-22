@@ -1,4 +1,3 @@
-import React from "react";
 import prisma from "@/lib/prisma";
 import RegistrationAdminClient from "./RegistrationAdminClient";
 import Link from "next/link";

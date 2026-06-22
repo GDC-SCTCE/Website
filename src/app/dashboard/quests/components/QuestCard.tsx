@@ -30,16 +30,12 @@ export interface QuestCardProps {
   quest: Quest;
   user: any; // Using any for simplicity as per original
   isAdmin?: boolean;
-  delay?: number;
-  visible?: boolean;
 }
 
 export function QuestCard({
   quest,
   user,
   isAdmin = false,
-  delay = 0,
-  visible = true,
 }: QuestCardProps) {
   const router = useRouter();
   const isUpcoming = quest.status === "UPCOMING";

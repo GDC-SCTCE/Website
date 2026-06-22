@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { QuestCard } from "./QuestCard";
 import { QuestFilterBar } from "./QuestFilterBar";
 import { ConqueredQuests } from "./ConqueredQuests";
@@ -175,8 +175,6 @@ export function QuestBoardClient({ initialQuests, isAdmin, user }: QuestBoardCli
                         quest={quest}
                         user={user}
                         isAdmin={isAdmin}
-                        delay={100 + (idx * 50)}
-                        visible={mounted}
                       />
                     </div>
                   ))}
@@ -186,8 +184,6 @@ export function QuestBoardClient({ initialQuests, isAdmin, user }: QuestBoardCli
                         quest={quest}
                         user={user}
                         isAdmin={isAdmin}
-                        delay={250 + (idx * 50)}
-                        visible={mounted}
                       />
                     </div>
                   ))}

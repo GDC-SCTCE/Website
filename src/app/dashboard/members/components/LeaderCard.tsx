@@ -4,13 +4,11 @@ import { StatBar } from "./StatBar";
 
 export function LeaderCard({
   member,
-  isFirst,
   delay,
   visible,
   onClick,
 }: {
   member: any;
-  isFirst: boolean;
   delay: number;
   visible: boolean;
   onClick?: (e: React.MouseEvent) => void;

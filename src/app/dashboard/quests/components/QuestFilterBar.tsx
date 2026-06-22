@@ -1,4 +1,3 @@
-import React from "react";
 import { Search } from "lucide-react";
 import { filters } from "@/constants/quests";
 import { QuestFilterCategory } from "@/types";

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { ExternalLink, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Tool as DbTool } from "@prisma/client";

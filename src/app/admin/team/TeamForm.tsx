@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { updateTeamMember } from "@/actions/admin/team";
 import { handleImageUpload } from "@/utils/uploadHelper";
 import Avatar from "@/components/Avatar";
