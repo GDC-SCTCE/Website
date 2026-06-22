@@ -3,11 +3,11 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 import * as dotenv from 'dotenv'
 
-import { questsData } from './seeds/quests'
-import { gamesData } from './seeds/games'
-import { teamMembersData } from './seeds/teamMembers'
-import { leaderboardsData } from './seeds/leaderboards'
-import { toolsData } from './seeds/tools'
+import { questsData } from './seeds/quests.ts'
+import { gamesData } from './seeds/games.ts'
+import { teamMembersData } from './seeds/teamMembers.ts'
+import { leaderboardsData } from './seeds/leaderboards.ts'
+import { toolsData } from './seeds/tools.ts'
 
 dotenv.config({ path: '.env.local' })
 dotenv.config()
