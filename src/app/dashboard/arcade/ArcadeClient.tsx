@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Game } from "@prisma/client";
 import { GameColumn } from "./components/GameColumn";
 import { FeaturedGame } from "./components/FeaturedGame";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -11,6 +12,12 @@ export function ArcadeClient({ games }: { games: Game[] }) {
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
   const [mounted, setMounted] = useState(false);
   const [gridVisible, setGridVisible] = useState(false);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showScrollIndicators, setShowScrollIndicators] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   // Dynamic tags
   const engines = Array.from(new Set(games.map(g => g.engine?.toUpperCase()).filter(Boolean)));
@@ -20,11 +27,30 @@ export function ArcadeClient({ games }: { games: Game[] }) {
   // Featured game
   const featuredGame = games.find(g => g.isEditorsChoice) || games[0];
 
-  // Mount entrance animation
+  // Mount entrance animation and scroll nudge
   useEffect(() => {
     const t1 = setTimeout(() => setMounted(true), 50);
     const t2 = setTimeout(() => setGridVisible(true), 300);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+
+    const nudgeTimer = setTimeout(() => {
+      if (scrollRef.current) {
+        const { scrollWidth, clientWidth } = scrollRef.current;
+        if (scrollWidth > clientWidth) {
+          scrollRef.current.scrollTo({ left: 60, behavior: "smooth" });
+          setTimeout(() => {
+            if (scrollRef.current) {
+              scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+            }
+          }, 500);
+        }
+      }
+    }, 1000);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(nudgeTimer);
+    };
   }, []);
 
   // Filter change with fade-out/fade-in transition
@@ -42,6 +68,56 @@ export function ArcadeClient({ games }: { games: Game[] }) {
     if (activeFilter === "ALL") return true;
     return g.engine?.toUpperCase() === activeFilter || g.year === activeFilter;
   });
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    const maxScroll = scrollWidth - clientWidth;
+    if (maxScroll <= 0) {
+      setScrollProgress(0);
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+      return;
+    }
+    const progress = (scrollLeft / maxScroll) * 100;
+    setScrollProgress(progress);
+    setCanScrollLeft(scrollLeft > 2);
+    setCanScrollRight(scrollLeft < maxScroll - 2);
+  };
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    const { clientWidth } = scrollRef.current;
+    const scrollAmount = clientWidth * 0.75;
+    scrollRef.current.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth"
+    });
+  };
+
+  useEffect(() => {
+    const checkScroll = () => {
+      if (!scrollRef.current) return;
+      const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
+      const maxScroll = scrollWidth - clientWidth;
+      const scrollable = scrollWidth > clientWidth;
+      setShowScrollIndicators(scrollable);
+      setCanScrollLeft(scrollLeft > 2);
+      setCanScrollRight(scrollLeft < maxScroll - 2);
+      if (maxScroll > 0) {
+        setScrollProgress((scrollLeft / maxScroll) * 100);
+      } else {
+        setScrollProgress(0);
+      }
+    };
+
+    const timer = setTimeout(checkScroll, 150);
+    window.addEventListener("resize", checkScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [filtered, gridVisible]);
 
   return (
     <div className="bg-[#131314] min-h-screen">
@@ -116,17 +192,47 @@ export function ArcadeClient({ games }: { games: Game[] }) {
       {/* ── Game Grid Section ─────────────────────────────────────────────── */}
       <div className="w-full mt-8">
         {filtered.length > 0 ? (
-          <div className="flex overflow-x-auto pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory">
-            {filtered.map((game, idx) => (
-              <div key={`${activeFilter}-${game.id}`} className="w-[85vw] sm:w-[50%] lg:w-[33.333%] shrink-0 snap-start flex">
-                <GameColumn
-                  game={game}
-                  isLast={idx === filtered.length - 1}
-                  delay={idx * 100}
-                  visible={gridVisible}
-                />
-              </div>
-            ))}
+          <div className="relative group/scroll-container">
+            <div
+              ref={scrollRef}
+              onScroll={handleScroll}
+              className="flex overflow-x-auto pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory scroll-smooth"
+            >
+              {filtered.map((game, idx) => (
+                <div key={`${activeFilter}-${game.id}`} className="w-[85vw] sm:w-[50%] lg:w-[33.333%] shrink-0 snap-start flex">
+                  <GameColumn
+                    game={game}
+                    isLast={idx === filtered.length - 1}
+                    delay={idx * 100}
+                    visible={gridVisible}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Floating Left Arrow Overlay (Middle Left) */}
+            {showScrollIndicators && canScrollLeft && (
+              <button
+                onClick={() => scroll("left")}
+                className="absolute left-4 lg:left-8 top-[calc(50%-16px)] -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-[#131314]/90 border border-[#584235] text-[#E0C0AF] hover:text-[#FFB68B] hover:border-[#FFB68B] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shadow-[0_0_15px_rgba(0,0,0,0.6)] backdrop-blur-sm z-10 opacity-0 md:group-hover/scroll-container:opacity-100"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            )}
+
+            {/* Floating Right Arrow Overlay (Middle Right) */}
+            {showScrollIndicators && canScrollRight && (
+              <button
+                onClick={() => scroll("right")}
+                className={`absolute right-4 lg:right-8 top-[calc(50%-16px)] -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-[#131314]/90 border border-[#584235] text-[#E0C0AF] hover:text-[#FFB68B] hover:border-[#FFB68B] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shadow-[0_0_15px_rgba(0,0,0,0.6)] backdrop-blur-sm z-10 ${
+                  !canScrollLeft ? "animate-nudge-horizontal border-[#FFB68B] text-[#FFB68B] opacity-100" : "opacity-0 md:group-hover/scroll-container:opacity-100"
+                }`}
+                aria-label="Scroll right"
+              >
+                <ChevronRight className={`w-6 h-6 ${!canScrollLeft ? "scale-110" : ""}`} />
+              </button>
+            )}
           </div>
         ) : (
           <div
@@ -137,6 +243,28 @@ export function ArcadeClient({ games }: { games: Game[] }) {
           </div>
         )}
       </div>
+
+      {/* Scroll Progress Bar at the bottom (aligned with Header Section boundaries) */}
+      {filtered.length > 0 && showScrollIndicators && (
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 pb-6">
+          <div className="flex items-center justify-end border-b border-[#584235]/40 pb-4">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[10px] text-[#A78B7C] uppercase tracking-wider font-semibold">
+                Scroll to explore
+              </span>
+              <div className="w-[100px] sm:w-[140px] h-[2px] bg-[#2E2B2A] relative rounded-full overflow-hidden">
+                <div
+                  className="absolute top-0 h-full bg-gradient-to-r from-[#FF7A00] to-[#FFB68B] transition-all duration-75 rounded-full"
+                  style={{
+                    width: "30%",
+                    left: `${scrollProgress * 0.7}%`,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Featured Game Section ─────────────────────────────────────────── */}
       {featuredGame && <FeaturedGame featuredGame={featuredGame} />}
