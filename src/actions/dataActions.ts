@@ -60,12 +60,12 @@ export async function fetchActiveQuests() {
 }
 
 export async function getQuestWinners(questId: string) {
-  const registrations = await prisma.registration.findMany({
+  const registrations = (await prisma.registration.findMany({
     where: {
       questId,
       status: "ATTENDED",
       pointsAwarded: { gt: 0 },
-    },
+    } as any,
     include: {
       user: {
         select: {
@@ -76,7 +76,7 @@ export async function getQuestWinners(questId: string) {
         },
       },
     },
-  });
+  })) as any[];
 
   const groups: {
     [key: string]: {

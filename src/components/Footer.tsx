@@ -106,10 +106,11 @@ export default function Footer() {
                 );
               }
 
+              const href = l === "Terms" ? "/terms" : "#";
               return (
                 <Link
                   key={l}
-                  href="#"
+                  href={href}
                   className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] no-underline hover:text-[#FFB68B] transition-colors duration-200"
                 >
                   {l}
