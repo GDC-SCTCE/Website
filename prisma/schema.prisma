@@ -122,6 +122,7 @@ model Registration {
   status    RegistrationStatus   // "PENDING", "REGISTERED", "ATTENDED"
   upiRef    String?
   teamName  String?
+  pointsAwarded Int @default(0)
   createdAt DateTime @default(now())
   
   @@unique([userId, questId])
@@ -143,14 +144,14 @@ model Game {
   createdAt       DateTime @default(now())
 }
 
-model Leaderboard {
-  id        String   @id @default(uuid())
-  rank      Int
-  player    String
-  score     Float
-  gameTitle String
-  date      String
-  createdAt DateTime @default(now())
+model Alumni {
+  id          String   @id @default(uuid())
+  name        String
+  role        String
+  company     String
+  companyLink String?
+  avatar      String?
+  createdAt   DateTime @default(now())
 }
 
 enum ToolCategory {

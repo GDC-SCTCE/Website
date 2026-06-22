@@ -178,7 +178,7 @@ export function QuestBoardClient({ initialQuests: quests, isAdmin, user }: Quest
                     </div>
                   ))}
                   {upcomingQuests.map((quest, idx) => (
-                    <div key={quest.id} className="w-full md:w-[calc(50%-22px)] shrink-0 snap-start flex">
+                    <div key={quest.id} className="w-full md:w-[calc(50%-22px)] shrink-0 snap-start snap-always flex">
                       <QuestCard
                         quest={quest}
                         user={user}

@@ -203,7 +203,12 @@ export function QuestCard({
                 id: "temp",
                 userId: user?.id || "",
                 questId: quest.id,
-                status: (successMsg === "PENDING APPROVAL" ? "PENDING" : "REGISTERED") as any,
+                status: (
+                  successMsg === "PENDING APPROVAL" ? "PENDING" : 
+                  successMsg === "REJECTED" ? "REJECTED" :
+                  successMsg === "NOT ATTENDED" ? "NOT_ATTENDED" :
+                  "REGISTERED"
+                ) as any,
                 createdAt: new Date()
               }]
               : quest.registrations

@@ -1,3 +1,4 @@
+import React from "react";
 import { Check, X, Users } from "lucide-react";
 
 interface RegistrationRowGroupProps {
@@ -7,7 +8,7 @@ interface RegistrationRowGroupProps {
   setLoadingId: (id: string | null) => void;
   onApprove: (userId: string, questId: string) => Promise<void>;
   onReject: (userId: string, questId: string) => Promise<void>;
-  onUpdateAttendance: (userId: string, questId: string, status: "ATTENDED" | "NOT_ATTENDED") => Promise<void>;
+  onUpdateAttendance: (userId: string, questId: string, status: "ATTENDED" | "NOT_ATTENDED", points?: number) => Promise<void>;
 }
 
 export function RegistrationRowGroup({
@@ -21,6 +22,7 @@ export function RegistrationRowGroup({
 }: RegistrationRowGroupProps) {
   const isTeam = teamKey.startsWith('TEAM_');
   const teamName = isTeam ? teamKey.replace('TEAM_', '') : 'Solo';
+  const [pointsInput, setPointsInput] = React.useState<Record<string, string>>({});
 
   return (
     <tbody className="border-b border-[#584235] hover:bg-[#1C1B1C]/50 transition-colors">
@@ -114,6 +116,10 @@ export function RegistrationRowGroup({
               return null; // Don't render for other idx when pending
             } else {
               // INDIVIDUAL STATUS & ACTIONS
+              const memberKey = `${r.userId}-${r.questId}`;
+              // Default input to the awarded points or empty
+              const currentInput = pointsInput[memberKey] ?? (r.pointsAwarded?.toString() || "0");
+              
               return (
                 <>
                   <td className="p-4 w-1/6 border-r border-[#584235] align-middle">
@@ -126,31 +132,59 @@ export function RegistrationRowGroup({
                     }`}>
                       {r.status.replace('_', ' ')}
                     </span>
+                    {r.status === "ATTENDED" && (
+                      <div className="mt-2 text-[#E0C0AF] font-mono text-[10px]">Score: {r.pointsAwarded || 0}</div>
+                    )}
                   </td>
-                  <td className="p-4 text-right w-1/6 align-middle">
-                    <div className="flex justify-end gap-2 flex-wrap">
-                      {(r.status === "REGISTERED" || r.status === "NOT_ATTENDED") && (
+                  <td className="p-4 text-right w-1/4 align-middle">
+                    <div className="flex justify-end gap-2 flex-wrap items-center">
+                      {(r.status === "REGISTERED" || r.status === "ATTENDED") && (
+                        <input
+                          type="number"
+                          placeholder="Pts"
+                          value={currentInput}
+                          onChange={(e) => setPointsInput(prev => ({ ...prev, [memberKey]: e.target.value }))}
+                          className="w-16 h-8 bg-[#131314] border border-[#584235] px-2 font-mono text-[10px] text-white outline-none focus:border-[#FF7A00] transition-colors"
+                        />
+                      )}
+                      
+                      {r.status === "REGISTERED" && (
                         <button 
-                          onClick={() => onUpdateAttendance(r.userId, r.questId, "ATTENDED")}
-                          disabled={loadingId === `${r.userId}-${r.questId}`}
+                          onClick={() => onUpdateAttendance(r.userId, r.questId, "ATTENDED", parseInt(currentInput) || 0)}
+                          disabled={loadingId === memberKey}
                           className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 font-mono text-[10px] hover:bg-emerald-500/20 transition-colors disabled:opacity-50 flex items-center justify-center tracking-[1.2px]"
                         >
                           MARK ATTENDED
                         </button>
                       )}
+
+                      {r.status === "ATTENDED" && (
+                        <button 
+                          onClick={() => onUpdateAttendance(r.userId, r.questId, "ATTENDED", parseInt(currentInput) || 0)}
+                          disabled={loadingId === memberKey}
+                          className="bg-[#FF7A00]/10 text-[#FF7A00] border border-[#FF7A00]/20 px-3 py-1 font-mono text-[10px] hover:bg-[#FF7A00]/20 transition-colors disabled:opacity-50 flex items-center justify-center tracking-[1.2px]"
+                        >
+                          UPDATE SCORE
+                        </button>
+                      )}
+
                       {(r.status === "REGISTERED" || r.status === "ATTENDED") && (
                         <button 
-                          onClick={() => onUpdateAttendance(r.userId, r.questId, "NOT_ATTENDED")}
-                          disabled={loadingId === `${r.userId}-${r.questId}`}
+                          onClick={() => {
+                            setPointsInput(prev => ({ ...prev, [memberKey]: "0" }));
+                            onUpdateAttendance(r.userId, r.questId, "NOT_ATTENDED", 0);
+                          }}
+                          disabled={loadingId === memberKey}
                           className="bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 px-3 py-1 font-mono text-[10px] hover:bg-zinc-500/20 transition-colors disabled:opacity-50 flex items-center justify-center tracking-[1.2px]"
                         >
                           NOT ATTENDED
                         </button>
                       )}
+                      
                       {(r.status === "PENDING" || r.status === "REGISTERED") && (
                         <button 
                           onClick={() => onReject(r.userId, r.questId)}
-                          disabled={loadingId === `${r.userId}-${r.questId}`}
+                          disabled={loadingId === memberKey}
                           className="bg-red-500/10 text-red-500 border border-red-500/20 p-2 hover:bg-red-500/20 transition-colors disabled:opacity-50"
                           title="Reject Registration"
                         >

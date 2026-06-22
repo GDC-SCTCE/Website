@@ -6,7 +6,7 @@ import * as dotenv from 'dotenv'
 import { questsData } from './seeds/quests.ts'
 import { gamesData } from './seeds/games.ts'
 import { teamMembersData } from './seeds/teamMembers.ts'
-import { leaderboardsData } from './seeds/leaderboards.ts'
+import { alumniData } from './seeds/alumni.ts'
 import { toolsData } from './seeds/tools.ts'
 
 dotenv.config({ path: '.env.local' })
@@ -22,7 +22,7 @@ async function main() {
   await prisma.game.deleteMany();
   await prisma.quest.deleteMany();
   await prisma.teamMember.deleteMany();
-  await prisma.leaderboard.deleteMany();
+  await prisma.alumni.deleteMany();
   await prisma.tool.deleteMany();
 
   console.log("Seeding Quests...");
@@ -40,9 +40,9 @@ async function main() {
     await prisma.teamMember.create({ data: item as any });
   }
 
-  console.log("Seeding Leaderboards...");
-  for (const item of leaderboardsData) {
-    await prisma.leaderboard.create({ data: item as any });
+  console.log("Seeding Alumnis...");
+  for (const item of alumniData) {
+    await prisma.alumni.create({ data: item as any });
   }
 
   console.log("Seeding Tools...");
