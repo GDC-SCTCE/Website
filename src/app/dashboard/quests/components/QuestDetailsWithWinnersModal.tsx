@@ -160,14 +160,14 @@ export function QuestDetailsWithWinnersModal({
           </div>
 
           {/* Scrollable content container */}
-          <div className="flex-1 overflow-visible md:overflow-y-auto md:min-h-0 p-4 md:p-6 flex flex-col gap-6 transform-gpu will-change-transform overscroll-contain">
+          <div className="flex-1  overflow-visible md:overflow-y-auto md:min-h-0 p-4 md:p-6 flex flex-col gap-6 transform-gpu will-change-transform overscroll-contain">
 
             {/* WINNERS SECTION (For Completed Quests, or if winners exist) */}
             {(isCompleted || winners.length > 0) && (
-              <div className="bg-[#1C1B1C] border border-[#FF7A00]/40 p-6 relative overflow-hidden rounded-sm">
+              <div className="bg-[#1C1B1C] min-h-[52vh]  border border-[#FF7A00]/40 p-6 relative overflow-hidden rounded-sm">
                 {/* Visual accent lines */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#FF7A00] via-[#FFB68B] to-[#FF7A00]" />
-                
+
                 <h3 className="font-sora font-semibold text-[14px] text-[#FFB68B] uppercase tracking-wider mb-5 flex items-center gap-2">
                   <Trophy className="w-4 h-4 text-[#FF7A00] animate-pulse" />
                   Quest Champions
@@ -181,8 +181,8 @@ export function QuestDetailsWithWinnersModal({
                   </div>
                 ) : winners.length > 0 ? (
                   <div className="flex flex-col gap-4">
-                    {/* Podium Layout */}
-                    <div className="grid grid-cols-1 gap-3">
+                    {/* Scrollable Champions List */}
+                    <div className="max-h-[420px] overflow-y-auto pr-2 flex flex-col gap-3 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[#131314] [&::-webkit-scrollbar-thumb]:bg-[#353436] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#584235]">
                       {winners.map((winner, index) => {
                         let borderStyle = "border-[#3A2D25]";
                         let bgStyle = "bg-[#131314]";
@@ -195,19 +195,25 @@ export function QuestDetailsWithWinnersModal({
                           bgStyle = "bg-[#1E1C15]";
                           textStyle = "text-[#FFF3D2]";
                           rankText = "1st Place";
-                          badgeIcon = <Crown className="w-5 h-5 text-[#FFD700]" />;
+                          badgeIcon = <Trophy className="w-5 h-5 text-[#FFD700]" />;
                         } else if (index === 1) {
                           borderStyle = "border-[#C0C0C0]/40 shadow-[0_0_8px_rgba(192,192,192,0.05)]";
                           bgStyle = "bg-[#181819]";
                           textStyle = "text-[#E5E2E3]";
                           rankText = "2nd Place";
-                          badgeIcon = <Medal className="w-5 h-5 text-[#C0C0C0]" />;
+                          badgeIcon = <Crown className="w-5 h-5 text-[#C0C0C0]" />;
                         } else if (index === 2) {
                           borderStyle = "border-[#CD7F32]/30 shadow-[0_0_8px_rgba(205,127,50,0.05)]";
                           bgStyle = "bg-[#171513]";
                           textStyle = "text-[#E0C0AF]";
                           rankText = "3rd Place";
-                          badgeIcon = <Award className="w-5 h-5 text-[#CD7F32]" />;
+                          badgeIcon = <Medal className="w-5 h-5 text-[#CD7F32]" />;
+                        } else {
+                          borderStyle = "border-[#3A2D25]";
+                          bgStyle = "bg-[#131314]";
+                          textStyle = "text-[#E5E2E3]";
+                          rankText = `${index + 1}th Place`;
+                          badgeIcon = <Award className="w-5 h-5 text-[#A78B7C]" />;
                         }
 
                         return (
