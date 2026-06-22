@@ -4,7 +4,6 @@ export const NAV_LINKS = [
   { label: "Character Select", href: "/dashboard/members" },
   { label: "Hall Of Fame", href: "/dashboard/leaderboard" },
   { label: "Inventory", href: "/dashboard/inventory" },
-  { label: "Profile", href: "/dashboard/profile" },
 ] as const;
 
 export const ADMIN_NAV_LINKS = [
