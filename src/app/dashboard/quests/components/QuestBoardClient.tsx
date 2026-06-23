@@ -229,7 +229,9 @@ export function QuestBoardClient({ dashboardDataPromise }: QuestBoardClientProps
           </p>
 
           <h1
-            className="mt-7 uppercase font-sora font-extrabold text-[clamp(36px,5.5vw,80px)] leading-none tracking-[-3.2px] text-[#E5E2E3] transition-all duration-700"
+            className={`mt-7 uppercase font-sora font-extrabold text-[clamp(36px,5.5vw,80px)] leading-none tracking-[-3.2px] text-[#E5E2E3] transition-all duration-700 ${
+              mounted ? "animate-glitch" : ""
+            }`}
             style={{
               opacity: mounted ? 1 : 0,
               transform: mounted ? "translateY(0)" : "translateY(24px)",

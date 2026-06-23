@@ -227,7 +227,9 @@ export default function MembersClient({ membersPromise }: { membersPromise: Prom
 
           {/* Heading */}
           <h1
-            className="font-sora font-extrabold text-[40px] md:text-[80px] leading-[48px] md:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 mb-[40px] md:mb-[60px] transition-all duration-700"
+            className={`font-sora font-extrabold text-[40px] md:text-[80px] leading-[48px] md:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 mb-[40px] md:mb-[60px] transition-all duration-700 ${
+              mounted ? "animate-glitch" : ""
+            }`}
             style={{
               opacity: mounted ? 1 : 0,
               transform: mounted ? "translateY(0)" : "translateY(24px)",

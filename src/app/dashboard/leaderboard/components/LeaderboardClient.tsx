@@ -185,7 +185,9 @@ export default function LeaderboardClient({ leaderboardDataPromise }: { leaderbo
             <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#00DBE9] mb-7">
               ALL TIME
             </p>
-            <h1 className="font-sora font-extrabold text-[56px] sm:text-[80px] leading-[56px] sm:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0">
+            <h1 className={`font-sora font-extrabold text-[56px] sm:text-[80px] leading-[56px] sm:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 ${
+              mounted ? "animate-glitch" : ""
+            }`}>
               HIGH SCORES.
             </h1>
           </div>

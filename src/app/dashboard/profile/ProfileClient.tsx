@@ -327,7 +327,9 @@ export default function ProfileClient({ userPromise }: ProfileClientProps) {
             </span>
           </div>
 
-          <h1 className="font-sora font-extrabold text-[40px] md:text-[80px] leading-[48px] md:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0">
+          <h1 className={`font-sora font-extrabold text-[40px] md:text-[80px] leading-[48px] md:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 ${
+            mounted ? "animate-glitch" : ""
+          }`}>
             MY <span className="text-[#FF7A00]">PROFILE</span>.
           </h1>
         </div>
