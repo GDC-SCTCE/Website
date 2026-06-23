@@ -45,12 +45,12 @@ export default function TeamAdminClient({ members }: { members: any[] }) {
             </div>
 
             {/* Info */}
-            <div className="flex-1 flex flex-col gap-1">
-              <div className="flex justify-between items-center">
-                <h3 className="font-sora font-bold text-[18px] text-[#FFB68B]">
+            <div className="flex-1 flex flex-col gap-1 overflow-hidden">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-0 w-full">
+                <h3 className="font-sora font-bold text-[18px] text-[#FFB68B] truncate w-full sm:w-auto">
                   {member.name}
                 </h3>
-                <span className="font-mono text-[10px] bg-[#584235] text-[#FFB68B] px-2 py-1 rounded-sm">
+                <span className="font-mono text-[10px] bg-[#584235] text-[#FFB68B] px-2 py-1 rounded-sm shrink-0">
                   {member.role}
                 </span>
               </div>

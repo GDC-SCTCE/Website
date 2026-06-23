@@ -88,10 +88,10 @@ export default function GameAdminClient({ games }: { games: Game[] }) {
               <div
                 key={game.id}
                 onClick={() => setSelectedGame(game)}
-                className={`bg-[#1A1A1B] border ${selectedGame?.id === game.id ? 'border-[#FF7A00]' : 'border-[#584235] hover:border-[#FF7A00]/50'} p-4 flex gap-4 cursor-pointer transition-colors items-center`}
+                className={`bg-[#1A1A1B] border ${selectedGame?.id === game.id ? 'border-[#FF7A00]' : 'border-[#584235] hover:border-[#FF7A00]/50'} p-4 flex flex-col sm:flex-row gap-4 cursor-pointer transition-colors items-start sm:items-center`}
               >
                 {/* Thumbnail */}
-                <div className="w-[96px] h-[64px] shrink-0 border border-[#584235] overflow-hidden relative flex items-center justify-center bg-[#1C1B1C]">
+                <div className="w-full sm:w-[96px] h-[120px] sm:h-[64px] shrink-0 border border-[#584235] overflow-hidden relative flex items-center justify-center bg-[#1C1B1C]">
                   {game.coverUrl ? (
                     <img src={game.coverUrl} alt={game.title} className="w-full h-full object-cover" />
                   ) : (
@@ -100,20 +100,20 @@ export default function GameAdminClient({ games }: { games: Game[] }) {
                 </div>
 
                 {/* Details */}
-                <div className="flex-1 flex flex-col justify-between py-1">
-                  <div className="flex items-start justify-between">
+                <div className="flex-1 flex flex-col justify-between py-1 w-full">
+                  <div className="flex flex-col xl:flex-row items-start justify-between gap-2 xl:gap-0">
                     <div>
                       <h3 className="font-sora font-bold text-[16px] text-[#FFB68B]">{game.title}</h3>
                       <p className="font-sans text-[12px] text-zinc-400 line-clamp-1">{game.description}</p>
                     </div>
                     {game.isEditorsChoice && (
-                      <span className="font-mono text-[10px] bg-[#00DBE9] text-[#131314] px-2 py-1 rounded-sm font-bold shrink-0 ml-2">
+                      <span className="font-mono text-[10px] bg-[#00DBE9] text-[#131314] px-2 py-1 rounded-sm font-bold shrink-0 xl:ml-2">
                         EDITOR&apos;S PICK
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between mt-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-3 sm:mt-2 gap-4 sm:gap-2">
                     <div className="flex flex-wrap gap-2">
                       <span className="font-mono text-[10px] bg-[#584235] text-[#FFB68B] px-2 py-1 rounded-sm">
                         {game.genre}

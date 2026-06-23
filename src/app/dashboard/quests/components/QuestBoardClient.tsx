@@ -75,10 +75,10 @@ function DynamicQuestList({ dashboardDataPromise, activeFilter, search }: { dash
         if (scrollWidth > clientWidth) {
           scrollRef.current.scrollTo({ left: 60, behavior: "smooth" });
           resetTimer = setTimeout(() => {
-            if (scrollRef.current) {
+            if (scrollRef.current && scrollRef.current.scrollLeft <= 65) {
               scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
             }
-          }, 500);
+          }, 800);
         }
       }
     }, 1000);

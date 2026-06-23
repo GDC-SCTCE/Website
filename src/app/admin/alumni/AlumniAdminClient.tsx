@@ -93,28 +93,29 @@ export default function AlumniAdminClient({ initialAlumni }: { initialAlumni: Al
                   )}
                 </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-sora font-bold text-[16px] text-white truncate mb-1">
-                    {alumnus.name}
-                  </h3>
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-[10px] tracking-[1.2px] text-[#A78B7C] uppercase">
-                      {alumnus.role}
-                    </span>
-                    <span className="font-mono text-[10px] tracking-[1.2px] text-[#A78B7C] uppercase">
-                      • {alumnus.company}
-                    </span>
+                {/* Info & Actions */}
+                <div className="flex-1 min-w-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
+                  <div className="min-w-0 flex-1 w-full">
+                    <h3 className="font-sora font-bold text-[16px] text-white truncate mb-1">
+                      {alumnus.name}
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="font-mono text-[10px] tracking-[1.2px] text-[#A78B7C] uppercase shrink-0">
+                        {alumnus.role}
+                      </span>
+                      <span className="font-mono text-[10px] tracking-[1.2px] text-[#A78B7C] uppercase truncate">
+                        • {alumnus.company}
+                      </span>
+                    </div>
                   </div>
+                  {/* Delete Button */}
+                  <button
+                    onClick={(e) => handleDelete(e, alumnus.id)}
+                    className="p-2 text-red-500 hover:bg-red-500/10 transition-colors shrink-0 self-end sm:self-center"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
-
-                {/* Delete Button */}
-                <button
-                  onClick={(e) => handleDelete(e, alumnus.id)}
-                  className="p-2 text-red-500 hover:bg-red-500/10 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
               </div>
             ))
           )}

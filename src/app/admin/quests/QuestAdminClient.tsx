@@ -172,24 +172,24 @@ export default function QuestAdminClient() {
             <div 
               key={quest.id} 
               onClick={() => setSelectedQuest(quest)}
-              className={`bg-[#1A1A1B] border ${selectedQuest?.id === quest.id ? 'border-[#FF7A00]' : 'border-[#584235] hover:border-[#FF7A00]/50'} p-4 flex gap-4 cursor-pointer transition-colors items-center`}
+              className={`bg-[#1A1A1B] border ${selectedQuest?.id === quest.id ? 'border-[#FF7A00]' : 'border-[#584235] hover:border-[#FF7A00]/50'} p-4 flex flex-col sm:flex-row gap-4 cursor-pointer transition-colors items-start sm:items-center`}
             >
-              <div className="w-[96px] h-[64px] shrink-0 border border-[#584235] overflow-hidden relative flex items-center justify-center bg-[#1C1B1C]">
+              <div className="w-full sm:w-[96px] h-[120px] sm:h-[64px] shrink-0 border border-[#584235] overflow-hidden relative flex items-center justify-center bg-[#1C1B1C]">
                 {quest.image ? (
-                  <Image src={quest.image} alt={quest.title} fill className="object-cover" sizes="96px" />
+                  <Image src={quest.image} alt={quest.title} fill className="object-cover" sizes="(max-width: 640px) 100vw, 96px" />
                 ) : (
                   <GDCPlaceholder textClassName="text-[20px]" />
                 )}
               </div>
               
-              <div className="flex-1 flex flex-col gap-1">
-                <div className="flex justify-between items-start">
+              <div className="flex-1 flex flex-col gap-2 sm:gap-1 w-full">
+                <div className="flex flex-col xl:flex-row justify-between items-start gap-2 xl:gap-0">
                   <h3 className="font-sora font-bold text-[18px] text-[#FFB68B]">{quest.title}</h3>
-                  <div className="flex gap-2">
-                    <span className="font-mono text-[10px] bg-[#584235] text-[#FFB68B] px-2 py-1 rounded-sm">
+                  <div className="flex flex-wrap gap-2">
+                    <span className="font-mono text-[10px] bg-[#584235] text-[#FFB68B] px-2 py-1 rounded-sm flex items-center">
                       {quest.category}
                     </span>
-                    <span className={`font-mono text-[10px] px-2 py-1 rounded-sm border ${
+                    <span className={`font-mono text-[10px] px-2 py-1 rounded-sm border flex items-center ${
                       quest.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                       quest.status === 'UPCOMING' ? 'bg-[#FF7A00]/10 text-[#FF7A00] border-[#FF7A00]/20' :
                       'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'
@@ -206,8 +206,8 @@ export default function QuestAdminClient() {
                     </button>
                   </div>
                 </div>
-                <p className="font-sans text-[14px] text-zinc-300">{quest.dateText} | {quest.location}</p>
-                <div className="mt-2 flex items-center justify-between gap-4 flex-wrap">
+                <p className="font-sans text-[14px] text-zinc-300 mt-1 sm:mt-0">{quest.dateText} | {quest.location}</p>
+                <div className="mt-3 sm:mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 flex-wrap">
                   <div className="flex gap-4 items-center">
                     <span className="font-mono text-[12px] text-[#A78B7C]">SEATS: <span className="text-[#FF7A00]">{quest.seatsTaken}/{quest.capacity}</span></span>
                     <span className="font-mono text-[12px] text-[#A78B7C]">

@@ -33,23 +33,23 @@ function DynamicArcadeContent({ gamesPromise }: { gamesPromise: Promise<Game[]> 
     let resetTimer: NodeJS.Timeout;
     const t2 = setTimeout(() => setGridVisible(true), 300);
 
-    const nudgeTimer = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (scrollRef.current) {
         const { scrollWidth, clientWidth } = scrollRef.current;
         if (scrollWidth > clientWidth) {
           scrollRef.current.scrollTo({ left: 60, behavior: "smooth" });
           resetTimer = setTimeout(() => {
-            if (scrollRef.current) {
+            if (scrollRef.current && scrollRef.current.scrollLeft <= 65) {
               scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
             }
-          }, 500);
+          }, 800);
         }
       }
     }, 1000);
 
     return () => {
       clearTimeout(t2);
-      clearTimeout(nudgeTimer);
+      clearTimeout(timer);
       if (resetTimer) clearTimeout(resetTimer);
     };
   }, []);
