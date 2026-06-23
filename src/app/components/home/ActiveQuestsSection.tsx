@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Quest } from "@prisma/client";
 import { useAuth } from "@/context/AuthContext";
 import { useInView } from "@/hooks/useInView";
@@ -28,7 +29,8 @@ function LandingQuestTimer({ targetDate }: { targetDate: Date }) {
 
 export default function ActiveQuestsSection({ activeQuestsPromise }: { activeQuestsPromise: Promise<Quest[]> }) {
   const activeQuests = use(activeQuestsPromise);
-  
+  const router = useRouter();
+  const [isPending, setIsPending] = useState(false);
   const { user, loading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(true); // Default true to hide initially
   const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
@@ -93,12 +95,33 @@ export default function ActiveQuestsSection({ activeQuestsPromise }: { activeQue
             </div>
 
             {!isAdmin && (
-              <Link href={!loading && user ? `/dashboard/quests?open=${currentQuest.id}` : `/onboarding?redirect=${encodeURIComponent('/dashboard/quests?open=' + currentQuest.id)}`}>
-                <button className="bg-[#FF7A00] w-[213.61px] h-[60px] font-mono font-semibold text-[14px] leading-[20px] tracking-[1.4px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-300 relative overflow-hidden group/btn-jam shadow-lg hover:shadow-[#FF7A00]/20">
-                  <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn-jam:translate-x-[300%] transition-transform duration-700 ease-in-out" />
-                  <span className="relative z-10">ACCEPT QUEST →</span>
-                </button>
-              </Link>
+              <button
+                onClick={() => {
+                  if (isPending) return;
+                  setIsPending(true);
+                  const targetUrl = !loading && user 
+                    ? `/dashboard/quests?open=${currentQuest.id}` 
+                    : `/onboarding?redirect=${encodeURIComponent('/dashboard/quests?open=' + currentQuest.id)}`;
+                  router.push(targetUrl);
+                }}
+                disabled={isPending}
+                className="bg-[#FF7A00] w-[213.61px] h-[60px] font-mono font-semibold text-[14px] leading-[20px] tracking-[1.4px] text-[#5C2800] border-none cursor-pointer hover:brightness-110 transition-all duration-300 relative overflow-hidden group/btn-jam shadow-lg hover:shadow-[#FF7A00]/20 flex items-center justify-center disabled:opacity-90"
+              >
+                {isPending ? (
+                  <div className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5 text-[#5C2800]" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>LOADING...</span>
+                  </div>
+                ) : (
+                  <>
+                    <span className="absolute inset-y-0 w-[40%] bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn-jam:translate-x-[300%] transition-transform duration-700 ease-in-out" />
+                    <span className="relative z-10">ACCEPT QUEST →</span>
+                  </>
+                )}
+              </button>
             )}
           </div>
         </div>
@@ -112,7 +135,7 @@ export default function ActiveQuestsSection({ activeQuestsPromise }: { activeQue
             transitionDelay: "150ms",
           }}
         >
-          <ActiveQuestsCarousel 
+          <ActiveQuestsCarousel
             activeQuests={activeQuests}
             currentQuestIdx={currentQuestIdx}
             setCurrentQuestIdx={setCurrentQuestIdx}
