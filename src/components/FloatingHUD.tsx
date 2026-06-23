@@ -4,12 +4,23 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { User } from "lucide-react";
+import { checkIsAdminEmail } from "@/actions/authActions";
+import { useState, useEffect } from "react";
 
 export default function FloatingHUD() {
   const { user, loading } = useAuth();
   const pathname = usePathname();
+  const [isAdmin, setIsAdmin] = useState(true); // default true to hide initially
 
-  if (loading || !user) return null;
+  useEffect(() => {
+    if (user?.email) {
+      checkIsAdminEmail(user.email).then(setIsAdmin);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
+
+  if (loading || !user || isAdmin) return null;
 
   // Hide the floating profile button if the user is already on the profile page
   if (pathname === "/dashboard/profile") return null;

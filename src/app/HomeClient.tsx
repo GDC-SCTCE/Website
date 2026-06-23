@@ -11,7 +11,7 @@ import StatsSection from "./components/home/StatsSection";
 import CommunitySection from "./components/home/CommunitySection";
 import ActiveQuestsSection from "./components/home/ActiveQuestsSection";
 
-export default function HomeClient({ activeQuestsPromise, isAdminPromise }: { activeQuestsPromise: Promise<Quest[]>, isAdminPromise: Promise<boolean> }) {
+export default function HomeClient({ activeQuestsPromise }: { activeQuestsPromise: Promise<Quest[]> }) {
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
       <SplashOverlay />
@@ -23,7 +23,7 @@ export default function HomeClient({ activeQuestsPromise, isAdminPromise }: { ac
         <StatsSection />
         <CommunitySection />
         <Suspense fallback={<div className="bg-[#1C1B1C] border-b border-[#584235]/30 py-[96px] h-[600px] w-full animate-pulse" />}>
-          <ActiveQuestsSection activeQuestsPromise={activeQuestsPromise} isAdminPromise={isAdminPromise} />
+          <ActiveQuestsSection activeQuestsPromise={activeQuestsPromise} />
         </Suspense>
       </main>
     </div>

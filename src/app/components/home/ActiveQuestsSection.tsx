@@ -6,6 +6,7 @@ import { Quest } from "@prisma/client";
 import { useAuth } from "@/context/AuthContext";
 import { useInView } from "@/hooks/useInView";
 import { useCountdown } from "@/hooks/useCountdown";
+import { checkIsAdminEmail } from "@/actions/authActions";
 import ActiveQuestsCarousel from "./ActiveQuestsCarousel";
 
 function LandingQuestTimer({ targetDate }: { targetDate: Date }) {
@@ -25,13 +26,21 @@ function LandingQuestTimer({ targetDate }: { targetDate: Date }) {
   );
 }
 
-export default function ActiveQuestsSection({ activeQuestsPromise, isAdminPromise }: { activeQuestsPromise: Promise<Quest[]>, isAdminPromise: Promise<boolean> }) {
+export default function ActiveQuestsSection({ activeQuestsPromise }: { activeQuestsPromise: Promise<Quest[]> }) {
   const activeQuests = use(activeQuestsPromise);
-  const isAdmin = use(isAdminPromise);
   
   const { user, loading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(true); // Default true to hide initially
   const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
   const { ref: jamRef, inView: jamVisible } = useInView(0.15);
+
+  useEffect(() => {
+    if (user?.email) {
+      checkIsAdminEmail(user.email).then(setIsAdmin);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
 
   const currentQuest = activeQuests[currentQuestIdx];
 

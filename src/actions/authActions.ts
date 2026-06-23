@@ -47,20 +47,27 @@ export async function syncUserToDatabase(data: any) {
   return { success: true, user: dbUser };
 }
 
-export async function verifyUser() {
+import { cache } from "react";
+
+export const verifyUser = cache(async () => {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user || !user.email) return null;
   
   const dbUser = await prisma.user.findUnique({ where: { email: user.email } });
   return dbUser;
-}
+});
 
-export async function verifyAdmin() {
+export const verifyAdmin = cache(async () => {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user || !user.email) return false;
   
   const adminEmails = process.env.ADMIN_EMAILS || "";
   return adminEmails.includes(user.email);
+});
+
+export async function checkIsAdminEmail(email: string) {
+  const adminEmails = process.env.ADMIN_EMAILS || "";
+  return adminEmails.includes(email);
 }
