@@ -23,6 +23,11 @@ export function ConqueredQuests({ user, isAdmin, search, category }: ConqueredQu
   
   const [quests, setQuests] = useState<Quest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchedState, setFetchedState] = useState({
+    category,
+    attendanceFilter: "all",
+    page: 0,
+  });
   const [totalFilteredCount, setTotalFilteredCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [attendedCount, setAttendedCount] = useState(0);
@@ -63,6 +68,11 @@ export function ConqueredQuests({ user, isAdmin, search, category }: ConqueredQu
         setTotalCount(data.totalCount);
         setAttendedCount(data.attendedCount);
         setNotAttendedCount(data.notAttendedCount);
+        setFetchedState({
+          category,
+          attendanceFilter,
+          page: completedPage,
+        });
       } catch (err) {
         console.error("Failed to load conquered quests", err);
       } finally {
@@ -73,6 +83,13 @@ export function ConqueredQuests({ user, isAdmin, search, category }: ConqueredQu
   }, [completedPage, attendanceFilter, debouncedSearch, category]);
 
   const totalCompletedPages = Math.ceil(totalFilteredCount / COMPLETED_PER_PAGE);
+
+  const showSkeleton = 
+    isLoading || 
+    search !== debouncedSearch || 
+    category !== fetchedState.category || 
+    attendanceFilter !== fetchedState.attendanceFilter || 
+    completedPage !== fetchedState.page;
 
   // If we have finished initial load and there are 0 completed quests in the entire system, don't show the section.
   if (!isLoading && totalCount === 0 && attendanceFilter === "all") {
@@ -163,7 +180,7 @@ export function ConqueredQuests({ user, isAdmin, search, category }: ConqueredQu
           transitionDelay: "200ms",
         }}
       >
-        {isLoading ? (
+        {showSkeleton ? (
           <div className="flex flex-col">
             {[...Array(COMPLETED_PER_PAGE)].map((_, idx) => (
               <ConqueredQuestSkeleton key={idx} />
