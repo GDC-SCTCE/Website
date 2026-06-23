@@ -28,9 +28,8 @@ export async function updateSession(request: NextRequest) {
   )
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const user = session?.user
+    data: { user },
+  } = await supabase.auth.getUser()
 
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
   const isLoginPage = request.nextUrl.pathname === '/admin/login'
@@ -42,7 +41,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user) {
-    const isAdmin = process.env.ADMIN_EMAILS?.includes(user.email || '')
+    const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()) ?? [];
+    const isAdmin = adminEmails.includes(user.email ?? '');
 
     if (isLoginPage && isAdmin) {
       const url = request.nextUrl.clone()

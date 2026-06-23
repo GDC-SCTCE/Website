@@ -9,8 +9,8 @@ export async function syncUserToDatabase(data: any) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user || !user.email) throw new Error("Not authenticated");
 
-  // Check if admin
-  if (process.env.ADMIN_EMAILS?.includes(user.email)) {
+  const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()) ?? [];
+  if (adminEmails.includes(user.email)) {
     return { success: true, isAdmin: true };
   }
 
@@ -63,11 +63,12 @@ export const verifyAdmin = cache(async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user || !user.email) return false;
   
-  const adminEmails = process.env.ADMIN_EMAILS || "";
+  const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()) ?? [];
   return adminEmails.includes(user.email);
 });
 
 export async function checkIsAdminEmail(email: string) {
-  const adminEmails = process.env.ADMIN_EMAILS || "";
+  if (!email) return false;
+  const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()) ?? [];
   return adminEmails.includes(email);
 }
