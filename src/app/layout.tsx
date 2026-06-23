@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   title: "Game Development Club SCTCE",
   description: "Initialize your game dev protocol. Track quests, build games, and climb the leaderboard at the GDSC SCT (GDG on Campus SCTCE) Game Dev Club.",
   verification: {
-    google: "S2Nc4s2Hka23O3vUcoRVCa6-8ku3c2E7rKjm49K2pJ8",
+    google: "M3iBMTw9_v9WbsLr7ORUnTGhjjDLb2gdnTYE4-V9IP8",
   },
 };
 
