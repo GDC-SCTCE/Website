@@ -64,15 +64,18 @@ export async function registerForQuest(questId: string, upiRef?: string, teamNam
 
   await prisma.registration.createMany({ data });
 
+  let updatedSeatsTaken = quest.seatsTaken;
+
   if (status === "REGISTERED") {
-    await prisma.quest.update({
+    const updatedQuest = await prisma.quest.update({
       where: { id: questId },
       data: { seatsTaken: { increment: allUserIds.length } },
     });
+    updatedSeatsTaken = updatedQuest.seatsTaken;
   }
 
   revalidatePath("/dashboard/quests");
-  return { success: true, status };
+  return { success: true, status, updatedSeatsTaken };
 }
 
 export async function updateUserProfile(data: {

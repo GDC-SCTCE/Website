@@ -57,9 +57,15 @@ export function QuestCard({
   const imageAlt = quest.title;
   const seatsTaken = quest.seatsTaken || 0;
   const seatsTotal = quest.capacity || 30;
-  const progressPct = seatsTotal > 0 ? (seatsTaken / seatsTotal) * 100 : 0;
-
+  
   const [showDetails, setShowDetails] = React.useState(false);
+  const [localSeatsTaken, setLocalSeatsTaken] = React.useState(quest.seatsTaken || 0);
+
+  React.useEffect(() => {
+    setLocalSeatsTaken(quest.seatsTaken || 0);
+  }, [quest.seatsTaken]);
+
+  const progressPct = seatsTotal > 0 ? (localSeatsTaken / seatsTotal) * 100 : 0;
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -73,14 +79,14 @@ export function QuestCard({
   const openModal = () => {
     setShowDetails(true);
     if (typeof window !== "undefined") {
-      window.history.pushState(null, '', `?open=${quest.id}`);
+      router.replace(`?open=${quest.id}`, { scroll: false });
     }
   };
 
   const closeModal = () => {
     setShowDetails(false);
     if (typeof window !== "undefined") {
-      window.history.pushState(null, '', window.location.pathname);
+      router.replace(window.location.pathname, { scroll: false });
     }
   };
   const [successMsg, setSuccessMsg] = React.useState(() => {
@@ -159,7 +165,7 @@ export function QuestCard({
               {isUpcoming ? "Reservation" : "Seats Available"}
             </p>
             <p className="mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] text-[#E5E2E3]">
-              {seatsTaken} / {seatsTotal}
+              {localSeatsTaken} / {seatsTotal}
             </p>
           </div>
         </div>
@@ -231,7 +237,12 @@ export function QuestCard({
           user={user}
           isAdmin={isAdmin}
           onClose={closeModal}
-          onSuccess={(msg) => setSuccessMsg(msg)}
+          onSuccess={(msg, newSeatsTaken) => {
+            setSuccessMsg(msg);
+            if (newSeatsTaken !== undefined) {
+              setLocalSeatsTaken(newSeatsTaken);
+            }
+          }}
         />
       )}
     </div>

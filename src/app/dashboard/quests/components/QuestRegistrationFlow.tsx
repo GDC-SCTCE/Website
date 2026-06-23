@@ -13,7 +13,7 @@ interface QuestRegistrationFlowProps {
   user: any;
   isUpcoming: boolean;
   onClose: () => void;
-  onSuccess: (status: string) => void;
+  onSuccess: (status: string, newSeatsTaken: number) => void;
 }
 
 export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSuccess }: QuestRegistrationFlowProps) {
@@ -105,8 +105,7 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
         new Promise((resolve) => setTimeout(resolve, 1200))
       ]);
       if (res.success) {
-        onSuccess(res.status === "PENDING" ? "PENDING APPROVAL" : "REGISTERED ✓");
-        router.refresh();
+        onSuccess(res.status === "PENDING" ? "PENDING APPROVAL" : "REGISTERED ✓", res.updatedSeatsTaken);
         onClose();
       }
     } catch (err: any) {

@@ -52,9 +52,9 @@ function TimerDisplay({ targetDate, status }: { targetDate: Date | null; status:
 interface QuestDetailsModalProps {
   quest: Quest;
   user: any;
-  isAdmin: boolean;
+  isAdmin?: boolean;
   onClose: () => void;
-  onSuccess: (status: string) => void;
+  onSuccess?: (msg: string, newSeatsTaken: number) => void;
 }
 
 // WinnerGroup interface moved to QuestChampionsList
@@ -267,7 +267,9 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
                   user={user}
                   isUpcoming={isUpcoming}
                   onClose={onClose}
-                  onSuccess={onSuccess}
+                  onSuccess={(msg, newSeatsTaken) => {
+                    if (onSuccess) onSuccess(msg, newSeatsTaken);
+                  }}
                 />
               )
             )}

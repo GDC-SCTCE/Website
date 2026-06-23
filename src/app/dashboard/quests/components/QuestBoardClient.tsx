@@ -65,29 +65,7 @@ function DynamicQuestList({ dashboardDataPromise, activeFilter, search }: { dash
     });
   };
 
-  useEffect(() => {
-    let resetTimer: NodeJS.Timeout;
-    
-    // Subtle scroll nudge hint after component mounts to show that it is scrollable
-    const nudgeTimer = setTimeout(() => {
-      if (scrollRef.current) {
-        const { scrollWidth, clientWidth } = scrollRef.current;
-        if (scrollWidth > clientWidth) {
-          scrollRef.current.scrollTo({ left: 60, behavior: "smooth" });
-          resetTimer = setTimeout(() => {
-            if (scrollRef.current && scrollRef.current.scrollLeft <= 65) {
-              scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
-            }
-          }, 800);
-        }
-      }
-    }, 1000);
 
-    return () => {
-      clearTimeout(nudgeTimer);
-      if (resetTimer) clearTimeout(resetTimer);
-    };
-  }, []);
 
   useEffect(() => {
     const checkScroll = () => {
