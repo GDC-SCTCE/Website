@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -20,6 +20,61 @@ export interface NavbarProps {
   isAdmin?: boolean;
 }
 
+function ScrambledLogoText({
+  text,
+  className,
+  scrambleTrigger,
+}: {
+  text: string;
+  className?: string;
+  scrambleTrigger: number;
+}) {
+  const [displayedText, setDisplayedText] = useState(text);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const chars = "01_*";
+
+  const triggerScramble = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    let iteration = 0;
+    intervalRef.current = setInterval(() => {
+      setDisplayedText(() =>
+        text
+          .split("")
+          .map((char, index) => {
+            if (char === " ") return " ";
+            if (index < iteration) {
+              return text[index];
+            }
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("")
+      );
+
+      if (iteration >= text.length) {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+      }
+      iteration += 1 / 3;
+    }, 25);
+  };
+
+  useEffect(() => {
+    if (scrambleTrigger > 0) {
+      triggerScramble();
+    }
+  }, [scrambleTrigger]);
+
+  useEffect(() => {
+    setDisplayedText(text);
+  }, [text]);
+
+  return (
+    <span className={className}>
+      {displayedText}
+    </span>
+  );
+}
+
 export default function Navbar({
   links = NAV_LINKS,
   logoText,
@@ -31,6 +86,7 @@ export default function Navbar({
   const router = useRouter();
   const { user, loading } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [scrambleTrigger, setScrambleTrigger] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -96,60 +152,66 @@ export default function Navbar({
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        isHome
+      className={`sticky top-0 z-50 transition-all duration-300 ${isHome
           ? "bg-[#131314] border-b border-[#584235]/30 ease-out"
           : isOnboarding
-          ? "bg-[#131314]/96 border-b border-[#584235]/30 backdrop-blur-md"
-          : isAdmin
-          ? "bg-[#131314] border-b border-[#FF7A00]/40"
-          : "bg-[#131314] border-b border-[#584235]/40"
-      }`}
+            ? "bg-[#131314]/96 border-b border-[#584235]/30 backdrop-blur-md"
+            : isAdmin
+              ? "bg-[#131314] border-b border-[#FF7A00]/40"
+              : "bg-[#131314] border-b border-[#584235]/40"
+        }`}
       style={
         isHome
           ? {
-              opacity: mounted ? 1 : 0,
-              transform: mounted ? "translateY(0)" : "translateY(-10px)",
-            }
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? "translateY(0)" : "translateY(-10px)",
+          }
           : {}
       }
     >
       <div className="w-full h-[79px] flex items-center justify-between px-6 md:px-[64px]">
         {/* Logo */}
-        <Link href={logoHref} className="flex items-center gap-[12px] no-underline shrink-0">
-          <div className="w-[39px] h-[40px] relative" style={{ position: "relative" }}>
+        <Link
+          href={logoHref}
+          onMouseEnter={() => setScrambleTrigger((prev) => prev + 1)}
+          className="group/logo flex items-center gap-[12px] no-underline shrink-0"
+        >
+          <div className="w-[39px] h-[40px] relative transition-transform duration-300 ease-out group-hover/logo:rotate-[12deg]">
             <Image src="/gdclogo.png" alt="GDC Logo" fill className="object-contain" sizes="39px" priority />
           </div>
-          <span className={`font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] ${isAdmin ? "text-[#FF7A00]" : "text-[#FFB68B]"} hidden min-[420px]:inline-block`}>
-            {finalLogoText}
-          </span>
+          <ScrambledLogoText
+            text={finalLogoText}
+            scrambleTrigger={scrambleTrigger}
+            className={`font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] ${
+              isAdmin ? "text-[#FF7A00]" : "text-[#FFB68B]"
+            } hidden min-[420px]:inline-block`}
+          />
         </Link>
 
         {/* Desktop Nav */}
         <nav className="hidden xl:flex items-center gap-[40px]">
           {links.map((l) => {
-              const isActive = pathname === l.href;
-              const isHomeNavStyle = isHome;
-              return (
-                <Link
-                  key={l.label}
-                  href={l.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`font-mono text-[12px] leading-[12px] tracking-[1.2px] no-underline transition-colors duration-200 ${
-                    isHomeNavStyle
-                      ? "font-semibold text-[#E0C0AF] hover:text-[#FFB68B] relative group"
-                      : isActive
+            const isActive = pathname === l.href;
+            const isHomeNavStyle = isHome;
+            return (
+              <Link
+                key={l.label}
+                href={l.href}
+                onClick={() => setMobileOpen(false)}
+                className={`font-mono text-[12px] leading-[12px] tracking-[1.2px] no-underline transition-colors duration-200 ${isHomeNavStyle
+                    ? "font-semibold text-[#E0C0AF] hover:text-[#FFB68B] relative group"
+                    : isActive
                       ? "font-bold text-[#FFB68B]"
                       : "font-semibold text-[#E0C0AF] hover:text-[#FFB68B]"
                   }`}
-                >
-                  {l.label}
-                  {isHomeNavStyle && (
-                    <span className="absolute bottom-[-4px] left-0 w-full h-[1px] bg-[#FFB68B] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                  )}
-                </Link>
-              );
-            })}
+              >
+                {l.label}
+                {isHomeNavStyle && (
+                  <span className="absolute bottom-[-4px] left-0 w-full h-[1px] bg-[#FFB68B] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right side: CTA + mobile toggle */}
@@ -172,39 +234,38 @@ export default function Navbar({
       {/* Mobile Nav Overlay */}
       {mobileOpen && (
         <>
-          <div 
+          <div
             className="fixed inset-[0] w-screen h-[100dvh] z-40 bg-transparent xl:hidden cursor-pointer"
             onClick={() => setMobileOpen(false)}
             aria-hidden="true"
           />
           <div className="absolute top-[79px] left-0 w-full bg-[#131314] border-b border-[#584235]/30 xl:hidden flex flex-col items-center py-8 gap-6 shadow-2xl z-50">
-          {links.map((l) => {
-            const isActive = pathname === l.href;
-            if (isHome) {
+            {links.map((l) => {
+              const isActive = pathname === l.href;
+              if (isHome) {
+                return (
+                  <button
+                    key={l.label}
+                    onClick={() => handleNavLink(l.href)}
+                    className="block font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] bg-transparent border-none cursor-pointer hover:text-[#FFB68B] transition-colors duration-200"
+                  >
+                    {l.label}
+                  </button>
+                );
+              }
               return (
-                <button
+                <Link
                   key={l.label}
-                  onClick={() => handleNavLink(l.href)}
-                  className="block font-mono text-[12px] tracking-[1.2px] text-[#E0C0AF] bg-transparent border-none cursor-pointer hover:text-[#FFB68B] transition-colors duration-200"
+                  href={l.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block font-mono text-[12px] tracking-[1.2px] no-underline ${isActive ? "text-[#FFB68B]" : "text-[#E0C0AF] hover:text-[#FFB68B]"
+                    }`}
                 >
                   {l.label}
-                </button>
+                </Link>
               );
-            }
-            return (
-              <Link
-                key={l.label}
-                href={l.href}
-                onClick={() => setMobileOpen(false)}
-                className={`block font-mono text-[12px] tracking-[1.2px] no-underline ${
-                  isActive ? "text-[#FFB68B]" : "text-[#E0C0AF] hover:text-[#FFB68B]"
-                }`}
-              >
-                {l.label}
-              </Link>
-            );
-          })}
-        </div>
+            })}
+          </div>
         </>
       )}
     </header>
