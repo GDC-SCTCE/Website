@@ -1,5 +1,3 @@
-import React from "react";
-
 // ── Exact skeleton clone of LeaderCard ──────────────────────────────────────
 export function LeadersDynamicSkeleton() {
   return (

@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import type { User, Alumni } from "@prisma/client";
 import { fetchLeaderboard } from "@/actions/leaderboard";
-import { LeaderboardDynamicSkeleton, AlumniDynamicSkeleton } from "./LeaderboardDynamicSkeleton";
-import AlumniSection from "./AlumniSection";
+import { LeaderboardDynamicSkeleton } from "./LeaderboardDynamicSkeleton";
 
 // ─── Score opacity by rank ─────────────────────────────────────────────────
 const SCORE_OPACITY: Record<number, string> = {
@@ -254,9 +253,6 @@ export default function LeaderboardClient({ leaderboardDataPromise }: { leaderbo
           </div>
         </div>
       </div>
-
-      {/* ── ALUMNI HIGH SCORES ── */}
-      <AlumniSection leaderboardDataPromise={leaderboardDataPromise} />
     </>
   );
 }

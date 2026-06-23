@@ -1,5 +1,3 @@
-import React from "react";
-
 export function ProfileDynamicSkeleton() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8 xl:gap-[64px] items-start">

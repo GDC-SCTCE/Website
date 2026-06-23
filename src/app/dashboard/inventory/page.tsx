@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import InventoryClient from "./InventoryClient";
-import { verifyUser, verifyAdmin } from "@/actions/authActions";
+import { verifyUser } from "@/actions/authActions";
 
 export const dynamic = "force-dynamic";
 

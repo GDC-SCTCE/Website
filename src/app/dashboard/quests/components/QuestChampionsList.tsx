@@ -1,4 +1,3 @@
-import React from "react";
 import { Trophy, Crown, Medal, Award, Sparkles } from "lucide-react";
 
 export interface WinnerGroup {

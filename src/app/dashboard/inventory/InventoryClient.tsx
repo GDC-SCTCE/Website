@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, use, Suspense } from "react";
+import { useState, useEffect, use, Suspense } from "react";
 import { Tool as DbTool, ToolCategory } from "@prisma/client";
 import ToolGrid from "./components/ToolGrid";
 import ToolSidebar from "./components/ToolSidebar";

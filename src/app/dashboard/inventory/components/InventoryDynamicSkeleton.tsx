@@ -1,5 +1,3 @@
-import React from "react";
-
 export function InventoryDynamicSkeleton() {
   return (
     <div className="flex flex-col lg:flex-row gap-8">

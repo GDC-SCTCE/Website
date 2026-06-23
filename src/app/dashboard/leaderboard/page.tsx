@@ -1,4 +1,3 @@
-import React from "react";
 import prisma from "@/lib/prisma";
 import LeaderboardClient from "./components/LeaderboardClient";
 import AlumniSection from "./components/AlumniSection";

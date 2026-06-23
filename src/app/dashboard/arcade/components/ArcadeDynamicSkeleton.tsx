@@ -1,12 +1,3 @@
-import React from "react";
-
-// Exact skeleton clone of GameColumn:
-// - w-[85vw] sm:w-[50%] lg:w-[33.333%] shrink-0 per item
-// - flex flex-col inside
-// - aspect-[479/400] thumbnail area
-// - px-6 py-6 info strip with h2 title + footer row (engine tag + play link)
-// Also mirrors the filter row: border-y border-[#584235] py-[17px], flex gap-8
-
 export function ArcadeDynamicSkeleton() {
   return (
     <>
