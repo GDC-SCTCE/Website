@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Search } from "lucide-react";
-import type { User } from "@prisma/client";
+import type { User, Alumni } from "@prisma/client";
 import { fetchLeaderboard } from "@/actions/leaderboard";
+import { LeaderboardDynamicSkeleton, AlumniDynamicSkeleton } from "./LeaderboardDynamicSkeleton";
+import AlumniSection from "./AlumniSection";
 
 // ─── Score opacity by rank ─────────────────────────────────────────────────
 const SCORE_OPACITY: Record<number, string> = {
@@ -31,8 +33,6 @@ function RankDisplay({ rank }: { rank: number }) {
     </span>
   );
 }
-
-
 
 // ─── Leaderboard Row ──────────────────────────────────────────────────────────
 function LeaderRow({ user, rank, delay, visible }: { user: User; rank: number; delay: number; visible: boolean }) {
@@ -91,17 +91,21 @@ function LeaderRow({ user, rank, delay, visible }: { user: User; rank: number; d
   );
 }
 
-export default function LeaderboardClient({ users }: { users: User[] }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [mounted, setMounted] = useState(false);
+// ─── Dynamic Rows Content ────────────────────────────────────────────────────
+function DynamicLeaderboardRows({ 
+  leaderboardDataPromise, 
+  searchQuery, 
+  mounted 
+}: { 
+  leaderboardDataPromise: Promise<{ users: User[], alumni: Alumni[] }>; 
+  searchQuery: string;
+  mounted: boolean;
+}) {
+  const { users } = React.use(leaderboardDataPromise);
   const [loadedUsers, setLoadedUsers] = useState<User[]>(users);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(users.length === 10);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Debounced server-side search
   useEffect(() => {
@@ -135,6 +139,38 @@ export default function LeaderboardClient({ users }: { users: User[] }) {
       setIsLoading(false);
     }
   };
+
+  return (
+    <>
+      {loadedUsers.map((user, idx) => (
+        <LeaderRow key={user.id} user={user} rank={idx + 1} delay={idx * 80} visible={mounted} />
+      ))}
+      {loadedUsers.length === 0 && !isLoading && (
+          <div className="py-20 text-center font-mono text-[#E0C0AF]">No scores found.</div>
+      )}
+      {isLoading && <LeaderboardDynamicSkeleton />}
+      {hasMore && !isLoading && (
+        <div className="py-12 flex justify-center">
+          <button
+            onClick={handleLoadMore}
+            disabled={isLoading}
+            className="bg-[#1C1B1C] border border-[#584235] hover:border-[#FF7A00] text-[#FFB68B] px-8 py-3 font-mono text-[12px] tracking-[1.2px] uppercase transition-all duration-300 disabled:opacity-50"
+          >
+            Load More
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
+export default function LeaderboardClient({ leaderboardDataPromise }: { leaderboardDataPromise: Promise<{ users: User[], alumni: Alumni[] }> }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <>
@@ -179,17 +215,17 @@ export default function LeaderboardClient({ users }: { users: User[] }) {
         </div>
       </div>
 
-      <div
-        className="w-full overflow-x-auto mt-16 transition-all duration-700"
-        style={{
-          opacity: mounted ? 1 : 0,
-          transform: mounted ? "translateY(0)" : "translateY(16px)",
-          transitionDelay: "250ms",
-        }}
-      >
+      <div className="w-full overflow-x-auto mt-16">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 min-w-[900px]">
           <div className="max-h-[70vh] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[#131314] [&::-webkit-scrollbar-thumb]:bg-[#353436] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#584235]">
-            <div className="flex items-center border-b border-[#353436]/30 h-[61px] sticky top-0 bg-[#131314] z-10">
+            <div 
+              className="flex items-center border-b border-[#353436]/30 h-[61px] sticky top-0 bg-[#131314] z-10 transition-all duration-700"
+              style={{
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "translateY(0)" : "translateY(16px)",
+                transitionDelay: "250ms",
+              }}
+            >
               <div className="w-[140px] shrink-0 pl-4">
                 <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF]">
                   RANK
@@ -212,26 +248,15 @@ export default function LeaderboardClient({ users }: { users: User[] }) {
               </div>
             </div>
 
-            {loadedUsers.map((user, idx) => (
-              <LeaderRow key={user.id} user={user} rank={idx + 1} delay={idx * 80} visible={mounted} />
-            ))}
-            {loadedUsers.length === 0 && !isLoading && (
-               <div className="py-20 text-center font-mono text-[#E0C0AF]">No scores found.</div>
-            )}
-            {hasMore && (
-              <div className="py-12 flex justify-center">
-                <button
-                  onClick={handleLoadMore}
-                  disabled={isLoading}
-                  className="bg-[#1C1B1C] border border-[#584235] hover:border-[#FF7A00] text-[#FFB68B] px-8 py-3 font-mono text-[12px] tracking-[1.2px] uppercase transition-all duration-300 disabled:opacity-50"
-                >
-                  {isLoading ? "Loading..." : "Load More"}
-                </button>
-              </div>
-            )}
+            <React.Suspense fallback={<LeaderboardDynamicSkeleton />}>
+              <DynamicLeaderboardRows leaderboardDataPromise={leaderboardDataPromise} searchQuery={searchQuery} mounted={mounted} />
+            </React.Suspense>
           </div>
         </div>
       </div>
+
+      {/* ── ALUMNI HIGH SCORES ── */}
+      <AlumniSection leaderboardDataPromise={leaderboardDataPromise} />
     </>
   );
 }

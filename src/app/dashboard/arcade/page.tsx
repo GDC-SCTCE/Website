@@ -3,10 +3,10 @@ import { ArcadeClient } from "./ArcadeClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function ArcadePage() {
-  const games = await prisma.game.findMany({
+export default function ArcadePage() {
+  const gamesPromise = prisma.game.findMany({
     orderBy: { createdAt: "desc" }
   });
 
-  return <ArcadeClient games={games} />;
+  return <ArcadeClient gamesPromise={gamesPromise} />;
 }

@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use, Suspense } from "react";
 import { Game } from "@prisma/client";
 import { GameColumn } from "./components/GameColumn";
 import { FeaturedGame } from "./components/FeaturedGame";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArcadeDynamicSkeleton } from "./components/ArcadeDynamicSkeleton";
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ─── Dynamic Content Component ──────────────────────────────────────────────
 
-export function ArcadeClient({ games }: { games: Game[] }) {
+function DynamicArcadeContent({ gamesPromise }: { gamesPromise: Promise<Game[]> }) {
+  const games = use(gamesPromise);
+  
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
-  const [mounted, setMounted] = useState(false);
   const [gridVisible, setGridVisible] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -27,9 +29,8 @@ export function ArcadeClient({ games }: { games: Game[] }) {
   // Featured game
   const featuredGame = games.find(g => g.isEditorsChoice) || games[0];
 
-  // Mount entrance animation and scroll nudge
   useEffect(() => {
-    const t1 = setTimeout(() => setMounted(true), 50);
+    let resetTimer: NodeJS.Timeout;
     const t2 = setTimeout(() => setGridVisible(true), 300);
 
     const nudgeTimer = setTimeout(() => {
@@ -37,7 +38,7 @@ export function ArcadeClient({ games }: { games: Game[] }) {
         const { scrollWidth, clientWidth } = scrollRef.current;
         if (scrollWidth > clientWidth) {
           scrollRef.current.scrollTo({ left: 60, behavior: "smooth" });
-          setTimeout(() => {
+          resetTimer = setTimeout(() => {
             if (scrollRef.current) {
               scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
             }
@@ -47,27 +48,32 @@ export function ArcadeClient({ games }: { games: Game[] }) {
     }, 1000);
 
     return () => {
-      clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(nudgeTimer);
+      if (resetTimer) clearTimeout(resetTimer);
     };
   }, []);
 
-  // Filter change with fade-out/fade-in transition
   const handleFilter = (tag: string) => {
     if (tag === activeFilter) return;
     setGridVisible(false);
     setTimeout(() => {
       setActiveFilter(tag);
-      setTimeout(() => setGridVisible(true), 60);
-    }, 220);
+      setGridVisible(true);
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+      }
+    }, 300);
   };
 
-  const filtered = games.filter((g) => {
-    if (featuredGame && g.id === featuredGame.id) return false;
-    if (activeFilter === "ALL") return true;
-    return g.engine?.toUpperCase() === activeFilter || g.year === activeFilter;
-  });
+  const filtered = React.useMemo(() => {
+    return games.filter((game) => {
+      if (activeFilter === "ALL") return true;
+      if (game.engine?.toUpperCase() === activeFilter) return true;
+      if (game.year === activeFilter) return true;
+      return false;
+    });
+  }, [games, activeFilter]);
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -117,50 +123,14 @@ export function ArcadeClient({ games }: { games: Game[] }) {
       clearTimeout(timer);
       window.removeEventListener("resize", checkScroll);
     };
-  }, [filtered, gridVisible]);
+  }, [filtered.length, gridVisible]);
 
   return (
-    <div className="bg-[#131314] min-h-screen">
-
-      {/* ── Header Section ───────────────────────────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 pt-[120px] pb-0">
-
-        {/* Label — fade up first */}
-        <p
-          className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#FFB68B] mb-7 transition-all duration-500"
-          style={{
-            opacity: mounted ? 1 : 0,
-            transform: mounted ? "translateY(0)" : "translateY(16px)",
-          }}
-        >
-          ALL BUILDS
-        </p>
-
-        {/* Heading — glitch animation + delayed fade up */}
-        <h1
-          className="font-sora font-extrabold text-[56px] sm:text-[80px] leading-[56px] sm:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 mb-8 transition-all duration-600"
-          style={{
-            opacity: mounted ? 1 : 0,
-            transform: mounted ? "translateY(0)" : "translateY(24px)",
-            transitionDelay: "100ms",
-            animationName: mounted ? "glitch" : "none",
-            animationDuration: "6s",
-            animationTimingFunction: "steps(1)",
-            animationIterationCount: "infinite",
-            animationDelay: "3s",
-          }}
-        >
-          THE ARCADE WALL.
-        </h1>
-
-        {/* Filter Row — fade up last */}
+    <>
+      {/* Filter Row — fade up last */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 pb-0">
         <div
-          className="border-y border-[#584235] py-[17px] overflow-x-auto transition-all duration-500"
-          style={{
-            opacity: mounted ? 1 : 0,
-            transform: mounted ? "translateY(0)" : "translateY(12px)",
-            transitionDelay: "200ms",
-          }}
+          className="border-y border-[#584235] py-[17px] overflow-x-auto animate-fade-in"
         >
           <div className="flex items-center gap-8 min-w-max">
             {FILTER_TAGS.map((tag) => {
@@ -196,6 +166,9 @@ export function ArcadeClient({ games }: { games: Game[] }) {
             <div
               ref={scrollRef}
               onScroll={handleScroll}
+              tabIndex={0}
+              role="region"
+              aria-label="Arcade games"
               className="flex overflow-x-auto pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory"
             >
               {filtered.map((game, idx) => (
@@ -241,8 +214,6 @@ export function ArcadeClient({ games }: { games: Game[] }) {
           >
             {games.length === 0
               ? "No games available yet"
-              : games.length === 1
-              ? "No other games available"
               : "No games matching this filter"}
           </div>
         )}
@@ -261,7 +232,7 @@ export function ArcadeClient({ games }: { games: Game[] }) {
                   className="absolute top-0 h-full bg-gradient-to-r from-[#FF7A00] to-[#FFB68B] transition-all duration-75 rounded-full"
                   style={{
                     width: "30%",
-                    left: `${scrollProgress * 0.7}%`,
+                    left: `${Math.min(scrollProgress * 0.7, 70)}%`,
                   }}
                 />
               </div>
@@ -272,6 +243,54 @@ export function ArcadeClient({ games }: { games: Game[] }) {
 
       {/* ── Featured Game Section ─────────────────────────────────────────── */}
       {featuredGame && <FeaturedGame featuredGame={featuredGame} />}
+    </>
+  );
+}
+
+// ─── Wrapper Client Component (Static Shell) ────────────────────────────────
+
+export function ArcadeClient({ gamesPromise }: { gamesPromise: Promise<Game[]> }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(t1);
+  }, []);
+
+  return (
+    <div className="bg-[#131314] min-h-screen">
+      {/* ── Header Section (Instantly visible) ───────────────────────────────────────────────── */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 pt-[120px] pb-0">
+        <p
+          className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#FFB68B] mb-7 transition-all duration-500"
+          style={{
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? "translateY(0)" : "translateY(16px)",
+          }}
+        >
+          ALL BUILDS
+        </p>
+
+        <h1
+          className="font-sora font-extrabold text-[56px] sm:text-[80px] leading-[56px] sm:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 mb-8 transition-all duration-600"
+          style={{
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? "translateY(0)" : "translateY(24px)",
+            transitionDelay: "100ms",
+            animationName: mounted ? "glitch" : "none",
+            animationDuration: "6s",
+            animationTimingFunction: "steps(1)",
+            animationIterationCount: "infinite",
+            animationDelay: "3s",
+          }}
+        >
+          THE ARCADE WALL.
+        </h1>
+      </div>
+
+      <Suspense fallback={<ArcadeDynamicSkeleton />}>
+        <DynamicArcadeContent gamesPromise={gamesPromise} />
+      </Suspense>
     </div>
   );
 }

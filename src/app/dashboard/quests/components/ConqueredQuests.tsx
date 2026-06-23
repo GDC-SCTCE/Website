@@ -123,7 +123,14 @@ export function ConqueredQuests({ user, isAdmin, search, category }: ConqueredQu
 
       {/* Attendance Filter Tabs */}
       {user && !isAdmin && (
-        <div className="mt-8 grid grid-cols-3 gap-2 p-1 bg-[#1C1B1C]/65 border border-[#3A2D25] rounded-lg w-[340px] sm:w-[390px] md:w-[460px] relative backdrop-blur-md">
+        <div 
+          className="mt-8 grid grid-cols-3 gap-2 p-1 bg-[#1C1B1C]/65 border border-[#3A2D25] rounded-lg w-[340px] sm:w-[390px] md:w-[460px] relative backdrop-blur-md transition-all duration-700"
+          style={{
+            opacity: pastVisible ? 1 : 0,
+            transform: pastVisible ? "translateY(0)" : "translateY(16px)",
+            transitionDelay: "150ms",
+          }}
+        >
           {/* Sliding indicator background */}
           <div
             className={`absolute top-1 bottom-1 transition-all duration-300 rounded-md ${

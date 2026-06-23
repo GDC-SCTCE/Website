@@ -4,15 +4,17 @@ import { verifyUser, verifyAdmin } from "@/actions/authActions";
 
 export const dynamic = "force-dynamic";
 
-export default async function InventoryPage() {
-  const [dbTools, user, isAdmin] = await Promise.all([
+export default function InventoryPage() {
+  const inventoryDataPromise = Promise.all([
     prisma.tool.findMany({ orderBy: { rating: "desc" } }),
     verifyUser(),
     verifyAdmin(),
-  ]);
+  ]).then(([dbTools, user, isAdmin]) => ({
+    dbTools,
+    initialUserTools: user?.tools || [],
+    isSignedIn: !!user,
+    isAdmin,
+  }));
 
-  const initialUserTools = user?.tools || [];
-  const isSignedIn = !!user;
-
-  return <InventoryClient dbTools={dbTools} initialUserTools={initialUserTools} isSignedIn={isSignedIn} isAdmin={isAdmin} />;
+  return <InventoryClient inventoryDataPromise={inventoryDataPromise} />;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { Quest } from "@prisma/client";
 import { useAuth } from "@/context/AuthContext";
@@ -25,7 +25,10 @@ function LandingQuestTimer({ targetDate }: { targetDate: Date }) {
   );
 }
 
-export default function ActiveQuestsSection({ activeQuests, isAdmin = false }: { activeQuests: Quest[], isAdmin?: boolean }) {
+export default function ActiveQuestsSection({ activeQuestsPromise, isAdminPromise }: { activeQuestsPromise: Promise<Quest[]>, isAdminPromise: Promise<boolean> }) {
+  const activeQuests = use(activeQuestsPromise);
+  const isAdmin = use(isAdminPromise);
+  
   const { user, loading } = useAuth();
   const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
   const { ref: jamRef, inView: jamVisible } = useInView(0.15);

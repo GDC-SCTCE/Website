@@ -9,8 +9,82 @@ import { MemberCard } from "./components/MemberCard";
 import DepartmentFilter from "@/components/DepartmentFilter";
 import { StatBar } from "./components/StatBar";
 
+import { LeadersDynamicSkeleton, MembersGridDynamicSkeleton } from "./components/MembersDynamicSkeleton";
+
+// ── DYNAMIC LEADERS CONTENT ──
+function DynamicLeadersContent({
+  membersPromise,
+  mounted,
+  handleMemberClick,
+}: {
+  membersPromise: Promise<any[]>;
+  mounted: boolean;
+  handleMemberClick: (member: any, event: React.MouseEvent) => void;
+}) {
+  const initialMembers = React.use(membersPromise);
+  const leads = initialMembers.filter((m: any) => m.department === "ALL");
+
+  return (
+    <div className="px-6 md:px-8 xl:px-16 mt-[40px] flex flex-col lg:flex-row gap-[32px] xl:gap-[57px] items-center lg:items-start">
+      {leads.map((lead: any, idx: number) => (
+        <LeaderCard 
+          key={lead.id} 
+          member={lead} 
+          delay={idx * 150} 
+          visible={mounted} 
+          onClick={(e) => handleMemberClick(lead, e)} 
+        />
+      ))}
+    </div>
+  );
+}
+
+// ── DYNAMIC MEMBERS GRID ──
+function DynamicMembersGrid({
+  membersPromise,
+  activeFilter,
+  gridVisible,
+  handleMemberClick,
+}: {
+  membersPromise: Promise<any[]>;
+  activeFilter: Department;
+  gridVisible: boolean;
+  handleMemberClick: (member: any, event: React.MouseEvent) => void;
+}) {
+  const initialMembers = React.use(membersPromise);
+  const members = initialMembers.filter((m: any) => m.department !== "ALL");
+  const filteredMembers =
+    activeFilter === "ALL"
+      ? members
+      : members.filter((m: any) => m.department === activeFilter);
+
+  return (
+    <div className="px-6 md:px-8 xl:px-16 pb-[80px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[40px_20px] lg:gap-[80px_20px] justify-items-center sm:justify-items-start justify-between">
+      {filteredMembers.map((member: any, idx: number) => (
+        <MemberCard 
+          key={member.id} 
+          member={member} 
+          delay={idx * 60} 
+          visible={gridVisible} 
+          onClick={(e) => handleMemberClick(member, e)} 
+        />
+      ))}
+      {filteredMembers.length === 0 && (
+        <div
+          className="col-span-full py-[80px] text-center transition-opacity duration-300"
+          style={{ opacity: gridVisible ? 1 : 0 }}
+        >
+          <p className="font-mono text-[12px] tracking-[1.2px] text-[#584235]">
+            NO MEMBERS IN THIS DEPARTMENT
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── PAGE ──
-export default function MembersClient({ initialMembers }: { initialMembers: any[] }) {
+export default function MembersClient({ membersPromise }: { membersPromise: Promise<any[]> }) {
   const [activeFilter, setActiveFilter] = useState<Department>("ALL");
   const [mounted, setMounted] = useState(false);
   const [gridVisible, setGridVisible] = useState(false);
@@ -132,14 +206,6 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
     }, 220);
   };
 
-  const leads = initialMembers.filter((m) => m.department === "ALL");
-  const members = initialMembers.filter((m) => m.department !== "ALL");
-
-  const filteredMembers =
-    activeFilter === "ALL" // In case the activeFilter defaults to ALL initially
-      ? members
-      : members.filter((m) => m.department === activeFilter);
-
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
       <div className="max-w-[1440px] mx-auto w-full">
@@ -174,17 +240,13 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
         </div>
 
         {/* ── LEADER CARDS ── */}
-        <div className="px-6 md:px-8 xl:px-16 mt-[40px] flex flex-col lg:flex-row gap-[32px] xl:gap-[57px] items-center lg:items-start">
-          {leads.map((lead, idx) => (
-            <LeaderCard 
-              key={lead.id} 
-              member={lead} 
-              delay={idx * 150} 
-              visible={mounted} 
-              onClick={(e) => handleMemberClick(lead, e)} 
-            />
-          ))}
-        </div>
+        <React.Suspense fallback={<LeadersDynamicSkeleton />}>
+          <DynamicLeadersContent 
+            membersPromise={membersPromise} 
+            mounted={mounted} 
+            handleMemberClick={handleMemberClick} 
+          />
+        </React.Suspense>
 
         {/* ── EVERYONE BUILDING ── */}
         <div className="pt-24 md:pt-32 px-6 md:px-8 xl:px-16 pb-0">
@@ -213,27 +275,14 @@ export default function MembersClient({ initialMembers }: { initialMembers: any[
         </div>
 
         {/* ── MEMBER CARDS GRID ── */}
-        <div className="px-6 md:px-8 xl:px-16 pb-[80px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[40px_20px] lg:gap-[80px_20px] justify-items-center sm:justify-items-start justify-between">
-          {filteredMembers.map((member, idx) => (
-            <MemberCard 
-              key={member.id} 
-              member={member} 
-              delay={idx * 60} 
-              visible={gridVisible} 
-              onClick={(e) => handleMemberClick(member, e)} 
-            />
-          ))}
-          {filteredMembers.length === 0 && (
-            <div
-              className="col-span-full py-[80px] text-center transition-opacity duration-300"
-              style={{ opacity: gridVisible ? 1 : 0 }}
-            >
-              <p className="font-mono text-[12px] tracking-[1.2px] text-[#584235]">
-                NO MEMBERS IN THIS DEPARTMENT
-              </p>
-            </div>
-          )}
-        </div>
+        <React.Suspense fallback={<MembersGridDynamicSkeleton />}>
+          <DynamicMembersGrid 
+            membersPromise={membersPromise} 
+            activeFilter={activeFilter} 
+            gridVisible={gridVisible} 
+            handleMemberClick={handleMemberClick} 
+          />
+        </React.Suspense>
       </div>
 
       {/* ── MEMBER DETAIL DIALOG (MODAL) ── */}

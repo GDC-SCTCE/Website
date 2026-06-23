@@ -3,10 +3,10 @@ import MembersClient from "./MembersClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function MembersPageWrapper() {
-  const teamMembers = await prisma.teamMember.findMany({
+export default function MembersPageWrapper() {
+  const membersPromise = prisma.teamMember.findMany({
     orderBy: { createdAt: "asc" },
   });
   
-  return <MembersClient initialMembers={teamMembers as any[]} />;
+  return <MembersClient membersPromise={membersPromise as any} />;
 }

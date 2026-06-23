@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use, Suspense } from "react";
 import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import Avatar from "@/components/Avatar";
 import { useInView } from "@/hooks/useInView";
-import type { Alumni } from "@prisma/client";
+import type { Alumni, User } from "@prisma/client";
+import { AlumniDynamicSkeleton } from "./LeaderboardDynamicSkeleton";
 
 // ─── Legend Card ─────────────────────────────────────────────────────────────
 function LegendCard({ legend, delay, visible }: { legend: Alumni; delay: number; visible: boolean }) {
@@ -62,8 +63,8 @@ function LegendCard({ legend, delay, visible }: { legend: Alumni; delay: number;
   );
 }
 
-export default function AlumniSection({ alumni }: { alumni: Alumni[] }) {
-  const { ref: legendsRef, inView: legendsVisible } = useInView(0.15);
+function DynamicAlumniContent({ leaderboardDataPromise, legendsVisible }: { leaderboardDataPromise: Promise<{ users: User[], alumni: Alumni[] }>, legendsVisible: boolean }) {
+  const { alumni } = use(leaderboardDataPromise);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollIndicators, setShowScrollIndicators] = useState(false);
@@ -120,25 +121,8 @@ export default function AlumniSection({ alumni }: { alumni: Alumni[] }) {
   }, [alumni]);
 
   return (
-    <div ref={legendsRef as React.RefObject<HTMLDivElement>} className="bg-[#0E0E0F] mt-24 py-32">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16">
-        {/* Section label + heading */}
-        <div
-          className="mb-16 transition-all duration-700"
-          style={{
-            opacity: legendsVisible ? 1 : 0,
-            transform: legendsVisible ? "translateY(0)" : "translateY(24px)",
-          }}
-        >
-          <p className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#00DBE9] mb-7">
-            LEGENDS (ALUMNI)
-          </p>
-          <h2 className="font-sora font-black text-[40px] sm:text-[48px] leading-[53px] tracking-[-0.96px] uppercase text-[#E5E2E3] m-0">
-            THEY BUILT HERE FIRST.
-          </h2>
-        </div>
-
-        {/* Scrollable Alumni Container */}
+    <>
+      {/* Scrollable Alumni Container */}
         <div className="relative group/scroll-container">
           <div
             ref={scrollRef}
@@ -193,13 +177,42 @@ export default function AlumniSection({ alumni }: { alumni: Alumni[] }) {
                   className="absolute top-0 h-full bg-gradient-to-r from-[#FF7A00] to-[#FFB68B] transition-all duration-75 rounded-full"
                   style={{
                     width: "30%",
-                    left: `${scrollProgress * 0.7}%`,
+                    left: `${Math.min(scrollProgress * 0.7, 70)}%`,
                   }}
                 />
               </div>
             </div>
           </div>
         )}
+      </>
+  );
+}
+
+export default function AlumniSection({ leaderboardDataPromise }: { leaderboardDataPromise: Promise<{ users: User[], alumni: Alumni[] }> }) {
+  const { ref: legendsRef, inView: legendsVisible } = useInView(0.15);
+
+  return (
+    <div ref={legendsRef as React.RefObject<HTMLDivElement>} className="bg-[#0E0E0F] mt-24 py-32">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16">
+        {/* Section label + heading */}
+        <div
+          className="mb-16 transition-all duration-700"
+          style={{
+            opacity: legendsVisible ? 1 : 0,
+            transform: legendsVisible ? "translateY(0)" : "translateY(24px)",
+          }}
+        >
+          <p className="font-mono font-bold text-[12px] leading-[12px] tracking-[1.2px] uppercase text-[#00DBE9] mb-7">
+            LEGENDS (ALUMNI)
+          </p>
+          <h2 className="font-sora font-black text-[40px] sm:text-[48px] leading-[53px] tracking-[-0.96px] uppercase text-[#E5E2E3] m-0">
+            THEY BUILT HERE FIRST.
+          </h2>
+        </div>
+
+        <Suspense fallback={<AlumniDynamicSkeleton />}>
+          <DynamicAlumniContent leaderboardDataPromise={leaderboardDataPromise} legendsVisible={legendsVisible} />
+        </Suspense>
       </div>
     </div>
   );

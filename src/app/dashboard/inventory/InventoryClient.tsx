@@ -1,27 +1,76 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, use, Suspense } from "react";
 import { Tool as DbTool, ToolCategory } from "@prisma/client";
 import ToolGrid from "./components/ToolGrid";
 import ToolSidebar from "./components/ToolSidebar";
+import { InventoryDynamicSkeleton } from "./components/InventoryDynamicSkeleton";
 
 type Category = "ALL" | ToolCategory;
 const CATEGORIES: Category[] = ["ALL", ...Object.values(ToolCategory)];
 
-export default function InventoryClient({
-  dbTools,
-  initialUserTools,
-  isSignedIn,
-  isAdmin = false,
-}: {
+interface InventoryData {
   dbTools: DbTool[];
   initialUserTools: string[];
   isSignedIn: boolean;
-  isAdmin?: boolean;
+  isAdmin: boolean;
+}
+
+// ── DYNAMIC CONTENT ──
+function DynamicInventoryContent({
+  inventoryDataPromise,
+  activeCategory,
+  gridVisible
+}: {
+  inventoryDataPromise: Promise<InventoryData>;
+  activeCategory: Category;
+  gridVisible: boolean;
 }) {
-  const [activeCategory, setActiveCategory] = useState<Category>("ALL");
+  const { dbTools, initialUserTools, isSignedIn, isAdmin } = use(inventoryDataPromise);
+
   const [selectedTool, setSelectedTool] = useState<DbTool | null>(dbTools[0] || null);
   const [loadout, setLoadout] = useState<Set<string>>(new Set(initialUserTools));
+
+  // Default to first tool if selected one gets filtered out?
+  // Usually, keeping the selected tool visible in the sidebar is fine even if not in grid.
+
+  const filtered =
+    activeCategory === "ALL"
+      ? dbTools
+      : dbTools.filter((t) => t.category === activeCategory);
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex-1 min-w-0">
+        <ToolGrid
+          tools={filtered}
+          selectedToolId={selectedTool?.id || ""}
+          onSelectTool={setSelectedTool}
+          gridVisible={gridVisible}
+          loadout={loadout}
+        />
+      </div>
+
+      {selectedTool && (
+        <ToolSidebar
+          selectedTool={selectedTool}
+          loadout={loadout}
+          onEquipChange={(newLoadout) => setLoadout(new Set(newLoadout))}
+          isSignedIn={isSignedIn}
+          isAdmin={isAdmin}
+        />
+      )}
+    </div>
+  );
+}
+
+// ── STATIC SHELL ──
+export default function InventoryClient({
+  inventoryDataPromise
+}: {
+  inventoryDataPromise: Promise<InventoryData>;
+}) {
+  const [activeCategory, setActiveCategory] = useState<Category>("ALL");
   const [mounted, setMounted] = useState(false);
   const [gridVisible, setGridVisible] = useState(false);
 
@@ -46,11 +95,6 @@ export default function InventoryClient({
       }, 60);
     }, 220);
   };
-
-  const filtered =
-    activeCategory === "ALL"
-      ? dbTools
-      : dbTools.filter((t) => t.category === activeCategory);
 
   return (
     <div className="bg-[#131314] min-h-screen">
@@ -101,27 +145,13 @@ export default function InventoryClient({
         </div>
 
         {/* ── Section 5.2: Inventory Grid + Inspector ─────────────────────── */}
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="flex-1 min-w-0">
-            <ToolGrid
-              tools={filtered}
-              selectedToolId={selectedTool?.id || ""}
-              onSelectTool={setSelectedTool}
-              gridVisible={gridVisible}
-              loadout={loadout}
-            />
-          </div>
-
-          {selectedTool && (
-            <ToolSidebar
-              selectedTool={selectedTool}
-              loadout={loadout}
-              onEquipChange={(newLoadout) => setLoadout(new Set(newLoadout))}
-              isSignedIn={isSignedIn}
-              isAdmin={isAdmin}
-            />
-          )}
-        </div>
+        <Suspense fallback={<InventoryDynamicSkeleton />}>
+          <DynamicInventoryContent 
+            inventoryDataPromise={inventoryDataPromise}
+            activeCategory={activeCategory}
+            gridVisible={gridVisible}
+          />
+        </Suspense>
 
       </div>
     </div>
