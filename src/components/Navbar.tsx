@@ -31,7 +31,7 @@ function ScrambledLogoText({
 }) {
   const [displayedText, setDisplayedText] = useState(text);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const chars = "01_*";
+  const chars = "123";
 
   const triggerScramble = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -153,12 +153,12 @@ export default function Navbar({
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${isHome
-          ? "bg-[#131314] border-b border-[#584235]/30 ease-out"
-          : isOnboarding
-            ? "bg-[#131314]/96 border-b border-[#584235]/30 backdrop-blur-md"
-            : isAdmin
-              ? "bg-[#131314] border-b border-[#FF7A00]/40"
-              : "bg-[#131314] border-b border-[#584235]/40"
+        ? "bg-[#131314] border-b border-[#584235]/30 ease-out"
+        : isOnboarding
+          ? "bg-[#131314]/96 border-b border-[#584235]/30 backdrop-blur-md"
+          : isAdmin
+            ? "bg-[#131314] border-b border-[#FF7A00]/40"
+            : "bg-[#131314] border-b border-[#584235]/40"
         }`}
       style={
         isHome
@@ -182,9 +182,8 @@ export default function Navbar({
           <ScrambledLogoText
             text={finalLogoText}
             scrambleTrigger={scrambleTrigger}
-            className={`font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] ${
-              isAdmin ? "text-[#FF7A00]" : "text-[#FFB68B]"
-            } hidden min-[420px]:inline-block`}
+            className={`font-sora font-extrabold text-[20px] md:text-[24px] leading-[32px] tracking-[-1.2px] ${isAdmin ? "text-[#FF7A00]" : "text-[#FFB68B]"
+              } hidden min-[420px]:inline-block`}
           />
         </Link>
 
@@ -199,10 +198,10 @@ export default function Navbar({
                 href={l.href}
                 onClick={() => setMobileOpen(false)}
                 className={`font-mono text-[12px] leading-[12px] tracking-[1.2px] no-underline transition-colors duration-200 ${isHomeNavStyle
-                    ? "font-semibold text-[#E0C0AF] hover:text-[#FFB68B] relative group"
-                    : isActive
-                      ? "font-bold text-[#FFB68B]"
-                      : "font-semibold text-[#E0C0AF] hover:text-[#FFB68B]"
+                  ? "font-semibold text-[#E0C0AF] hover:text-[#FFB68B] relative group"
+                  : isActive
+                    ? "font-bold text-[#FFB68B]"
+                    : "font-semibold text-[#E0C0AF] hover:text-[#FFB68B]"
                   }`}
               >
                 {l.label}
