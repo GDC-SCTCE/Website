@@ -1,5 +1,7 @@
 import { MetadataRoute } from "next";
 
+export const revalidate = 3600; // revalidate sitemap cache at most every hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://gdcsctce.vercel.app";
 
