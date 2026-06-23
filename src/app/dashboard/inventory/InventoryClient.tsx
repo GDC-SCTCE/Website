@@ -6,6 +6,9 @@ import ToolGrid from "./components/ToolGrid";
 import ToolSidebar from "./components/ToolSidebar";
 import { InventoryDynamicSkeleton } from "./components/InventoryDynamicSkeleton";
 
+import { useAuth } from "@/context/AuthContext";
+import { checkIsAdminEmail } from "@/actions/authActions";
+
 type Category = "ALL" | ToolCategory;
 const CATEGORIES: Category[] = ["ALL", ...Object.values(ToolCategory)];
 
@@ -13,7 +16,6 @@ interface InventoryData {
   dbTools: DbTool[];
   initialUserTools: string[];
   isSignedIn: boolean;
-  isAdmin: boolean;
 }
 
 // ── DYNAMIC CONTENT ──
@@ -26,7 +28,17 @@ function DynamicInventoryContent({
   activeCategory: Category;
   gridVisible: boolean;
 }) {
-  const { dbTools, initialUserTools, isSignedIn, isAdmin } = use(inventoryDataPromise);
+  const { dbTools, initialUserTools, isSignedIn } = use(inventoryDataPromise);
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user?.email) {
+      checkIsAdminEmail(user.email).then(setIsAdmin);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
 
   const [selectedTool, setSelectedTool] = useState<DbTool | null>(dbTools[0] || null);
   const [loadout, setLoadout] = useState<Set<string>>(new Set(initialUserTools));

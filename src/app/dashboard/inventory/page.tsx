@@ -8,13 +8,11 @@ export default function InventoryPage() {
   const inventoryDataPromise = Promise.all([
     prisma.tool.findMany({ orderBy: { rating: "desc" } }),
     verifyUser(),
-    verifyAdmin(),
-  ]).then(([dbTools, user, isAdmin]) => ({
+  ]).then(([dbTools, user]) => ({
     dbTools,
     initialUserTools: user?.tools || [],
     isSignedIn: !!user,
-    isAdmin,
   }));
 
-  return <InventoryClient inventoryDataPromise={inventoryDataPromise} />;
+  return <InventoryClient inventoryDataPromise={inventoryDataPromise as any} />;
 }
