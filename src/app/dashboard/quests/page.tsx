@@ -1,16 +1,13 @@
 import { fetchDashboardData } from "@/actions/dataActions";
 import { QuestBoardClient } from "./components/QuestBoardClient";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 
-export default async function QuestBoardPage() {
-  const { quests, isAdmin, user } = await fetchDashboardData();
+export default function QuestBoardPage() {
+  // Start the fetch but do NOT await it! This allows the page layout to render instantly.
+  const dashboardDataPromise = fetchDashboardData();
 
   return (
-    <QuestBoardClient
-      initialQuests={quests}
-      isAdmin={isAdmin}
-      user={user}
-    />
+    <QuestBoardClient dashboardDataPromise={dashboardDataPromise} />
   );
 }
