@@ -1,7 +1,7 @@
 import { fetchDashboardData } from "@/actions/dataActions";
 import { QuestBoardClient } from "./components/QuestBoardClient";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 
 export default async function QuestBoardPage() {
   const { quests, isAdmin, user } = await fetchDashboardData();
