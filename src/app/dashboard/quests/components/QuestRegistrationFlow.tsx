@@ -6,6 +6,7 @@ import { X, Bell, Users } from "lucide-react";
 import QRCode from "react-qr-code";
 import { Quest } from "@/types";
 import { registerForQuest, validateQuestRegistration } from "@/actions/userActions";
+import QuestButton from "./QuestButton";
 
 interface QuestRegistrationFlowProps {
   quest: Quest;
@@ -72,13 +73,15 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
       if (res.success) {
         if (quest.price && quest.price > 0) {
           setShowPayment(true);
+          setRegistering(false);
         } else {
-          executeRegistration();
+          await executeRegistration();
         }
+      } else {
+        setRegistering(false);
       }
     } catch (err: any) {
       setRegError(err.message);
-    } finally {
       setRegistering(false);
     }
   };
@@ -97,7 +100,10 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
 
       const finalTeammates = teammates.filter(t => t.trim() !== "");
       // Pass upiRef, teamName, and teammateEmails to server action
-      const res = await registerForQuest(quest.id, upiRef, teamName, finalTeammates);
+      const [res] = await Promise.all([
+        registerForQuest(quest.id, upiRef, teamName, finalTeammates),
+        new Promise((resolve) => setTimeout(resolve, 1200))
+      ]);
       if (res.success) {
         onSuccess(res.status === "PENDING" ? "PENDING APPROVAL" : "REGISTERED ✓");
         router.refresh();
@@ -105,7 +111,6 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
       }
     } catch (err: any) {
       setRegError(err.message);
-    } finally {
       setRegistering(false);
     }
   };
@@ -185,13 +190,13 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
               />
             </div>
             {regError && <p className="text-red-500 text-[12px] font-mono leading-tight bg-red-500/10 p-3 border border-red-500/30">{regError}</p>}
-            <button
+            <QuestButton
+              label="REGISTER"
               onClick={executeRegistration}
-              disabled={registering || !upiRef.trim()}
-              className="w-full h-[56px] bg-[#FF7A00] text-[#522300] font-mono font-bold text-[14px] tracking-[2px] disabled:opacity-50 hover:brightness-110 transition-all"
-            >
-              {registering ? "PROCESSING..." : "REGISTER"}
-            </button>
+              disabled={!upiRef.trim()}
+              isLoading={registering}
+              className="bg-[#FF7A00] text-[#522300] hover:brightness-110"
+            />
             <button onClick={() => setShowPayment(false)} className="text-[#A78B7C] font-mono text-[10px] hover:text-white underline text-center">Back to Registration</button>
           </div>
         </div>
@@ -294,16 +299,16 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
 
             {regError && <p className="text-red-500 text-[12px] font-mono leading-tight bg-red-500/10 p-3 border border-red-500/30">{regError}</p>}
 
-            <button
+            <QuestButton
+              label={totalPrice > 0 ? `PAY \u20B9${totalPrice} & JOIN` : "ACCEPT QUEST"}
               onClick={handleRegisterClick}
-              disabled={registering}
-              className="w-full h-[56px] bg-[#FF7A00] text-[#522300] font-mono font-bold text-[14px] tracking-[2px] disabled:opacity-50 hover:brightness-110 transition-all mt-4"
-            >
-              {registering ? "PROCESSING..." : (totalPrice > 0 ? `PAY ₹${totalPrice} & JOIN QUEST` : "ACCEPT QUEST")}
-            </button>
+              isLoading={registering}
+              className="bg-[#FF7A00] text-[#522300] hover:brightness-110 mt-4"
+            />
           </div>
         </div>
       )}
+
     </div>
   );
 }
