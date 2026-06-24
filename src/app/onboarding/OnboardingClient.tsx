@@ -150,11 +150,6 @@ export default function OnboardingClient() {
           selectedTools,
           xpLevel
         };
-        
-        // Wait for the auth cookies to be fully registered in the browser
-        // before firing the server action
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
         await syncUserToDatabase(userData);
         if (redirectUrl) {
           if (isLoginMode) {
