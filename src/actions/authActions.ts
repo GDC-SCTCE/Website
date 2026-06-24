@@ -4,9 +4,18 @@ import prisma from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { validateUserData } from "@/utils/validation";
 
-export async function syncUserToDatabase(data: any) {
+export async function syncUserToDatabase(data: any, accessToken?: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  
+  let user;
+  if (accessToken) {
+    const { data: userData } = await supabase.auth.getUser(accessToken);
+    user = userData?.user;
+  } else {
+    const { data: userData } = await supabase.auth.getUser();
+    user = userData?.user;
+  }
+
   if (!user || !user.email) throw new Error("Not authenticated");
 
   const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()) ?? [];

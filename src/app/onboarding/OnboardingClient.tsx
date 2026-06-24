@@ -128,18 +128,18 @@ export default function OnboardingClient() {
     if (e) e.preventDefault();
     setSubmitting(true);
     setAuthError("");
-    const currentOtp = otp;
-    setOtp(""); // Clear the input field immediately
+
     const supabase = createClient();
     const { data, error } = await supabase.auth.verifyOtp({
       email: email.trim(),
-      token: currentOtp,
+      token: otp,
       type: 'email',
     });
 
     if (error) {
       setAuthError(error.message);
       setSubmitting(false);
+      setOtp("");
     } else {
       try {
         const userData = isLoginMode ? null : {
@@ -150,7 +150,7 @@ export default function OnboardingClient() {
           selectedTools,
           xpLevel
         };
-        await syncUserToDatabase(userData);
+        await syncUserToDatabase(userData, data?.session?.access_token);
         if (redirectUrl) {
           if (isLoginMode) {
              router.push(redirectUrl);
@@ -242,7 +242,11 @@ export default function OnboardingClient() {
 
       <OtpModal
         isOpen={showOtpModal}
-        onClose={() => setShowOtpModal(false)}
+        onClose={() => {
+          setShowOtpModal(false);
+          setOtp("");
+          setAuthError("");
+        }}
         email={email}
         otp={otp}
         setOtp={setOtp}

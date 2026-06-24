@@ -63,6 +63,7 @@ export default function OtpModal({
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
           placeholder="000000"
+          maxLength={6}
           className="w-full bg-[#131314] border border-[#584235] p-4 text-center font-mono text-[24px] text-[#FFB68B] tracking-[8px] outline-none mb-4 focus:border-[#FFB68B]"
         />
         {authError && <p className="text-red-500 mb-4 text-[12px]">{authError}</p>}
