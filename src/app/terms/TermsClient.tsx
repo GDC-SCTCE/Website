@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Shield, Scale, HelpCircle, Trophy, ChevronDown } from "lucide-react";
 
+import { useRouter } from "next/navigation";
+
 interface ProtocolSection {
   id: string;
   num: string;
@@ -13,6 +15,7 @@ interface ProtocolSection {
 }
 
 export default function TermsClient() {
+  const router = useRouter();
   const [expandedSection, setExpandedSection] = useState<string | null>("acceptance");
 
   const handleSectionClick = (id: string) => {
@@ -122,13 +125,13 @@ export default function TermsClient() {
       <div className="max-w-[800px] w-full flex flex-col relative z-10">
         
         {/* Navigation back */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[1.5px] text-[#A78B7C] hover:text-[#FFB68B] mb-12 group self-start border border-[#1b1e26] px-4 py-1.5 rounded-sm bg-[#0d0d10]/40 transition-colors duration-300"
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[1.5px] text-[#A78B7C] hover:text-[#FFB68B] mb-12 group self-start border border-[#1b1e26] px-4 py-1.5 rounded-sm bg-[#0d0d10]/40 transition-colors duration-300 cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
           Back to Terminal
-        </Link>
+        </button>
 
         {/* Title */}
         <div className="mb-10 text-center sm:text-left">
