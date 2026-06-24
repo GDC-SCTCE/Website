@@ -9,29 +9,30 @@ export default function SuccessClient({ actualName }: { actualName: string }) {
   const redirectUrl = searchParams.get("redirect");
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] overflow-x-hidden">
-      {/* ── ATMOSPHERIC ELEMENTS ── */}
-      {/* Orange ambient glow centre */}
-      <div
-        aria-hidden
-        className="fixed w-[384px] h-[384px] left-1/2 top-[22%] -translate-x-1/2 bg-[#FFB68B] opacity-5 blur-[60px] rounded-full pointer-events-none z-0"
-      />
-      {/* Cyan ambient glow bottom-right */}
-      <div
-        aria-hidden
-        className="fixed w-[256px] h-[256px] right-[10%] bottom-[20%] bg-[#00DBE9] opacity-5 blur-[50px] rounded-full pointer-events-none z-0"
-      />
-      {/* Canvas particle grid */}
-      <div
-        aria-hidden
-        className="fixed inset-0 bg-[linear-gradient(180deg,#FF7A00_1.25%,rgba(255,122,0,0)_1.25%),linear-gradient(90deg,#FF7A00_1.25%,rgba(255,122,0,0)_1.25%)] bg-[size:80px_80px] opacity-[0.03] pointer-events-none z-0"
-      />
-
+    <div className="relative min-h-screen bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] flex flex-col">
       {/* ── NAVBAR ── */}
       <Navbar />
 
-      {/* ── MAIN CONTENT ── */}
-      <main className="relative z-10 flex flex-col items-center pt-[100px] pb-[60px] md:pt-32 lg:pt-40 md:pb-[80px] px-4 md:px-16 max-w-[1440px] mx-auto box-border">
+      <div className="relative flex-1 overflow-x-hidden">
+        {/* ── ATMOSPHERIC ELEMENTS ── */}
+        {/* Orange ambient glow centre */}
+        <div
+          aria-hidden
+          className="fixed w-[384px] h-[384px] left-1/2 top-[22%] -translate-x-1/2 bg-[#FFB68B] opacity-5 blur-[60px] rounded-full pointer-events-none z-0"
+        />
+        {/* Cyan ambient glow bottom-right */}
+        <div
+          aria-hidden
+          className="fixed w-[256px] h-[256px] right-[10%] bottom-[20%] bg-[#00DBE9] opacity-5 blur-[50px] rounded-full pointer-events-none z-0"
+        />
+        {/* Canvas particle grid */}
+        <div
+          aria-hidden
+          className="fixed inset-0 bg-[linear-gradient(180deg,#FF7A00_1.25%,rgba(255,122,0,0)_1.25%),linear-gradient(90deg,#FF7A00_1.25%,rgba(255,122,0,0)_1.25%)] bg-[size:80px_80px] opacity-[0.03] pointer-events-none z-0"
+        />
+
+        {/* ── MAIN CONTENT ── */}
+        <main className="relative z-10 flex flex-col items-center pt-[100px] pb-[60px] md:pt-32 lg:pt-40 md:pb-[80px] px-4 md:px-16 max-w-[1440px] mx-auto box-border">
         {/* ── SUCCESS INDICATOR ── */}
         <div className="relative w-[128px] h-[128px] mb-[48px]">
           {/* Outer decorative border — rotated 45° */}
@@ -221,6 +222,7 @@ export default function SuccessClient({ actualName }: { actualName: string }) {
           </svg>
         </div>
       </main>
+      </div>
     </div>
   );
 }

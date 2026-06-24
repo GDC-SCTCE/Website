@@ -166,16 +166,17 @@ export default function OnboardingClient() {
   };
 
   return (
-    <div className="min-h-dvh bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] relative overflow-x-hidden">
-      {/* ── Ambient blobs ── */}
-      <div className="absolute w-[512px] h-[746px] left-[-136px] top-[79px] bg-[#FFB68B]/3 blur-[60px] rotate-12 pointer-events-none" />
-      <div className="absolute w-[640px] h-[622px] left-[870px] top-[242px] bg-[#00DBE9]/3 blur-[75px] -rotate-12 pointer-events-none" />
-
+    <div className="min-h-dvh bg-gradient-to-br from-[#131314] to-[#1C1B1C] text-[#E5E2E3] flex flex-col">
       {/* ── NAVBAR ── */}
       <Navbar />
 
-      {/* ── MAIN ── */}
-      <main className="max-w-[1440px] mx-auto px-4 md:px-[64px] pb-[80px]">
+      <div className="relative flex-1 overflow-x-hidden">
+        {/* ── Ambient blobs ── */}
+        <div className="absolute w-[512px] h-[746px] left-[-136px] top-[79px] bg-[#FFB68B]/3 blur-[60px] rotate-12 pointer-events-none" />
+        <div className="absolute w-[640px] h-[622px] left-[870px] top-[242px] bg-[#00DBE9]/3 blur-[75px] -rotate-12 pointer-events-none" />
+
+        {/* ── MAIN ── */}
+        <main className="max-w-[1440px] mx-auto px-4 md:px-[64px] pb-[80px] relative">
         <form onSubmit={handleJoinOrLogin}>
         {/* ── PROGRESS HEADER ── */}
         <div className="text-center pt-[48px] md:pt-[96px] mb-[32px] md:mb-[56px]">
@@ -234,6 +235,7 @@ export default function OnboardingClient() {
         </div>
         </form>
       </main>
+      </div>
 
       <OtpModal
         isOpen={showOtpModal}
