@@ -7,6 +7,7 @@ interface OtpModalProps {
   otp: string;
   setOtp: (val: string) => void;
   submitting: boolean;
+  resending?: boolean;
   authError: string;
   onVerify: (e: React.FormEvent) => void;
   onResend?: () => void;
@@ -19,15 +20,16 @@ export default function OtpModal({
   otp,
   setOtp,
   submitting,
+  resending,
   authError,
   onVerify,
   onResend,
 }: OtpModalProps) {
-  const [cooldown, setCooldown] = useState(30);
+  const [cooldown, setCooldown] = useState(60);
 
   useEffect(() => {
     if (!isOpen) {
-      setCooldown(30);
+      setCooldown(60);
       return;
     }
     
@@ -43,7 +45,7 @@ export default function OtpModal({
   const handleResendClick = () => {
     if (onResend) {
       onResend();
-      setCooldown(30);
+      setCooldown(60);
     }
   };
 
@@ -77,10 +79,10 @@ export default function OtpModal({
             <button
               type="button"
               onClick={handleResendClick}
-              disabled={submitting || cooldown > 0}
-              className={`text-[12px] bg-transparent border-none font-mono tracking-[1px] transition-colors ${cooldown > 0 ? 'text-[#A78B7C]/50 cursor-not-allowed' : 'text-[#00DBE9] cursor-pointer hover:text-white disabled:opacity-50 hover:underline hover:underline-offset-4'}`}
+              disabled={submitting || cooldown > 0 || resending}
+              className={`text-[12px] bg-transparent border-none font-mono tracking-[1px] transition-colors ${cooldown > 0 || resending ? 'text-[#A78B7C]/50 cursor-not-allowed' : 'text-[#00DBE9] cursor-pointer hover:text-white disabled:opacity-50 hover:underline hover:underline-offset-4'}`}
             >
-              {cooldown > 0 ? `RESEND IN ${cooldown}S` : "RESEND CODE"}
+              {resending ? "RESENDING..." : cooldown > 0 ? `RESEND IN ${cooldown}S` : "RESEND CODE"}
             </button>
           )}
           <button

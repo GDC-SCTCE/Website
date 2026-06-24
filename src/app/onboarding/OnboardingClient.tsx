@@ -28,6 +28,7 @@ export default function OnboardingClient() {
   const [xpLevel, setXpLevel] = useState<XPLevel>("Newbie");
   
   const [submitting, setSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState("");
   const [authError, setAuthError] = useState("");
@@ -104,13 +105,13 @@ export default function OnboardingClient() {
 
   const handleResendOtp = async () => {
     setAuthError("");
-    setSubmitting(true);
+    setResending(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: { shouldCreateUser: !isLoginMode },
     });
-    setSubmitting(false);
+    setResending(false);
 
     if (error) {
       if (error.message.toLowerCase().includes("rate limit") || error.status === 429) {
@@ -127,10 +128,12 @@ export default function OnboardingClient() {
     if (e) e.preventDefault();
     setSubmitting(true);
     setAuthError("");
+    const currentOtp = otp;
+    setOtp(""); // Clear the input field immediately
     const supabase = createClient();
     const { data, error } = await supabase.auth.verifyOtp({
       email: email.trim(),
-      token: otp,
+      token: currentOtp,
       type: 'email',
     });
 
@@ -244,6 +247,7 @@ export default function OnboardingClient() {
         otp={otp}
         setOtp={setOtp}
         submitting={submitting}
+        resending={resending}
         authError={authError}
         onVerify={handleVerifyOtp}
         onResend={handleResendOtp}
