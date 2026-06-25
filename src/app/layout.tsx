@@ -52,6 +52,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Game Development Club SCTCE",
+    "alternateName": "GDC SCTCE",
     "url": "https://gdcsctce.vercel.app",
   };
 
@@ -60,11 +61,13 @@ export default function RootLayout({
       lang="en"
       className={`${sora.variable} ${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable} h-full dark antialiased`}
     >
-      <body className="min-h-full bg-black text-zinc-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
+      <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
         />
+      </head>
+      <body className="min-h-full bg-black text-zinc-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
         <AuthProvider>
           {children}
           <Footer />
