@@ -19,6 +19,7 @@ export default function QuestAdminClient() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   
   const [quests, setQuests] = useState<Quest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,13 +65,14 @@ export default function QuestAdminClient() {
     }
     loadQuests();
     return () => { isMounted = false; };
-  }, [page, debouncedSearch, activeFilter, statusFilter]);
+  }, [page, debouncedSearch, activeFilter, statusFilter, refreshTrigger]);
 
   const handleDeleteAll = async () => {
     if (window.confirm("WARNING: Are you sure you want to delete ALL quests? This cannot be undone!")) {
       setIsDeleting(true);
       await deleteAllQuests();
       setSelectedQuest(null);
+      setRefreshTrigger(prev => prev + 1);
       setIsDeleting(false);
     }
   };
@@ -83,6 +85,7 @@ export default function QuestAdminClient() {
       if (selectedQuest?.id === id) {
         setSelectedQuest(null);
       }
+      setRefreshTrigger(prev => prev + 1);
       setIsDeleting(false);
     }
   };
@@ -276,7 +279,7 @@ export default function QuestAdminClient() {
               </button>
             </div>
             <div className="p-6 flex-1 overflow-y-auto">
-              <QuestForm key={selectedQuest.id || "new"} quest={selectedQuest.id ? selectedQuest : undefined} onComplete={() => setSelectedQuest(null)} />
+              <QuestForm key={selectedQuest.id || "new"} quest={selectedQuest.id ? selectedQuest : undefined} onComplete={() => { setSelectedQuest(null); setRefreshTrigger(prev => prev + 1); }} />
             </div>
           </div>
         </div>

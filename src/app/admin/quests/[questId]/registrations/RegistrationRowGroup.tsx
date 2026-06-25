@@ -138,7 +138,7 @@ export function RegistrationRowGroup({
                   </td>
                   <td className="p-4 text-right w-1/4 align-middle">
                     <div className="flex justify-end gap-2 flex-wrap items-center">
-                      {(r.status === "REGISTERED" || r.status === "ATTENDED") && (
+                      {(r.status === "REGISTERED" || r.status === "ATTENDED" || r.status === "NOT_ATTENDED") && (
                         <input
                           type="number"
                           placeholder="Pts"
@@ -148,7 +148,7 @@ export function RegistrationRowGroup({
                         />
                       )}
                       
-                      {r.status === "REGISTERED" && (
+                      {(r.status === "REGISTERED" || r.status === "NOT_ATTENDED") && (
                         <button 
                           onClick={() => onUpdateAttendance(r.userId, r.questId, "ATTENDED", parseInt(currentInput) || 0)}
                           disabled={loadingId === memberKey}

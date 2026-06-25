@@ -1,4 +1,4 @@
-import { Trophy, Crown, Medal, Award, Sparkles } from "lucide-react";
+import { Trophy, Crown, Medal, Award, Sparkles, Star } from "lucide-react";
 
 export interface WinnerGroup {
   name: string;
@@ -61,13 +61,13 @@ export function QuestChampionsList({ winners, loadingWinners }: QuestChampionsLi
                 bgStyle = "bg-[#171513]";
                 textStyle = "text-[#E0C0AF]";
                 rankText = "3rd Place";
-                badgeIcon = <Medal className="w-5 h-5 text-[#CD7F32]" />;
+                badgeIcon = <Award className="w-5 h-5 text-[#CD7F32]" />;
               } else {
                 borderStyle = "border-[#3A2D25]";
                 bgStyle = "bg-[#131314]";
                 textStyle = "text-[#E5E2E3]";
                 rankText = `${index + 1}th Place`;
-                badgeIcon = <Award className="w-5 h-5 text-[#A78B7C]" />;
+                badgeIcon = <Star className="w-5 h-5 text-[#A78B7C]" />;
               }
 
               return (
@@ -75,17 +75,23 @@ export function QuestChampionsList({ winners, loadingWinners }: QuestChampionsLi
                   key={index}
                   className={`border ${borderStyle} ${bgStyle} p-4 flex items-center justify-between gap-4 transition-all duration-300 hover:scale-[1.01]`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-black/40 border border-[#3A2D25]">
                       {badgeIcon}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="font-mono text-[9px] uppercase tracking-wider text-[#A78B7C]">{rankText}</p>
-                      <h4 className={`font-sora font-bold text-[15px] ${textStyle} tracking-wide mt-0.5`}>
+                      <h4 
+                        className={`font-sora font-bold text-[15px] ${textStyle} tracking-wide mt-0.5 break-words`}
+                        title={winner.name}
+                      >
                         {winner.name}
                       </h4>
                       {winner.isTeam && (
-                        <p className="font-mono text-[10px] text-[#A78B7C] mt-1 leading-relaxed">
+                        <p 
+                          className="font-mono text-[10px] text-[#A78B7C] mt-1 leading-relaxed break-words"
+                          title={`Members: ${winner.members.map(m => m.fullName).join(", ")}`}
+                        >
                           Members: {winner.members.map(m => m.fullName).join(", ")}
                         </p>
                       )}
