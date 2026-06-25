@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef, use, Suspense } from "react";
 import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import Avatar from "@/components/Avatar";
 import { useInView } from "@/hooks/useInView";
-import type { Alumni, User } from "@prisma/client";
+import type { Alumni } from "@prisma/client";
+import type { LeaderboardUser } from "./LeaderboardClient";
 import { AlumniDynamicSkeleton } from "./LeaderboardDynamicSkeleton";
 
 // ─── Legend Card ─────────────────────────────────────────────────────────────
@@ -63,7 +64,7 @@ function LegendCard({ legend, delay, visible }: { legend: Alumni; delay: number;
   );
 }
 
-function DynamicAlumniContent({ leaderboardDataPromise, legendsVisible }: { leaderboardDataPromise: Promise<{ users: User[], alumni: Alumni[] }>, legendsVisible: boolean }) {
+function DynamicAlumniContent({ leaderboardDataPromise, legendsVisible }: { leaderboardDataPromise: Promise<{ users: LeaderboardUser[], alumni: Alumni[] }>, legendsVisible: boolean }) {
   const { alumni } = use(leaderboardDataPromise);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -188,7 +189,7 @@ function DynamicAlumniContent({ leaderboardDataPromise, legendsVisible }: { lead
   );
 }
 
-export default function AlumniSection({ leaderboardDataPromise }: { leaderboardDataPromise: Promise<{ users: User[], alumni: Alumni[] }> }) {
+export default function AlumniSection({ leaderboardDataPromise }: { leaderboardDataPromise: Promise<{ users: LeaderboardUser[], alumni: Alumni[] }> }) {
   const { ref: legendsRef, inView: legendsVisible } = useInView(0.15);
 
   return (

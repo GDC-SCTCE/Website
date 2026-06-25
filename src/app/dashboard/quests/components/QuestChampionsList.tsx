@@ -6,7 +6,6 @@ export interface WinnerGroup {
   points: number;
   members: Array<{
     fullName: string;
-    email: string;
     rollNo: string;
     xpLevel: string;
   }>;

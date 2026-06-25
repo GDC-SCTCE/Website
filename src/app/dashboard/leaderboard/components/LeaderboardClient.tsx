@@ -6,6 +6,8 @@ import type { User, Alumni } from "@prisma/client";
 import { fetchLeaderboard } from "@/actions/leaderboard";
 import { LeaderboardDynamicSkeleton } from "./LeaderboardDynamicSkeleton";
 
+export type LeaderboardUser = Pick<User, "id" | "fullName" | "rollNo" | "academicYear" | "xpLevel" | "score">;
+
 // ─── Score opacity by rank ─────────────────────────────────────────────────
 const SCORE_OPACITY: Record<number, string> = {
   1: "text-[#E5E2E3]",
@@ -34,7 +36,7 @@ function RankDisplay({ rank }: { rank: number }) {
 }
 
 // ─── Leaderboard Row ──────────────────────────────────────────────────────────
-function LeaderRow({ user, rank, delay, visible }: { user: User; rank: number; delay: number; visible: boolean }) {
+function LeaderRow({ user, rank, delay, visible }: { user: LeaderboardUser; rank: number; delay: number; visible: boolean }) {
   const isTopThree = rank <= 3;
 
   return (
@@ -96,12 +98,12 @@ function DynamicLeaderboardRows({
   searchQuery, 
   mounted 
 }: { 
-  leaderboardDataPromise: Promise<{ users: User[], alumni: Alumni[] }>; 
+  leaderboardDataPromise: Promise<{ users: LeaderboardUser[], alumni: Alumni[] }>; 
   searchQuery: string;
   mounted: boolean;
 }) {
   const { users } = React.use(leaderboardDataPromise);
-  const [loadedUsers, setLoadedUsers] = useState<User[]>(users);
+  const [loadedUsers, setLoadedUsers] = useState<LeaderboardUser[]>(users);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(users.length === 10);
   const [isLoading, setIsLoading] = useState(false);
@@ -163,7 +165,7 @@ function DynamicLeaderboardRows({
   );
 }
 
-export default function LeaderboardClient({ leaderboardDataPromise }: { leaderboardDataPromise: Promise<{ users: User[], alumni: Alumni[] }> }) {
+export default function LeaderboardClient({ leaderboardDataPromise }: { leaderboardDataPromise: Promise<{ users: LeaderboardUser[], alumni: Alumni[] }> }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
 

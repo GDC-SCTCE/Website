@@ -144,7 +144,6 @@ export async function getQuestWinners(questId: string) {
       user: {
         select: {
           fullName: true,
-          email: true,
           rollNo: true,
           xpLevel: true,
         },
@@ -159,7 +158,6 @@ export async function getQuestWinners(questId: string) {
       points: number;
       members: Array<{
         fullName: string;
-        email: string;
         rollNo: string;
         xpLevel: string;
       }>;
@@ -178,7 +176,6 @@ export async function getQuestWinners(questId: string) {
     }
     groups[key].members.push({
       fullName: reg.user.fullName,
-      email: reg.user.email,
       rollNo: reg.user.rollNo,
       xpLevel: reg.user.xpLevel,
     });

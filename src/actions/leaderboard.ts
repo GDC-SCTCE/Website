@@ -15,6 +15,14 @@ export async function fetchLeaderboard(skip: number, take: number, search: strin
     },
     orderBy: { score: "desc" },
     skip,
-    take
+    take,
+    select: {
+      id: true,
+      fullName: true,
+      rollNo: true,
+      academicYear: true,
+      xpLevel: true,
+      score: true
+    }
   });
 }
