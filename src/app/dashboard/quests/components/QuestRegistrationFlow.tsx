@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, Bell, Users } from "lucide-react";
+import { X, Users } from "lucide-react";
 import QRCode from "react-qr-code";
 import { Quest } from "@/types";
 import { registerForQuest, validateQuestRegistration } from "@/actions/userActions";
@@ -11,12 +11,11 @@ import QuestButton from "./QuestButton";
 interface QuestRegistrationFlowProps {
   quest: Quest;
   user: any;
-  isUpcoming: boolean;
   onClose: () => void;
   onSuccess: (status: string, newSeatsTaken: number) => void;
 }
 
-export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSuccess }: QuestRegistrationFlowProps) {
+export function QuestRegistrationFlow({ quest, user, onClose, onSuccess }: QuestRegistrationFlowProps) {
   const router = useRouter();
   const [registering, setRegistering] = useState(false);
   const [regError, setRegError] = useState("");
@@ -136,25 +135,7 @@ export function QuestRegistrationFlow({ quest, user, isUpcoming, onClose, onSucc
     <div className="bg-[#131314] border border-[#FF7A00] p-6 relative mt-4 overflow-hidden shrink-0">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#93000A] via-[#FF7A00] to-[#FDD400]" />
 
-      {isUpcoming ? (
-        <>
-          <h3 className="font-sora text-[16px] text-[#FFB68B] mb-4">QUEST LOCKED</h3>
-          <button
-            onClick={() => { 
-              if (!user) {
-                const currentPath = window.location.pathname + window.location.search;
-                router.push(`/onboarding?redirect=${encodeURIComponent(currentPath)}`); 
-              } else {
-                alert("Notification enabled! We will notify you when this quest starts.");
-              }
-            }}
-            className="w-full h-[48px] border border-[#FFB68B] bg-[#1C1B1C] text-[#FFB68B] flex items-center justify-center gap-2 hover:bg-[#FFB68B]/10 transition-colors"
-          >
-            <Bell className="w-4 h-4 text-[#FFB68B]" />
-            <span className="font-mono text-[12px] tracking-[1.2px] text-[#FFB68B]">NOTIFY ME</span>
-          </button>
-        </>
-      ) : showPayment ? (
+      {showPayment ? (
         // PAYMENT FLOW
         <div className="flex flex-col gap-6">
           <div className="flex justify-between items-center border-b border-[#584235] pb-4">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Clock, Users, User, CreditCard, Calendar, MapPin, Trophy, Crown, Medal, Award, Sparkles } from "lucide-react";
+import { X, Clock, Users, User, CreditCard, Calendar, MapPin } from "lucide-react";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { Quest } from "@/types";
 import { useCountdown } from "@/hooks/useCountdown";
@@ -14,8 +14,6 @@ function TimerDisplay({ targetDate, status }: { targetDate: Date | null; status:
   const targetMs = targetDate ? new Date(targetDate).getTime() : 0;
   const timer = useCountdown(targetMs);
   const pad = (n: number) => String(n).padStart(2, "0");
-  const isUpcoming = status === "UPCOMING";
-
   const isZero = timer.d === 0 && timer.h === 0 && timer.m === 0 && timer.s === 0;
 
   if (isZero) {
@@ -39,9 +37,9 @@ function TimerDisplay({ targetDate, status }: { targetDate: Date | null; status:
       </div>
       <div>
         <p className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px] uppercase">
-          {isUpcoming ? "Unlocks In" : "Time Remaining"}
+          Time Remaining
         </p>
-        <p className={`font-mono text-[14px] font-bold mt-0.5 ${isUpcoming ? "text-[#E5E2E3]" : "text-[#FFB68B]"}`}>
+        <p className="font-mono text-[14px] font-bold mt-0.5 text-[#FFB68B]">
           {pad(timer.d)}d : {pad(timer.h)}h : {pad(timer.m)}m
         </p>
       </div>
@@ -60,7 +58,6 @@ interface QuestDetailsModalProps {
 // WinnerGroup interface moved to QuestChampionsList
 
 export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: QuestDetailsModalProps) {
-  const isUpcoming = quest.status === "UPCOMING";
   const isCompleted = quest.status === "COMPLETED";
 
   const existingRegStatus = quest.registrations && quest.registrations.length > 0
@@ -255,7 +252,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
             )}
 
             {!isAdmin && !existingRegStatus && (
-              quest.capacity !== null && quest.capacity !== undefined && (quest.seatsTaken || 0) >= quest.capacity ? (
+               quest.capacity !== null && quest.capacity !== undefined && (quest.seatsTaken || 0) >= quest.capacity ? (
                 <div className="bg-[#1C1B1C] border border-[#584235] p-6 text-center shrink-0">
                   <p className="font-mono text-[#E5E2E3] text-[14px] uppercase">
                     QUEST STATUS: <span className="font-bold ml-2 text-[#FFB68B]">MAX CAPACITY REACHED</span>
@@ -265,7 +262,6 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
                 <QuestRegistrationFlow
                   quest={quest}
                   user={user}
-                  isUpcoming={isUpcoming}
                   onClose={onClose}
                   onSuccess={(msg, newSeatsTaken) => {
                     if (onSuccess) onSuccess(msg, newSeatsTaken);

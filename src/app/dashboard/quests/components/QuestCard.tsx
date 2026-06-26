@@ -8,6 +8,7 @@ import { Bell } from "lucide-react";
 import { Quest } from "@/types";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 import { QuestDetailsModal } from "./QuestDetailsModal";
+import { registerForNotification } from "@/actions/notificationActions";
 
 function QuestCardTimer({ targetDate, status }: { targetDate: Date | null; status: string }) {
   const targetMs = targetDate ? new Date(targetDate).getTime() : 0;
@@ -54,6 +55,7 @@ export function QuestCard({
 }: QuestCardProps) {
   const router = useRouter();
   const isUpcoming = quest.status === "UPCOMING";
+  const [isRegisteringNotify, setIsRegisteringNotify] = React.useState(false);
   const imageAlt = quest.title;
   const seatsTaken = quest.seatsTaken || 0;
   const seatsTotal = quest.capacity || 30;
@@ -70,11 +72,11 @@ export function QuestCard({
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get("open") === quest.id) {
+      if (urlParams.get("open") === quest.id && !isUpcoming) {
         setShowDetails(true);
       }
     }
-  }, [quest.id]);
+  }, [quest.id, isUpcoming]);
 
   const openModal = () => {
     setShowDetails(true);
@@ -186,19 +188,38 @@ export function QuestCard({
         {!isAdmin && (
           isUpcoming ? (
             <button
-              onClick={(e) => {
+              disabled={isRegisteringNotify}
+              onClick={async (e) => {
                 e.stopPropagation();
                 if (!user) {
                   router.push("/onboarding");
                 } else {
-                  alert("Notification enabled! We will notify you when this quest starts.");
+                  setIsRegisteringNotify(true);
+                  try {
+                    const res = await registerForNotification(quest.id);
+                    if (res.success) {
+                      if (res.message === "Already registered") {
+                        alert("You are already on the notification list for this quest!");
+                      } else {
+                        alert("Notification enabled! We will notify you when this quest starts.");
+                      }
+                    }
+                  } catch (err: any) {
+                    alert(err.message || "Failed to register for notifications. Please try again.");
+                  } finally {
+                    setIsRegisteringNotify(false);
+                  }
                 }
               }}
-              className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] border-2 border-[#FFB68B] bg-[#1C1B1C] text-[#FFB68B] flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/10 cursor-pointer"
+              className="mt-4 md:mt-6 mb-4 md:mb-6 w-full h-[56px] border-2 border-[#FFB68B] bg-[#1C1B1C] text-[#FFB68B] flex items-center justify-center gap-2 transition-colors hover:bg-[#FFB68B]/10 cursor-pointer disabled:opacity-50"
             >
-              <Bell className="w-4 h-5 text-[#FFB68B]" />
+              {isRegisteringNotify ? (
+                <div className="w-5 h-5 border-2 border-[#FFB68B] border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Bell className="w-4 h-5 text-[#FFB68B]" />
+              )}
               <span className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#FFB68B]">
-                Notify Me
+                {isRegisteringNotify ? "REGISTERING..." : "NOTIFY ME"}
               </span>
             </button>
           ) : (
