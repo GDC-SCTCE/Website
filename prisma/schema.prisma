@@ -97,6 +97,7 @@ model Quest {
 
   registrations Registration[]
   ratings       QuestRating[]
+  notifications QuestNotification[]
 
   createdAt    DateTime  @default(now())
 }
@@ -180,4 +181,14 @@ model Tool {
   iconUrl     String?       // URL to the tool's logo/icon in Supabase Storage
 
   createdAt   DateTime     @default(now())
+}
+
+model QuestNotification {
+  id        String   @id @default(uuid())
+  email     String
+  questId   String
+  quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([email, questId])
 }

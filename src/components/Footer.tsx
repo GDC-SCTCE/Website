@@ -65,10 +65,10 @@ export default function Footer() {
                               SUPPORT PROTOCOL
                             </div>
                             <a
-                              href="mailto:gdc.sctce@gmail.com"
+                              href="mailto:gdcsctce@gmail.com"
                               className="font-mono text-[12px] text-[#E0C0AF] hover:text-[#FFB68B] transition-colors duration-200 break-all no-underline block"
                             >
-                              gdc.sctce@gmail.com
+                              gdcsctce@gmail.com
                             </a>
                           </div>
 
