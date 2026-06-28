@@ -6,7 +6,7 @@ import type { User, Alumni } from "@prisma/client";
 import { fetchLeaderboard } from "@/actions/leaderboard";
 import { LeaderboardDynamicSkeleton } from "./LeaderboardDynamicSkeleton";
 
-export type LeaderboardUser = Pick<User, "id" | "fullName" | "rollNo" | "academicYear" | "xpLevel" | "score">;
+export type LeaderboardUser = Pick<User, "id" | "fullName" | "rollNo" | "academicYear" | "xpLevel" | "score"> & { rank?: number };
 
 // ─── Score opacity by rank ─────────────────────────────────────────────────
 const SCORE_OPACITY: Record<number, string> = {
@@ -144,7 +144,7 @@ function DynamicLeaderboardRows({
   return (
     <>
       {loadedUsers.map((user, idx) => (
-        <LeaderRow key={user.id} user={user} rank={idx + 1} delay={idx * 80} visible={mounted} />
+        <LeaderRow key={user.id} user={user} rank={user.rank ?? (idx + 1)} delay={idx * 80} visible={mounted} />
       ))}
       {loadedUsers.length === 0 && !isLoading && (
           <div className="py-20 text-center font-mono text-[#E0C0AF]">No scores found.</div>

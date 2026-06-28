@@ -58,6 +58,8 @@ model User {
   ratings       QuestRating[]
   
   createdAt    DateTime  @default(now())
+
+  @@index([score(sort: Desc)])
 }
 
 model TeamMember {
