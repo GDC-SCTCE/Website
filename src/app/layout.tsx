@@ -27,13 +27,13 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://gdcsctce.vercel.app"),
   title: "Game Development Club SCTCE",
-  description: "Initialize your game dev protocol. Track quests, build games, and climb the leaderboard at the GDSC SCT (GDG on Campus SCTCE) Game Dev Club.",
+  description: "Initialize your game dev protocol. Track quests, build games, and climb the leaderboard at the GDC SCT (GDC on Campus SCTCE) Game Dev Club.",
   icons: {
     icon: "/favicon.ico",
   },
   openGraph: {
     title: "Game Development Club SCTCE",
-    description: "Initialize your game dev protocol. Track quests, build games, and climb the leaderboard at the GDSC SCT (GDG on Campus SCTCE) Game Dev Club.",
+    description: "Initialize your game dev protocol. Track quests, build games, and climb the leaderboard at the GDC SCT (GDC on Campus SCTCE) Game Dev Club.",
     siteName: "Game Development Club SCTCE",
     url: "https://gdcsctce.vercel.app",
     type: "website",
