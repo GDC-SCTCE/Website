@@ -118,6 +118,6 @@ export async function updateUserProfile(data: {
 
   revalidatePath("/dashboard/profile");
   revalidatePath("/dashboard/inventory");
-  return { success: true, user: updatedUser };
+  return { success: true };
 }
 

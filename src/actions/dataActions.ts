@@ -13,10 +13,7 @@ export async function fetchDashboardData() {
     orderBy: { createdAt: "desc" },
     include: {
       registrations: user
-        ? { where: { userId: user.id } }
-        : false,
-      ratings: user
-        ? { where: { userId: user.id } }
+        ? { where: { userId: user.id }, select: { status: true } }
         : false,
     },
   });
@@ -59,8 +56,8 @@ export async function getPaginatedConqueredQuests(
       skip: page * pageSize,
       take: pageSize,
       include: {
-        registrations: user ? { where: { userId: user.id } } : false,
-        ratings: user ? { where: { userId: user.id } } : false,
+        registrations: user ? { where: { userId: user.id }, select: { status: true, pointsAwarded: true } } : false,
+        ratings: user ? { where: { userId: user.id }, select: { rating: true } } : false,
       },
     }),
     // Count based on current filter

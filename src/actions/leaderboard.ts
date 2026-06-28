@@ -12,7 +12,7 @@ export async function fetchLeaderboard(skip: number, take: number, search: strin
   const query = Prisma.sql`
     WITH RankedUsers AS (
       SELECT id, "fullName", "rollNo", "academicYear", "xpLevel", score,
-             (RANK() OVER (ORDER BY score DESC))::int as rank
+             (DENSE_RANK() OVER (ORDER BY score DESC))::int as rank
       FROM "User"
       WHERE score > -1
     )
