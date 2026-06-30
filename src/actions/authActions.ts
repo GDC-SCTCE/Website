@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { validateUserData } from "@/utils/validation";
+import { cache } from "react";
 
 export async function syncUserToDatabase(data: any, accessToken?: string) {
   const supabase = await createClient();
@@ -55,8 +56,6 @@ export async function syncUserToDatabase(data: any, accessToken?: string) {
 
   return { success: true, user: dbUser };
 }
-
-import { cache } from "react";
 
 export const verifyUser = cache(async () => {
   const supabase = await createClient();

@@ -8,6 +8,7 @@ import { validateUserData } from "@/utils/validation";
 import ProfileSummaryCard from "./components/ProfileSummaryCard";
 import CyberInput from "./components/CyberInput";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { ProfileDynamicSkeleton } from "./components/ProfileDynamicSkeleton";
 
 interface ProfileClientProps {
@@ -299,11 +300,23 @@ function DynamicProfileContent({ userPromise, mounted }: { userPromise: Promise<
 
 export default function ProfileClient({ userPromise }: ProfileClientProps) {
   const [mounted, setMounted] = useState(false);
+  const { user: authUser, loading } = useAuth();
+  const router = useRouter();
 
   // Entrance animation trigger
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!loading && !authUser) {
+      router.replace("/onboarding");
+    }
+  }, [loading, authUser, router]);
+
+  if (loading || !authUser) {
+    return null;
+  }
 
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen relative overflow-hidden">
