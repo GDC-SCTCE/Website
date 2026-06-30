@@ -12,7 +12,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/dashboard/members",
     "/dashboard/leaderboard",
     "/dashboard/inventory",
-    "/dashboard/profile",
     "/terms",
     "/onboarding",
   ];
