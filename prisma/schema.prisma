@@ -129,6 +129,7 @@ model Registration {
   createdAt DateTime @default(now())
   
   @@unique([userId, questId])
+  @@index([questId, status, pointsAwarded])
 }
 
 model Game {

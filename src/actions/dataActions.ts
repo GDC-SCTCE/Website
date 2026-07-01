@@ -148,40 +148,35 @@ export async function getQuestWinners(questId: string) {
     },
   })) as any[];
 
-  const groups: {
-    [key: string]: {
-      name: string;
-      isTeam: boolean;
-      points: number;
-      members: Array<{
-        fullName: string;
-        rollNo: string;
-        xpLevel: string;
-      }>;
-    };
-  } = {};
+  type MemberType = { fullName: string; rollNo: string; xpLevel: string };
+  type GroupType = { name: string; isTeam: boolean; points: number; members: MemberType[] };
+  
+  const groups = new Map<string, GroupType>();
 
   for (const reg of registrations) {
     const key = reg.teamName ? `team:${reg.teamName}` : `user:${reg.userId}`;
-    if (!groups[key]) {
-      groups[key] = {
+    
+    if (!groups.has(key)) {
+      groups.set(key, {
         name: reg.teamName || reg.user.fullName,
         isTeam: !!reg.teamName,
         points: 0,
         members: [],
-      };
+      });
     }
-    groups[key].members.push({
+    
+    const group = groups.get(key)!;
+    group.members.push({
       fullName: reg.user.fullName,
       rollNo: reg.user.rollNo,
       xpLevel: reg.user.xpLevel,
     });
     
     // Sum the points of all individuals in the team
-    groups[key].points += reg.pointsAwarded;
+    group.points += reg.pointsAwarded;
   }
 
-  const sorted = Object.values(groups).sort((a, b) => b.points - a.points);
+  const sorted = Array.from(groups.values()).sort((a, b) => b.points - a.points);
   return sorted.slice(0, 3);
 }
 
