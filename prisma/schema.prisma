@@ -30,9 +30,12 @@ enum QuestCategory {
 }
 
 enum QuestStatus {
+  PENDING
+  APPROVED
   UPCOMING
   ACTIVE
   COMPLETED
+  REJECTED
 }
 
 enum RegistrationStatus {
@@ -56,6 +59,8 @@ model User {
   
   registrations Registration[]
   ratings       QuestRating[]
+  ideas         Idea[]
+  proposedQuests Quest[]
   
   createdAt    DateTime  @default(now())
 
@@ -71,6 +76,17 @@ model TeamMember {
   stats       Json?
   gamePreview Json?
   createdAt   DateTime   @default(now())
+}
+
+model Idea {
+  id                     String   @id @default(uuid())
+  title                  String
+  description            String
+  tags                   String[]
+  authorId               String
+  author                 User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  lookingForCollaborators Boolean  @default(false)
+  createdAt              DateTime @default(now())
 }
 
 model Quest {
@@ -96,6 +112,9 @@ model Quest {
   upiLink      String?
   
   recapUrl     String?  
+
+  proposedById String?
+  proposedBy   User?     @relation(fields: [proposedById], references: [id], onDelete: SetNull)
 
   registrations Registration[]
   ratings       QuestRating[]
@@ -142,6 +161,7 @@ model Game {
   duration        String?  // e.g., "2h"
   year            String?  // e.g., "2024", "2025"
   coverUrl        String?  // Image URL
+  screenshotUrls  String[]
   playUrl         String?  // Link to the game site
   developer       String
   isEditorsChoice Boolean  @default(false)

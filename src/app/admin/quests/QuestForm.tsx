@@ -6,6 +6,7 @@ import { handleImageUpload } from "@/utils/uploadHelper";
 import { filters } from "@/constants/quests";
 import GDCPlaceholder from "@/components/GDCPlaceholder";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import { QuestStatus } from "@prisma/client";
 
 export default function QuestForm({ quest, onComplete }: { quest?: any, onComplete?: () => void }) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -112,9 +113,9 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
             onChange={(e) => setStatus(e.target.value)} 
             className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]"
           >
-            <option value="ACTIVE">ACTIVE</option>
-            <option value="UPCOMING">UPCOMING</option>
-            <option value="COMPLETED">COMPLETED</option>
+            {Object.values(QuestStatus).map(statusValue => (
+              <option key={statusValue} value={statusValue}>{statusValue}</option>
+            ))}
           </select>
         </div>
       </div>

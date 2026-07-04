@@ -11,6 +11,7 @@ import { Quest, QuestFilterCategory } from "@/types";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { AdminQuestSkeleton } from "./AdminQuestSkeleton";
 import Image from "next/image";
+import { QuestStatus } from "@prisma/client";
 
 export default function QuestAdminClient() {
   const [activeFilter, setActiveFilter] = useState<QuestFilterCategory>("All");
@@ -140,7 +141,7 @@ export default function QuestAdminClient() {
               onChange={(e) => handleStatusChange(e.target.value)}
               className="bg-[#131314] border border-[#584235] h-[36px] px-2 text-[#FFB68B] font-mono text-[12px] outline-none focus:border-[#FF7A00] min-w-[120px]"
             >
-              {["ALL", "ACTIVE", "UPCOMING", "COMPLETED"].map(status => (
+              {["ALL", ...Object.values(QuestStatus)].map(status => (
                 <option key={status} value={status}>{status}</option>
               ))}
             </select>
