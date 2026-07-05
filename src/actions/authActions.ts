@@ -21,12 +21,11 @@ export async function syncUserToDatabase(data: any, accessToken?: string) {
 
   const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()) ?? [];
   if (adminEmails.includes(user.email)) {
-    return { success: true, isAdmin: true };
+    return { success: true };
   }
 
-  let dbUser = await prisma.user.findUnique({ where: { email: user.email } });
-  
-  if (!dbUser && data) {
+  if (data) {
+    // Registration mode: try to create directly
     const validationError = validateUserData({
       fullName: data.fullName,
       phone: data.phone,
@@ -38,23 +37,37 @@ export async function syncUserToDatabase(data: any, accessToken?: string) {
       throw new Error(validationError);
     }
 
-    dbUser = await prisma.user.create({
-      data: {
-        id: user.id, // match supabase auth id
-        email: user.email,
-        fullName: data.fullName,
-        phone: data.phone,
-        rollNo: data.rollNo,
-        academicYear: data.year,
-        tools: data.selectedTools,
-        xpLevel: data.xpLevel
+    try {
+      await prisma.user.create({
+        data: {
+          id: user.id, // match supabase auth id
+          email: user.email,
+          fullName: data.fullName,
+          phone: data.phone,
+          rollNo: data.rollNo,
+          academicYear: data.year,
+          tools: data.selectedTools,
+          xpLevel: data.xpLevel
+        }
+      });
+    } catch (error: any) {
+      // P2002 is Prisma's unique constraint failed error (User already exists)
+      if (error.code !== 'P2002') {
+        throw error;
       }
+    }
+  } else {
+    // Login mode: verify they exist in the DB
+    const dbUser = await prisma.user.findUnique({ 
+      where: { id: user.id },
+      select: { id: true }
     });
-  } else if (!dbUser && !data) {
-    throw new Error("User not found in database. Please sign up.");
+    if (!dbUser) {
+      throw new Error("User not found in database. Please sign up.");
+    }
   }
 
-  return { success: true, user: dbUser };
+  return { success: true };
 }
 
 export const verifyUser = cache(async () => {
