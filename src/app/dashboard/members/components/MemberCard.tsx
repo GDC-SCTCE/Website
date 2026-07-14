@@ -12,7 +12,7 @@ export function MemberCard({
   visible: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }) {
-  const preventActions = (e) => {
+  const preventActions = (e :React.SyntheticEvent) => {
     e.preventDefault();
   };
   

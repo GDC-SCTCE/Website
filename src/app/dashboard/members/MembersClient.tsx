@@ -205,7 +205,7 @@ export default function MembersClient({ membersPromise }: { membersPromise: Prom
       }, 60);
     }, 220);
   };
-  const preventActions = (e) => {
+  const preventActions = (e :React.SyntheticEvent) => {
     e.preventDefault();
   };
   return (
