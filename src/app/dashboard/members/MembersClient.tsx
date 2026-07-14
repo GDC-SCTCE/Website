@@ -8,6 +8,7 @@ import { LeaderCard } from "./components/LeaderCard";
 import { MemberCard } from "./components/MemberCard";
 import DepartmentFilter from "@/components/DepartmentFilter";
 import { StatBar } from "./components/StatBar";
+import { useScreenshotDeterrent } from "@/hooks/useScreenshotDeterrent";
 
 import { LeadersDynamicSkeleton, MembersGridDynamicSkeleton } from "./components/MembersDynamicSkeleton";
 
@@ -27,12 +28,12 @@ function DynamicLeadersContent({
   return (
     <div className="px-6 md:px-8 xl:px-16 mt-[40px] flex flex-col lg:flex-row gap-[32px] xl:gap-[57px] items-center lg:items-start">
       {leads.map((lead: any, idx: number) => (
-        <LeaderCard 
-          key={lead.id} 
-          member={lead} 
-          delay={idx * 150} 
-          visible={mounted} 
-          onClick={(e) => handleMemberClick(lead, e)} 
+        <LeaderCard
+          key={lead.id}
+          member={lead}
+          delay={idx * 150}
+          visible={mounted}
+          onClick={(e) => handleMemberClick(lead, e)}
         />
       ))}
     </div>
@@ -61,12 +62,12 @@ function DynamicMembersGrid({
   return (
     <div className="px-6 md:px-8 xl:px-16 pb-[80px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[40px_20px] lg:gap-[80px_20px] justify-items-center sm:justify-items-start justify-between">
       {filteredMembers.map((member: any, idx: number) => (
-        <MemberCard 
-          key={member.id} 
-          member={member} 
-          delay={idx * 60} 
-          visible={gridVisible} 
-          onClick={(e) => handleMemberClick(member, e)} 
+        <MemberCard
+          key={member.id}
+          member={member}
+          delay={idx * 60}
+          visible={gridVisible}
+          onClick={(e) => handleMemberClick(member, e)}
         />
       ))}
       {filteredMembers.length === 0 && (
@@ -205,9 +206,11 @@ export default function MembersClient({ membersPromise }: { membersPromise: Prom
       }, 60);
     }, 220);
   };
-  const preventActions = (e :React.SyntheticEvent) => {
+  const preventActions = (e: React.SyntheticEvent) => {
     e.preventDefault();
   };
+  const [isBlurred, setIsBlurred] = useState(false);
+  useScreenshotDeterrent(setIsBlurred);
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
       <div className="max-w-[1440px] mx-auto w-full">
@@ -229,9 +232,8 @@ export default function MembersClient({ membersPromise }: { membersPromise: Prom
 
           {/* Heading */}
           <h1
-            className={`font-sora font-extrabold text-[40px] md:text-[80px] leading-[48px] md:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 mb-[40px] md:mb-[60px] transition-all duration-700 ${
-              mounted ? "animate-glitch" : ""
-            }`}
+            className={`font-sora font-extrabold text-[40px] md:text-[80px] leading-[48px] md:leading-[80px] tracking-[-3.2px] uppercase text-[#E5E2E3] m-0 mb-[40px] md:mb-[60px] transition-all duration-700 ${mounted ? "animate-glitch" : ""
+              }`}
             style={{
               opacity: mounted ? 1 : 0,
               transform: mounted ? "translateY(0)" : "translateY(24px)",
@@ -245,10 +247,10 @@ export default function MembersClient({ membersPromise }: { membersPromise: Prom
 
         {/* ── LEADER CARDS ── */}
         <React.Suspense fallback={<LeadersDynamicSkeleton />}>
-          <DynamicLeadersContent 
-            membersPromise={membersPromise} 
-            mounted={mounted} 
-            handleMemberClick={handleMemberClick} 
+          <DynamicLeadersContent
+            membersPromise={membersPromise}
+            mounted={mounted}
+            handleMemberClick={handleMemberClick}
           />
         </React.Suspense>
 
@@ -280,24 +282,24 @@ export default function MembersClient({ membersPromise }: { membersPromise: Prom
 
         {/* ── MEMBER CARDS GRID ── */}
         <React.Suspense fallback={<MembersGridDynamicSkeleton />}>
-          <DynamicMembersGrid 
-            membersPromise={membersPromise} 
-            activeFilter={activeFilter} 
-            gridVisible={gridVisible} 
-            handleMemberClick={handleMemberClick} 
+          <DynamicMembersGrid
+            membersPromise={membersPromise}
+            activeFilter={activeFilter}
+            gridVisible={gridVisible}
+            handleMemberClick={handleMemberClick}
           />
         </React.Suspense>
       </div>
 
       {/* ── MEMBER DETAIL DIALOG (MODAL) ── */}
       {selectedMember && (
-        <div 
+        <div
           ref={overlayRef}
           onClick={handleClose}
           className="fixed inset-0 z-[250] bg-black/80 flex items-center justify-center p-4"
         >
           {/* Modal Card */}
-          <div 
+          <div
             ref={modalRef}
             onClick={(e) => e.stopPropagation()}
             className="bg-[#1C1B1C] border border-[#201F20] relative w-full max-w-[680px] shadow-2xl flex flex-col md:flex-row overflow-hidden rounded-none"
@@ -320,13 +322,14 @@ export default function MembersClient({ membersPromise }: { membersPromise: Prom
                   alt={selectedMember.name}
                   onContextMenu={preventActions}
                   onDragStart={preventActions}
-                  className="w-full h-full object-cover"
+                  className={` ${isBlurred ? 'blur-2xl pointer-events-none' : 'blur-none'}w-full h-full object-cover"`}
                 />
               ) : (
                 <div className="scale-75 md:scale-100">
                   <Avatar name={selectedMember.name} size={200} />
                 </div>
               )}
+
               {/* Highlight divider line */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FF7A00] to-transparent z-20" />
             </div>

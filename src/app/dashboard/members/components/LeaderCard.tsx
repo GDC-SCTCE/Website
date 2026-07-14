@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@/components/Avatar";
 import { StatBar } from "./StatBar";
+import { useScreenshotDeterrent } from "@/hooks/useScreenshotDeterrent";
 
 export function LeaderCard({
   member,
@@ -13,7 +14,10 @@ export function LeaderCard({
   visible: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }) {
-  const preventActions = (e :React.SyntheticEvent) => {
+  const [isBlurred, setIsBlurred] = useState(false);
+  useScreenshotDeterrent(setIsBlurred);
+
+  const preventActions = (e: React.SyntheticEvent) => {
     e.preventDefault();
   };
   return (
@@ -25,20 +29,20 @@ export function LeaderCard({
         transitionDelay: `${delay}ms`,
       }}
     >
-      <div 
+      <div
         onClick={onClick}
         className="w-full h-auto lg:h-[553px] bg-[#1C1B1C] border border-[#201F20] transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(255,122,0,0.15)] hover:border-[#FF7A00] flex flex-col lg:flex-row relative group/card overflow-hidden cursor-pointer"
       >
-        
+
         {/* Left: Photo container */}
         <div className="w-full lg:w-1/2 h-auto lg:h-full relative flex items-center justify-center bg-[#131314]">
           <div className="w-full aspect-square relative">
             {/* Horizontal Divider */}
             <div className="absolute w-full h-[2px] left-0 top-0 bg-gradient-to-r from-[#FF7A00] to-transparent z-20 pointer-events-none" />
 
-            <div className="no-print w-full h-full relative overflow-hidden transition-transform duration-700 group-hover/card:scale-105">
+            <div className={`no-print ${isBlurred ? 'blur-2xl pointer-events-none' : 'blur-none'} w-full h-full relative overflow-hidden transition-transform duration-700 group-hover/card:scale-105`}>
               {member.avatar ? (
-                 <img src={member.avatar} alt={member.name} onContextMenu={preventActions} onDragStart={preventActions} className="w-full h-full object-cover transition-transform duration-700" />
+                <img src={member.avatar} alt={member.name} onContextMenu={preventActions} onDragStart={preventActions} className="w-full h-full object-cover transition-transform duration-700" />
               ) : (
                 <Avatar name={member.name} size={300} />
               )}

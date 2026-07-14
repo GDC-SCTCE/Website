@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@/components/Avatar";
+import { useScreenshotDeterrent } from "@/hooks/useScreenshotDeterrent";
 
 export function MemberCard({
   member,
@@ -12,10 +13,11 @@ export function MemberCard({
   visible: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }) {
-  const preventActions = (e :React.SyntheticEvent) => {
+  const preventActions = (e: React.SyntheticEvent) => {
     e.preventDefault();
   };
-  
+  const [isBlurred, setIsBlurred] = useState(false);
+  useScreenshotDeterrent(setIsBlurred);
   return (
     <div
       className="w-full max-w-[270px] shrink-0 flex transition-all duration-700"
@@ -25,7 +27,7 @@ export function MemberCard({
         transitionDelay: `${delay}ms`,
       }}
     >
-      <div 
+      <div
         onClick={onClick}
         className="w-full max-w-[270px] h-[376px] bg-[#131314] border border-transparent transition-all duration-[250ms] ease-out hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(0,0,0,0.6)] hover:border-[#FF7A00] relative shrink-0 box-border mx-auto group/member cursor-pointer flex flex-col"
       >
@@ -34,9 +36,9 @@ export function MemberCard({
 
         {/* Photo container */}
         <div className="flex-1 w-full overflow-hidden relative">
-          <div className="no-print w-full h-full transition-transform duration-700 group-hover/member:scale-105 flex items-center justify-center">
+          <div className={`no-print ${isBlurred ? 'blur-2xl pointer-events-none' : 'blur-none'} w-full h-full transition-transform duration-700 group-hover/member:scale-105 flex items-center justify-center`}>
             {member.avatar ? (
-                 <img src={member.avatar} alt={member.name} onContextMenu={preventActions} onDragStart={preventActions} className="w-full h-full object-cover" />
+              <img src={member.avatar} alt={member.name} onContextMenu={preventActions} onDragStart={preventActions} className="w-full h-full object-cover" />
             ) : (
               <Avatar name={member.name} size={150} />
             )}
