@@ -12,6 +12,10 @@ export function MemberCard({
   visible: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }) {
+  const preventActions = (e) => {
+    e.preventDefault();
+  };
+  
   return (
     <div
       className="w-full max-w-[270px] shrink-0 flex transition-all duration-700"
@@ -30,9 +34,9 @@ export function MemberCard({
 
         {/* Photo container */}
         <div className="flex-1 w-full overflow-hidden relative">
-          <div className="w-full h-full transition-transform duration-700 group-hover/member:scale-105 flex items-center justify-center">
+          <div className="no-print w-full h-full transition-transform duration-700 group-hover/member:scale-105 flex items-center justify-center">
             {member.avatar ? (
-                 <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
+                 <img src={member.avatar} alt={member.name} onContextMenu={preventActions} onDragStart={preventActions} className="w-full h-full object-cover" />
             ) : (
               <Avatar name={member.name} size={150} />
             )}

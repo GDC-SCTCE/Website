@@ -13,6 +13,9 @@ export function LeaderCard({
   visible: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }) {
+  const preventActions = (e) => {
+    e.preventDefault();
+  };
   return (
     <div
       className="w-full flex-1 transition-all duration-700"
@@ -33,9 +36,9 @@ export function LeaderCard({
             {/* Horizontal Divider */}
             <div className="absolute w-full h-[2px] left-0 top-0 bg-gradient-to-r from-[#FF7A00] to-transparent z-20 pointer-events-none" />
 
-            <div className="w-full h-full relative overflow-hidden transition-transform duration-700 group-hover/card:scale-105">
+            <div className="no-print w-full h-full relative overflow-hidden transition-transform duration-700 group-hover/card:scale-105">
               {member.avatar ? (
-                 <img src={member.avatar} alt={member.name} className="w-full h-full object-cover transition-transform duration-700" />
+                 <img src={member.avatar} alt={member.name} onContextMenu={preventActions} onDragStart={preventActions} className="w-full h-full object-cover transition-transform duration-700" />
               ) : (
                 <Avatar name={member.name} size={300} />
               )}

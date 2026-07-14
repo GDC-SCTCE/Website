@@ -205,7 +205,9 @@ export default function MembersClient({ membersPromise }: { membersPromise: Prom
       }, 60);
     }, 220);
   };
-
+  const preventActions = (e) => {
+    e.preventDefault();
+  };
   return (
     <div className="bg-[#131314] text-[#E5E2E3] min-h-screen">
       <div className="max-w-[1440px] mx-auto w-full">
@@ -311,11 +313,13 @@ export default function MembersClient({ membersPromise }: { membersPromise: Prom
             </button>
 
             {/* Left: Avatar/Image container */}
-            <div className="w-full md:w-[280px] shrink-0 bg-[#131314] relative flex items-center justify-center aspect-square md:aspect-auto md:h-[450px]">
+            <div className="no-print w-full md:w-[280px] shrink-0 bg-[#131314] relative flex items-center justify-center aspect-square md:aspect-auto md:h-[450px]">
               {selectedMember.avatar ? (
                 <img
                   src={selectedMember.avatar}
                   alt={selectedMember.name}
+                  onContextMenu={preventActions}
+                  onDragStart={preventActions}
                   className="w-full h-full object-cover"
                 />
               ) : (
