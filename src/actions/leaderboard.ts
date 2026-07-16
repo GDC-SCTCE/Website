@@ -14,11 +14,11 @@ export async function fetchLeaderboard(skip: number, take: number, search: strin
       SELECT id, "fullName", "rollNo", "academicYear", "xpLevel", score,
              (DENSE_RANK() OVER (ORDER BY score DESC))::int as rank
       FROM "User"
-      WHERE score > -1
+      WHERE score > 0
     )
     SELECT * FROM RankedUsers
     ${search ? Prisma.sql`WHERE "fullName" ILIKE ${`%${search}%`} OR "rollNo" ILIKE ${`%${search}%`}` : Prisma.empty}
-    ORDER BY rank ASC
+    ORDER BY rank ASC, id ASC
     OFFSET ${skip} LIMIT ${take}
   `;
 

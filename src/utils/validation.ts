@@ -12,10 +12,15 @@ export function validateUserData(data: {
     return "Please fill all required fields.";
   }
 
-  // Phone Number Validation (10-digit number with optional country code/spacers)
-  const phoneRegex = /^(\+?\d{1,4}[- ]?)?\d{10}$/;
+  // Phone Number Validation (strictly 10 digits)
+  const phoneRegex = /^\d{10}$/;
   if (!phoneRegex.test(trimmedPhone)) {
     return "Please enter a valid 10-digit phone number";
+  }
+
+  const rollNoRegex = /^[A-Za-z0-9]{3}\d{2}[A-Za-z0-9]{2}\d{3}$/;
+  if (!rollNoRegex.test(trimmedRollNo)) {
+    return "Enter University Roll No";
   }
 
   // Development Tools Validation (only if passed)

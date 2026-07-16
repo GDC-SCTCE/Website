@@ -84,9 +84,14 @@ export default function SignupFields({
                 value={rollNo}
                 onChange={(e) => setRollNo(e.target.value.toUpperCase())}
                 placeholder="SCT22CS001"
+                pattern="^[A-Za-z0-9]{3}\d{2}[A-Za-z0-9]{2}\d{3}$"
+                title="Enter University Roll No"
                 className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B] uppercase"
               />
             </div>
+            {rollNo.length > 0 && !/^[A-Za-z0-9]{3}\d{2}[A-Za-z0-9]{2}\d{3}$/.test(rollNo) && (
+              <p className="text-red-500 font-mono text-[10px] mt-2 tracking-wide">Enter University Roll No</p>
+            )}
           </div>
           
           <div>
@@ -97,11 +102,16 @@ export default function SignupFields({
               <input
                 type="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+91 9876543210"
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                placeholder="9876543210"
+                pattern="^\d{10}$"
+                title="Enter 10-digit Phone Number"
                 className="w-full bg-transparent border-none outline-none font-sora font-normal text-[16px] leading-[20px] text-[#E5E2E3] placeholder:text-[#353436] caret-[#FFB68B]"
               />
             </div>
+            {phone.length > 0 && phone.length < 10 && (
+              <p className="text-red-500 font-mono text-[10px] mt-2 tracking-wide">Enter 10-digit Phone Number</p>
+            )}
           </div>
         </div>
 

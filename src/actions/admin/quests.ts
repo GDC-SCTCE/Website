@@ -109,7 +109,10 @@ export async function getPaginatedAdminQuests(
       orderBy: { createdAt: "desc" },
       skip: page * pageSize,
       take: pageSize,
-      include: { ratings: true }
+      include: { 
+        ratings: true,
+        proposedBy: { select: { fullName: true, rollNo: true } }
+      }
     }),
     prisma.quest.count({ where: whereClause })
   ]);

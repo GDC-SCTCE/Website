@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { fetchLeaderboard } from "@/actions/leaderboard";
 import LeaderboardClient from "./components/LeaderboardClient";
 import AlumniSection from "./components/AlumniSection";
 
@@ -7,11 +8,7 @@ export const revalidate = 60; // optionally revalidate every 60s
 
 export default function HallOfFamePage() {
   const leaderboardDataPromise = Promise.all([
-    prisma.user.findMany({
-      orderBy: { score: "desc" },
-      take: 10,
-      where: { score: { gt: -1 } }
-    }),
+    fetchLeaderboard(0, 10),
     prisma.alumni.findMany({
       orderBy: { createdAt: "asc" }
     })

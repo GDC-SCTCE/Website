@@ -108,9 +108,22 @@ function DynamicLeaderboardRows({
   const [hasMore, setHasMore] = useState(users.length === 10);
   const [isLoading, setIsLoading] = useState(false);
 
+  const prevSearchRef = React.useRef<string | null>(null);
+
   // Debounced server-side search
   useEffect(() => {
     if (!mounted) return;
+    
+    // Skip the redundant fetch on initial mount and Strict Mode re-mounts
+    if (prevSearchRef.current === null && searchQuery === "") {
+      prevSearchRef.current = searchQuery;
+      return;
+    }
+    if (prevSearchRef.current === searchQuery) {
+      return;
+    }
+    prevSearchRef.current = searchQuery;
+
     const timer = setTimeout(async () => {
       setIsLoading(true);
       try {
@@ -144,7 +157,7 @@ function DynamicLeaderboardRows({
   return (
     <>
       {loadedUsers.map((user, idx) => (
-        <LeaderRow key={user.id} user={user} rank={user.rank ?? (idx + 1)} delay={idx * 80} visible={mounted} />
+        <LeaderRow key={user.id} user={user} rank={user.rank!} delay={idx * 80} visible={mounted} />
       ))}
       {loadedUsers.length === 0 && !isLoading && (
           <div className="py-20 text-center font-mono text-[#E0C0AF]">No scores found.</div>

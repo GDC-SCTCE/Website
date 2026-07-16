@@ -92,6 +92,13 @@ export default function QuestForm({ quest, onComplete }: { quest?: any, onComple
         <input name="imageFile" type="file" accept="image/*" className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00] file:bg-[#FF7A00] file:text-[#5C2800] file:border-none file:px-3 file:py-1 file:mr-4 file:font-mono file:text-[10px] file:tracking-[1.2px] hover:file:brightness-110 cursor-pointer" />
       </div>
 
+      {quest?.proposedBy && (
+        <div>
+          <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">PROPOSED BY</label>
+          <input type="text" readOnly disabled value={`${quest.proposedBy.fullName} (${quest.proposedBy.rollNo})`} className="w-full bg-[#1A1A1B] border border-[#584235] p-2 text-[#A78B7C] font-mono text-[12px] outline-none cursor-not-allowed" />
+        </div>
+      )}
+
       <div>
         <label className="block font-mono text-[10px] text-[#FFB68B] mb-2 tracking-[1.2px]">TITLE</label>
         <input name="title" type="text" required defaultValue={quest?.title || ""} className="w-full bg-[#131314] border border-[#584235] p-2 text-white font-mono text-[12px] outline-none focus:border-[#FF7A00]" />
