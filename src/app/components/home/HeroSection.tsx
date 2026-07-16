@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function HeroSection() {
   const { user, loading } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -68,19 +69,29 @@ export default function HeroSection() {
           </button>
         </Link>
 
-        <a 
-          href="#jam" 
+        <button 
           onClick={(e) => {
             e.preventDefault();
-            document.getElementById("jam")?.scrollIntoView({ behavior: "smooth" });
+            const el = document.getElementById("jam");
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+            } else {
+              setShowToast(true);
+              setTimeout(() => setShowToast(false), 3000);
+            }
           }}
-          className="w-full sm:w-auto"
+          className="bg-transparent border border-[#FF7A00] w-full sm:w-[248.48px] h-[52px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] cursor-pointer hover:bg-[#FF7A00]/10 hover:shadow-md hover:shadow-[#FF7A00]/10 transition-all duration-300"
         >
-          <button className="bg-transparent border border-[#FF7A00] w-full sm:w-[248.48px] h-[52px] font-mono font-semibold text-[12px] tracking-[1.2px] text-[#FF7A00] cursor-pointer hover:bg-[#FF7A00]/10 hover:shadow-md hover:shadow-[#FF7A00]/10 transition-all duration-300">
-            View Quest →
-          </button>
-        </a>
+          View Quest →
+        </button>
       </div>
+
+      {showToast && (
+        <div className="fixed top-24 right-4 sm:right-8 bg-[#1A1A1B]/95 backdrop-blur-sm border border-[#FF7A00]/30 text-[#FFB68B] px-6 py-4 font-mono font-bold text-[12px] uppercase tracking-wide z-50 shadow-[0_0_20px_rgba(255,122,0,0.15)] animate-in fade-in slide-in-from-right-8 duration-300 flex items-center gap-3">
+          <span className="w-2 h-2 bg-[#FF7A00] animate-pulse shadow-[0_0_8px_#FF7A00]"></span>
+          No active quests at the moment
+        </div>
+      )}
     </section>
   );
 }
