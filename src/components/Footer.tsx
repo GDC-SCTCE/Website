@@ -31,7 +31,7 @@ export default function Footer() {
             IGNITION COLLECTIVE
           </h2>
           <p className="font-mono font-semibold text-[12px] leading-[12px] tracking-[1.2px] text-[#E0C0AF] m-0 opacity-80 md:opacity-100 hidden md:block">
-            © 2024 IGNITION COLLECTIVE. BUILT FOR PERFORMANCE.
+            © 2026 IGNITION COLLECTIVE. BUILT FOR PERFORMANCE.
           </p>
         </div>
 
