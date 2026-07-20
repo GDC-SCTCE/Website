@@ -34,27 +34,13 @@ function CountUp({ value, startTrigger, duration = 1500 }: { value: string; star
 
   return <>{displayValue}</>;
 }
-
-export default function StatsSection() {
+interface StatsSectionProps {
+  visitorCount: string;
+}
+export default function StatsSection({ visitorCount }: StatsSectionProps) {
   const { ref: statsRef, inView: statsVisible } = useInView(0.15);
   const { user, loading } = useAuth();
   
-  // 1. Initialize state for the live visitor count placeholder
-  const [visitorCount, setVisitorCount] = useState("...");
-
-  // 2. Fetch from your local Next.js API proxy route to conform to CSP rules
-  useEffect(() => {
-    fetch("/api/views")
-      .then((res) => res.json())
-      .then((data) => {
-        setVisitorCount(data.views);
-      })
-      .catch(() => {
-        setVisitorCount("1.2K+"); // Local error threshold fallback
-      });
-  }, []);
-
-  // 3. Keep stats here inside the component body so it updates on state changes
   const stats = [
     { value: "250+", label: "Members", textColor: "text-[#FF7A00]" },
     { value: "In Dev", label: "Games Baked", textColor: "text-[#E9C400]" }, 
