@@ -15,6 +15,8 @@ export default function SplashOverlay() {
   }, []);
 
   const handleDismissSplash = () => {
+    if (splashEnding) return; 
+    
     setSplashEnding(true);
     sessionStorage.setItem("gdc_intro_played", "true");
     setTimeout(() => {
@@ -26,7 +28,8 @@ export default function SplashOverlay() {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] bg-[#131314] flex flex-col items-center justify-center transition-all duration-100 ease-in-out ${
+      onClick={handleDismissSplash}
+      className={`fixed inset-0 z-[100] bg-[#131314] flex flex-col items-center justify-center transition-all duration-100 ease-in-out cursor-pointer ${
         splashEnding ? "opacity-0 pointer-events-none scale-110 blur-md" : "opacity-100"
       }`}
     >
@@ -46,7 +49,8 @@ export default function SplashOverlay() {
       </div>
 
       {/* Content overlay on splash */}
-      <div className="relative z-10 w-full max-w-[1440px] h-full flex flex-col justify-between p-8 md:p-16 pointer-events-none">
+      {/* Removed pointer-events-none so the whole area registers clicks cleanly */}
+      <div className="relative z-10 w-full max-w-[1440px] h-full flex flex-col justify-between p-8 md:p-16">
         {/* Top row */}
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-[12px]">
@@ -63,7 +67,7 @@ export default function SplashOverlay() {
         </div>
 
         {/* Middle logo / title */}
-        <div className="text-center flex flex-col items-center gap-4">
+        <div className="text-center flex flex-col items-center gap-4 select-none">
           <span className="font-mono text-[#FF7A00] tracking-[4px] uppercase text-[12px] animate-pulse">
             Entering Collective Sandbox
           </span>
@@ -72,8 +76,12 @@ export default function SplashOverlay() {
           </h2>
         </div>
 
-        {/* Bottom Row - Spacer for layout balance */}
-        <div className="w-full h-12" />
+        {/* Bottom Row - Hint text telling users they can click anywhere */}
+        <div className="flex justify-end w-full select-none">
+          <span className="font-mono text-[11px] tracking-[2px] text-white/40 uppercase animate-pulse">
+            Tap anywhere to skip ➔
+          </span>
+        </div>
       </div>
     </div>
   );
