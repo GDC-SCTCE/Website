@@ -164,7 +164,7 @@ export function QuestCard({
           <QuestCardTimer targetDate={quest.targetDate} status={quest.status} />
           <div className="text-right">
             <p className="font-mono font-normal text-[10px] leading-[15px] text-[#E0C0AF]">
-              {isUpcoming ? "Reservation" : "Seats Available"}
+              {isUpcoming ? "Reservation" : "Seats Filled"}
             </p>
             <p className="mt-1 font-mono font-normal text-[14px] sm:text-[16px] leading-[22px] sm:leading-[26px] text-[#E5E2E3]">
               {localSeatsTaken} / {seatsTotal}

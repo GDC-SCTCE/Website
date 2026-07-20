@@ -200,7 +200,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px] uppercase">Seats Available</p>
+                  <p className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px] uppercase">Seats Filled</p>
                   <p className="font-mono text-[14px] font-bold text-[#E5E2E3] mt-0.5">
                     {quest.seatsTaken || 0} / {quest.capacity || 30}
                   </p>
