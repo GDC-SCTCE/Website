@@ -140,7 +140,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
               </span>
               {isTeamQuest ? (
                 <span className="font-mono text-[11px] text-[#FFB68B] flex items-center gap-2 font-bold">
-                  <Users className="w-3.5 h-3.5 text-[#FF7A00]" /> Team Event ({quest.minTeamSize}-{quest.maxTeamSize} Members)
+                  <Users className="w-3.5 h-3.5 text-[#FF7A00]" /> Team Event ({quest.minTeamSize === quest.maxTeamSize ? quest.minTeamSize : `${quest.minTeamSize}-${quest.maxTeamSize}`} Members)
                 </span>
               ) : (
                 <span className="font-mono text-[11px] text-zinc-400 flex items-center gap-2">
@@ -178,7 +178,11 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
                 <div>
                   <h4 className="font-sora font-semibold text-[13px] text-white uppercase tracking-wider">Team Event Notice</h4>
                   <p className="font-mono text-[11px] text-[#A78B7C] mt-1 leading-relaxed">
-                    A team of <span className="text-[#FFB68B] font-bold">{quest.minTeamSize || 1}</span> to <span className="text-[#FFB68B] font-bold">{quest.maxTeamSize || 1}</span> members is required. Provide a team name and teammate emails below to register.
+                    {quest.minTeamSize === quest.maxTeamSize ? (
+                      <>A team of <span className="text-[#FFB68B] font-bold">{quest.minTeamSize || 1}</span> members is required. Provide a team name and teammate emails below to register.</>
+                    ) : (
+                      <>A team of <span className="text-[#FFB68B] font-bold">{quest.minTeamSize || 1}</span> to <span className="text-[#FFB68B] font-bold">{quest.maxTeamSize || 1}</span> members is required. Provide a team name and teammate emails below to register.</>
+                    )}
                   </p>
                 </div>
               </div>
@@ -211,7 +215,7 @@ export function QuestDetailsModal({ quest, user, isAdmin, onClose, onSuccess }: 
                 <div>
                   <p className="font-mono text-[10px] text-[#A78B7C] tracking-[1.2px] uppercase">Team Size</p>
                   <p className="font-mono text-[14px] font-bold text-[#E5E2E3] mt-0.5">
-                    {isTeamQuest ? `${quest.minTeamSize || 1}-${quest.maxTeamSize || 1} Members` : "Solo"}
+                    {isTeamQuest ? `${quest.minTeamSize === quest.maxTeamSize ? quest.minTeamSize : `${quest.minTeamSize || 1}-${quest.maxTeamSize || 1}`} Members` : "Solo"}
                   </p>
                 </div>
               </div>

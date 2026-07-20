@@ -233,7 +233,11 @@ export function QuestRegistrationFlow({ quest, user, onClose, onSuccess }: Quest
                 <div>
                   <div className="flex justify-between items-end mb-2">
                     <label className="block font-mono text-[10px] text-[#FFB68B] tracking-[1.2px]">TEAM MEMBERS (GDC Users)</label>
-                    <span className="font-mono text-[10px] text-[#A78B7C]">Min: {quest.minTeamSize || 1} | Max: {quest.maxTeamSize || 1}</span>
+                    <span className="font-mono text-[10px] text-[#A78B7C]">
+                      {quest.minTeamSize === quest.maxTeamSize 
+                        ? `Size: ${quest.minTeamSize || 1}` 
+                        : `Min: ${quest.minTeamSize || 1} | Max: ${quest.maxTeamSize || 1}`}
+                    </span>
                   </div>
 
                   <div className="flex flex-col gap-2 border border-[#3A2D25]/30 p-2 bg-[#1C1B1C]/40 rounded-sm">
