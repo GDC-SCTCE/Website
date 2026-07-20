@@ -1,19 +1,66 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { useInView } from "@/hooks/useInView";
 import { useAuth } from "@/context/AuthContext";
 
-const stats = [
-  { value: "847", label: "Members", textColor: "text-[#FF7A00]" },
-  { value: "156", label: "Links Up", textColor: "text-[#E9C400]" },
-  { value: "12K", label: "In Game", textColor: "text-[#FF7A00]" },
-  { value: "2,340", label: "First Base", textColor: "text-[#E9C400]" },
-];
+function CountUp({ value, startTrigger, duration = 1500 }: { value: string; startTrigger: boolean; duration?: number }) {
+  const [displayValue, setDisplayValue] = useState(value);
+
+  useEffect(() => {
+    if (!startTrigger) return;
+    const match = value.match(/^(\d+)(.*)$/);
+    if (!match) {
+      setDisplayValue(value);
+      return;
+    }
+    const targetNumber = parseInt(match[1], 10);
+    const suffix = match[2];
+    let startTime: number | null = null;
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const progressFraction = Math.min(progress / duration, 1);
+      const currentCount = Math.floor(progressFraction * targetNumber);
+      setDisplayValue(`${currentCount}${suffix}`);
+      if (progress < duration) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [value, startTrigger, duration]);
+
+  return <>{displayValue}</>;
+}
 
 export default function StatsSection() {
   const { ref: statsRef, inView: statsVisible } = useInView(0.15);
   const { user, loading } = useAuth();
+  
+  // 1. Initialize state for the live visitor count placeholder
+  const [visitorCount, setVisitorCount] = useState("...");
+
+  // 2. Fetch from your local Next.js API proxy route to conform to CSP rules
+  useEffect(() => {
+    fetch("/api/views")
+      .then((res) => res.json())
+      .then((data) => {
+        setVisitorCount(data.views);
+      })
+      .catch(() => {
+        setVisitorCount("1.2K+"); // Local error threshold fallback
+      });
+  }, []);
+
+  // 3. Keep stats here inside the component body so it updates on state changes
+  const stats = [
+    { value: "250+", label: "Members", textColor: "text-[#FF7A00]" },
+    { value: "In Dev", label: "Games Baked", textColor: "text-[#E9C400]" }, 
+    { value: "20+", label: "In Events", textColor: "text-[#FF7A00]" },     
+    { value: visitorCount, label: "Net Hits", textColor: "text-[#E9C400]" },    
+  ];
 
   return (
     <section
@@ -65,7 +112,7 @@ export default function StatsSection() {
               <p
                 className={`font-sora font-normal text-[48px] leading-[48px] mb-[8px] transition-all duration-300 group-hover/stat:scale-105 ${s.textColor}`}
               >
-                {s.value}
+                <CountUp value={s.value} startTrigger={statsVisible && s.value !== "..."} />
               </p>
               <p className="font-mono font-normal text-[14px] leading-[21px] text-[#A78B7C] uppercase transition-colors duration-300 group-hover/stat:text-[#E0C0AF]">
                 {s.label}
