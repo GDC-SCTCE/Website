@@ -49,7 +49,6 @@ export default function SplashOverlay() {
       </div>
 
       {/* Content overlay on splash */}
-      {/* Removed pointer-events-none so the whole area registers clicks cleanly */}
       <div className="relative z-10 w-full max-w-[1440px] h-full flex flex-col justify-between p-8 md:p-16">
         {/* Top row */}
         <div className="flex items-center justify-between w-full">
@@ -61,12 +60,8 @@ export default function SplashOverlay() {
               GAME DEV CLUB
             </span>
           </div>
-          <span className="font-mono text-[11px] tracking-[1.1px] text-[#A78B7C] uppercase">
-            // System Initialize
-          </span>
         </div>
 
-        {/* Middle logo / title */}
         <div className="text-center flex flex-col items-center gap-4 select-none">
           <span className="font-mono text-[#FF7A00] tracking-[4px] uppercase text-[12px] animate-pulse">
             Entering Collective Sandbox
