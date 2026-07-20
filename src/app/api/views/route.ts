@@ -14,12 +14,12 @@ export async function GET() {
 
     // Format the number compactly right here before sending it to the client
     const formattedViews = views > 999 
-      ? `${(views / 1000).toFixed(1)}K+` 
-      : `${views}+`;
+      ? `${(views / 1000).toFixed(1)}K` 
+      : `${views}`;
 
     return NextResponse.json({ views: formattedViews });
   } catch (error) {
     // Graceful server fallback if the API endpoint experiences lag
-    return NextResponse.json({ views: "1.2K+" });
+    return NextResponse.json({ views: "1.2K" });
   }
 }
