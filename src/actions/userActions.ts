@@ -14,23 +14,23 @@ export async function checkUserExists(email: string) {
   return !!user;
 }
 
-export async function validateQuestRegistration(questId: string, teammates: string[] = []) {
+export async function validateQuestRegistration(questId: string, teammates: string[] = []): Promise<{ success: false, error: string } | { success: true, allUserIds: string[], quest: NonNullable<Awaited<ReturnType<typeof prisma.quest.findUnique>>>, user: NonNullable<Awaited<ReturnType<typeof verifyUser>>> }> {
   const user = await verifyUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) return { success: false, error: "Unauthorized" };
 
   const quest = await prisma.quest.findUnique({ where: { id: questId } });
-  if (!quest) throw new Error("Quest not found");
+  if (!quest) return { success: false, error: "Quest not found" };
 
   const requiredSeats = 1 + teammates.length;
   if (quest.capacity && quest.seatsTaken + requiredSeats > quest.capacity) {
-    throw new Error(`Quest is full or not enough seats for ${requiredSeats} members`);
+    return { success: false, error: `Quest is full or not enough seats for ${requiredSeats} members` };
   }
 
   const teamUsers = [];
   for (const email of teammates) {
     const tUser = await prisma.user.findUnique({ where: { email } });
-    if (!tUser) throw new Error(`User with email ${email} is not registered on GDC.`);
-    if (tUser.id === user.id) throw new Error(`You cannot add yourself as a teammate.`);
+    if (!tUser) return { success: false, error: `User with email ${email} is not registered on GDC.` };
+    if (tUser.id === user.id) return { success: false, error: `You cannot add yourself as a teammate.` };
     teamUsers.push(tUser);
   }
 
@@ -41,15 +41,17 @@ export async function validateQuestRegistration(questId: string, teammates: stri
   });
 
   if (existing.length > 0) {
-    throw new Error("One or more team members are already registered for this quest.");
+    return { success: false, error: "One or more team members are already registered for this quest." };
   }
 
   return { success: true, allUserIds, quest, user };
 }
 
-export async function registerForQuest(questId: string, upiRef?: string, teamName?: string, teammates: string[] = []) {
+export async function registerForQuest(questId: string, upiRef?: string, teamName?: string, teammates: string[] = []): Promise<{ success: false, error: string } | { success: true, status: string, updatedSeatsTaken: number }> {
   // 1. Run all validations and retrieve the validated data
-  const { allUserIds, quest, user } = await validateQuestRegistration(questId, teammates);
+  const valResult = await validateQuestRegistration(questId, teammates);
+  if (!valResult.success) return valResult;
+  const { allUserIds, quest, user } = valResult;
 
   // 2. Determine registration status based on price
   const status = quest.price > 0 ? "PENDING" : "REGISTERED";

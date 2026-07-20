@@ -69,18 +69,20 @@ export function QuestRegistrationFlow({ quest, user, onClose, onSuccess }: Quest
 
     try {
       const res = await validateQuestRegistration(quest.id, filledTeammates);
-      if (res.success) {
-        if (quest.price && quest.price > 0) {
-          setShowPayment(true);
-          setRegistering(false);
-        } else {
-          await executeRegistration();
-        }
-      } else {
+      if (!res.success) {
+        setRegError(res.error || "Validation failed.");
         setRegistering(false);
+        return;
+      }
+      
+      if (quest.price && quest.price > 0) {
+        setShowPayment(true);
+        setRegistering(false);
+      } else {
+        await executeRegistration();
       }
     } catch (err: any) {
-      setRegError(err.message);
+      setRegError(err.message || "An unexpected error occurred.");
       setRegistering(false);
     }
   };
@@ -103,12 +105,16 @@ export function QuestRegistrationFlow({ quest, user, onClose, onSuccess }: Quest
         registerForQuest(quest.id, upiRef, teamName, finalTeammates),
         new Promise((resolve) => setTimeout(resolve, 1200))
       ]);
-      if (res.success) {
-        onSuccess(res.status === "PENDING" ? "PENDING APPROVAL" : "REGISTERED ✓", res.updatedSeatsTaken);
-        onClose();
+      if (!res.success) {
+        setRegError(res.error || "Registration failed.");
+        setRegistering(false);
+        return;
       }
+      
+      onSuccess(res.status === "PENDING" ? "PENDING APPROVAL" : "REGISTERED ✓", res.updatedSeatsTaken);
+      onClose();
     } catch (err: any) {
-      setRegError(err.message);
+      setRegError(err.message || "An unexpected error occurred.");
       setRegistering(false);
     }
   };
